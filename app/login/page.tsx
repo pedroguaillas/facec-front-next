@@ -1,6 +1,7 @@
 // app/login/page.tsx
 "use client";
 
+import { PrimaryButton, TextInput } from "@/components";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
@@ -8,6 +9,15 @@ export default function LoginPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUser(event.target.value);
+  };
+
+  // Maneja cambios para el campo "password"
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,30 +35,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <>
+      <h1 className="text-3xl font-bold text-center dark:text-primary">
+        fac
+        <span className="text-slate-400 font-semibold">ec</span>
+      </h1>
+      <p className="text-slate-500 my-4">Ingresa a tu cuenta</p>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Usuario</label>
-          <input
-            type="text"
-            value={user}
-            onChange={(e) => setUser(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        <TextInput
+          value={user}
+          onChange={handleChange}
+          label="Usuario"
+          name="user"
+        />
+        <TextInput
+          type="password"
+          value={password}
+          onChange={handlePasswordChange}
+          label="Contraseña"
+          name="password"
+        />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Ingresar</button>
+        <div className="mt-6">
+          <PrimaryButton
+            label="Ingresar"
+            type="submit"
+            action="create"
+          />
+        </div>
       </form>
-    </div>
+    </>
   );
 }

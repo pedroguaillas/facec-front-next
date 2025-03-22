@@ -10,7 +10,7 @@ export default async function Dashboard() {
       <h1>Dashboard</h1>
       {session ? (
         <>
-          <p>Bienvenido, {session.user?.name}</p>
+          <p>Bienvenido, {session.user?.user.user}</p>
           <SignOutButton /> {/* ✅ Ahora el botón se maneja en el lado del cliente */}
         </>
       ) : (

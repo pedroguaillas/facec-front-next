@@ -12,6 +12,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@theme {
+  /* Verde oscuro personalizado */
+  --color-primary: #005c67;
+  --color-primaryhover: #0096a3;
+  --color-primarywhite: #a0d1d4;
+  /* Amarillo personalizado */
+  --color-secondary: #ffffff;
+  --color-secondaryhover: #eee;
+  /* Naranja personalizado */
+  --color-success: #0e9f6e;
+  --color-successhover: #117729;
+  --color-danger: #dd1f12;
+  --color-dangerhover: #bb1a0f;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
