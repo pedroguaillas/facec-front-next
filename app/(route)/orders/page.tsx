@@ -6,11 +6,13 @@ import { useSession } from "next-auth/react";
 import { Meta } from "@/types/paginate";
 import { Paginate, TableResponsive, Title } from "@/components";
 import { ActionsTitle } from "@/types";
+import { Dropdown } from "./components/Dropdown";
 
 const Invoices = () => {
-    const [orders, setOrders] = useState<any[]>([]);
+    const [orders, setOrders] = useState<OrderProps[]>([]);
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta | null>(null);
+    const [dropdown, setDropdown] = useState<boolean[]>([]);
     const { status } = useSession();
 
     const axiosAuth = useAxiosAuth();
@@ -66,6 +68,18 @@ const Invoices = () => {
         { label: "+", type: "link", url: 'orders/create', action: 'create' },
     ];
 
+    const handleDrops = (index: number) => {
+        dropdown[index] = !dropdown[index]
+        if (dropdown[index]) {
+            dropdown.forEach((drop, i) => {
+                if (index !== i) {
+                    dropdown[i] = false;
+                }
+            })
+        }
+        setDropdown([...dropdown])
+    }
+
     return (
         <div className="dark:text-gray-300">
 
@@ -113,7 +127,7 @@ const Invoices = () => {
                                     </td>
                                     <td className="text-right">${order.atts?.total || "0.00"}</td>
                                     <td className="flex justify-end">
-                                        <button className="rounded-full bg-blue-700 px-3 py-1 font-bold cursor-pointer">&#60;</button>
+                                        <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
                                     </td>
                                 </tr>
                             ))}
