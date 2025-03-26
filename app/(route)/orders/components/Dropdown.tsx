@@ -9,8 +9,6 @@ interface Props {
 
 export const Dropdown = ({ isOpen, index, order, setIsOpen }: Props) => {
 
-    const toggleDropdown = () => setIsOpen(index);
-
     const options = [
         { label: "Ver Pdf", onClick: () => showOrderPdf() },
         { label: "Anular", onClick: () => console.log("Option 2 clicked") },
@@ -35,14 +33,14 @@ export const Dropdown = ({ isOpen, index, order, setIsOpen }: Props) => {
     }
 
     return (
-        <div className="relative inline-block text-left">
+        <div className="relative inline-block text-left min-w-[40px]">
 
             {/* Dropdown Button */}
-            <button onClick={toggleDropdown} className="rounded-full bg-blue-700 px-3 py-1 font-bold cursor-pointer">&#60;</button>
+            <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 my-auto font-bold cursor-pointer">&#60;</button>
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute right-0 z-10 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                <div className="absolute right-0 z-1000 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700">
                     <div className="py-1">
                         {options.map((option, index) => (
                             <button

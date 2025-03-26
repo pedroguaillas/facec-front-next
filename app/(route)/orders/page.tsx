@@ -30,6 +30,7 @@ const Invoices = () => {
             const res = await axiosAuth.post(`orderlist?page=${page}`, { search });
             setOrders(res.data.data);
             setMeta(res.data.meta);
+            setDropdown(new Array(res.data.data.length).fill(false));
         } catch (error) {
             console.error("Error al obtener facturas:", error);
         }
@@ -69,15 +70,11 @@ const Invoices = () => {
     ];
 
     const handleDrops = (index: number) => {
-        dropdown[index] = !dropdown[index]
-        if (dropdown[index]) {
-            dropdown.forEach((drop, i) => {
-                if (index !== i) {
-                    dropdown[i] = false;
-                }
-            })
-        }
-        setDropdown([...dropdown])
+        console.log('antes', dropdown)
+        setDropdown((prev) =>
+            prev.map((isOpen, i) => (i === index ? !isOpen : false))
+        );
+        console.log('despues', dropdown)
     }
 
     return (
@@ -126,7 +123,7 @@ const Invoices = () => {
                                         </span>
                                     </td>
                                     <td className="text-right">${order.atts?.total || "0.00"}</td>
-                                    <td className="flex justify-end">
+                                    <td className="flex justify-end relative">
                                         <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
                                     </td>
                                 </tr>

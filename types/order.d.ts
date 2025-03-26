@@ -4,7 +4,7 @@ interface OrderProps {
         extra_detail: string | null;
         send_mail: boolean;
         serie: string;
-        state: string | null;
+        state: 'CREADO' | 'FIRMADO' | 'ENVIADO' | 'RECIBIDA' | 'EN_PROCESO' | 'DEVUELTA' | 'AUTORIZADO' | 'NO AUTORIZADO';
         total: number;
         voucher_type: number;
         xml: string | null;
