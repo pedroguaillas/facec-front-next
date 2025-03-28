@@ -20,7 +20,7 @@ const InvoicesPage = () => {
     const ProductsPagination = () => {
         const { meta, fetchInvoices } = useInvoices();
 
-        const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string | null) => {
+        const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
             e.preventDefault();
             fetchInvoices(pageUrl);
         };

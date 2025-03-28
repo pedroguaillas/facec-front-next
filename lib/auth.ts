@@ -1,6 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "./axios";
+import { jwtDecode } from "jwt-decode";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -35,21 +36,21 @@ export const authOptions: NextAuthOptions = {
       if (user) token.user = user; // Store the token
 
       // Refrescar el token si está vencido
-      // const { exp } = jwtDecode(token.user.token);
-      // console.log("Llega al JWT: ", token?.user?.token);
+      const { exp } = jwtDecode(token.user.token);
+      console.log("Llega al JWT: ", token?.user?.token);
 
-      // if (Date.now() >= exp * 1000) {
-      //   try {
-      //     const res = await axios.get("api/refreshtoken", {
-      //       headers: { Authorization: `Bearer ${token.user.token}` },
-      //     });
+      if (Date.now() >= exp * 1000) {
+        try {
+          const res = await axios.get("api/refreshtoken", {
+            headers: { Authorization: `Bearer ${token.user.token}` },
+          });
 
-      //     token.user.token = res.data.token;
-      //   } catch (error) {
-      //     console.error("Error refrescando el token EN CALLBACKS: ", error);
-      //     return null;
-      //   }
-      // }
+          token.user.token = res.data.token;
+        } catch (error) {
+          console.error("Error refrescando el token EN CALLBACKS: ", error);
+          return null;
+        }
+      }
 
       return token;
     },

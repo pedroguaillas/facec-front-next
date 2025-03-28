@@ -1,52 +1,19 @@
-"use client";
+import { AxiosInstance } from "axios";
 
-import { useEffect, useState } from "react";
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-
-export const useInvoices = (search: string, page: number) => {
-  const axiosAuth = useAxiosAuth();
-  const [invoices, setInvoices] = useState<OrderProps[]>([]);
-
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const response = await axiosAuth.post<OrderProps[]>(`orderlist?page=${page}`, { search });
-        setInvoices(response.data);
-      } catch (error) {
-        console.error("Error al obtener facturas:", error);
-      }
-    };
-
-    fetchInvoices();
-  }, [axiosAuth]); // ⚠ Aquí agregamos axiosAuth como dependencia
-
-  return { invoices };
-};
-
-export const useUploadInvoiceBatch = () => {
-  const axiosAuth = useAxiosAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const uploadInvoiceBatch = async (file: File) => {
-    setLoading(true);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append("lot", file);
-    formData.append("point_id", "1");
-
-    try {
-      await axiosAuth.post("orders/lot", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    } catch (error) {
-      console.error("Error al subir el lote:", error);
-      setError("Error al subir el lote.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { uploadInvoiceBatch, loading, error };
+export const getInvoices = async (
+  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+  pageUrl?: string | null,
+  search?: string,
+  page?: number
+) => {
+  // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
+  const url = pageUrl || `orderlist?page=${page}`;
+  try {
+    const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
+    const response = await axiosAuth.post(fullUrl, { search });
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener facturas:", error);
+    return [];
+  }
 };

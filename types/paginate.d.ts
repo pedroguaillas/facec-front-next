@@ -16,5 +16,5 @@ export type Links = {
 
 export type PaginateProps = {
     meta: Meta | null;
-    reqNewPage: (e: React.MouseEvent<HTMLButtonElement>, url: string | null) => void;
+    reqNewPage: (e: React.MouseEvent<HTMLButtonElement>, url: string) => void;
 };

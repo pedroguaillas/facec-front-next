@@ -8,6 +8,8 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
 
     const { links } = meta
 
+    if (!links) return;
+
     return (
         <nav aria-label="Navegación de páginas" className="flex justify-center mt-4">
             <ul className="inline-flex items-center gap-1 text-sm">
@@ -60,7 +62,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                 </li>
                 <li>
                     <button
-                        onClick={(e) => reqNewPage(e, links?.last)}
+                        onClick={(e) => reqNewPage(e, links.last)}
                         className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
                         disabled={meta.current_page === meta.last_page}
                     >
