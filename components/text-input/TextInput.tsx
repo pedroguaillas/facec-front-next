@@ -2,7 +2,7 @@ import React from 'react';
 
 // Definición de la interfaz Props con tipado correcto
 interface Props {
-    type?: 'text' | 'email' | 'password' | 'number'; // Restringe los tipos válidos
+    type?: 'text' | 'email' | 'password' | 'number' | 'date'; // Restringe los tipos válidos
     value: string;
     required?: boolean;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; // Tipado correcto para onChange

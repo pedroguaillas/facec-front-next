@@ -15,3 +15,37 @@ interface OrderProps {
     }
     id: number
 }
+
+interface OrderCreateProps {
+    serie: string;
+    date: string;
+    expiration_days: number; //Eliminar
+    no_iva: number,
+    base0: number,
+    base5: number,
+    base12: number,
+    base15: number,
+    iva: number,
+    ice: number,
+    sub_total: number,
+    discount: number,
+    total: number,
+    description: string | null,
+    customer_id: number,
+    received: number, //Ver
+    doc_realeted: number, //Ver
+    voucher_type: number,
+    pay_method: number,
+}
+
+interface PayMethod {
+    code: number;
+    description: string;
+}
+
+interface EmisionPoint {
+    id: number;
+    store: string;
+    point: string;
+    recognition: string;
+}
