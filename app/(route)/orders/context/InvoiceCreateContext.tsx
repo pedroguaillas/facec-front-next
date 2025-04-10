@@ -11,6 +11,12 @@ interface InvoicesContextType {
   payMethods: PayMethod[];
   points: EmisionPoint[];
   tourism: boolean;
+  productInputs: ProductInput[];
+  productOutputs: ProductOutput[];
+  aditionalInformation: AditionalInformation[];
+  setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
+  setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
+  setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
 }
 
 const InvoiceCreateContext = createContext<InvoicesContextType | undefined>(undefined);
@@ -42,12 +48,31 @@ const initialInvoice = {
   doc_realeted: 0,
   voucher_type: 1,
   pay_method: 20,
+  guia: '',
 };
+
+const initialProductOutputs = [
+  {
+    id: Date.now(),
+    product_id: 0,
+    price: 0,
+    quantity: 1,
+    stock: 1,
+    discount: 0,
+    iva: 0,
+    total_iva: 0,
+    ice: undefined,
+    percentage: 0
+  }
+];
 
 export const InvoiceCreateProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
+  const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
+  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>(initialProductOutputs);
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
+  const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
   const [tourism, setTourism] = useState(false);
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
@@ -72,13 +97,13 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   }, [status]);
 
   return (
-    <InvoiceCreateContext.Provider value={{ invoice, setInvoice, payMethods, points, tourism }}>
+    <InvoiceCreateContext.Provider value={{ invoice, setInvoice, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, setProductInputs, setProductOutputs, setAditionalInformation }}>
       {children}
     </InvoiceCreateContext.Provider>
   );
 };
 
-export const useInvoice = () => {
+export const useCreateInvoice = () => {
   const context = useContext(InvoiceCreateContext);
   if (!context) {
     throw new Error("Invoices must be used within an InvoiceCreateProvider");

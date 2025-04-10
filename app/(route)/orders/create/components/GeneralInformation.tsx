@@ -1,15 +1,20 @@
 "use client";
 
-import { TextInput } from '@/components'
-import { SelectOption } from '@/components/select-option/SelectOption';
-import React from 'react'
+import { SelectOption, TextInput } from '@/components';
+import React from 'react';
+import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 
 export const GeneralInformation = () => {
+
+    const { invoice, setInvoice } = useCreateInvoice();
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value)
+        setInvoice((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
     }
+
     const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(event.target.value)
+        setInvoice((prevState) => ({ ...prevState, [event.target.name]: Number(event.target.value) }))
+        // console.log(event.target.value)
     }
 
     const invoiceTypes = [
@@ -26,13 +31,13 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='w-2/4'>
-                        <TextInput type='date' label='Fecha emisión' value='' onChange={handleChange} name='date' />
+                        <TextInput type='date' label='Fecha emisión' value={invoice.date} onChange={handleChange} name='date' />
                     </div>
 
                     <div className="flex flex-col w-2/3">
                         <SelectOption label="Punto Emi" options={invoiceTypes} selectedValue={1} handleSelect={handleSelect} />
                     </div>
-                    <div><span>N° de serie </span> </div>
+                    <div className='py-2'><span>N° de serie </span>{invoice.serie}</div>
                     <div><span>Cliente </span> </div>
                 </div>
 
@@ -45,16 +50,16 @@ export const GeneralInformation = () => {
                     </div>
 
                     <div className='w-2/3'>
-                        <TextInput label='Guia de Remisión' value='' onChange={handleChange} name='guia' />
+                        <TextInput label='Guia de Remisión' value={invoice.guia} onChange={handleChange} name='guia' />
                     </div>
                     <div className='w-2/3'>
-                        <TextInput type='date' label='Emisión factura *' value='' onChange={handleChange} name='guia' />
+                        <TextInput type='date' label='Emisión factura *' value='' onChange={handleChange} name='date_order' />
                     </div>
                     <div className='w-2/3'>
-                        <TextInput label='Serie factura *' value='' onChange={handleChange} name='guia' />
+                        <TextInput label='Serie factura *' value='' onChange={handleChange} name='serie_order' />
                     </div>
                     <div className='w-2/3'>
-                        <TextInput label='Motivo *' value='' onChange={handleChange} name='guia' />
+                        <TextInput label='Motivo *' value='' onChange={handleChange} name='rason' />
                     </div>
                 </div>
             </div>

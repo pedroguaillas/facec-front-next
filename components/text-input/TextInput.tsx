@@ -26,7 +26,7 @@ export const TextInput = ({
 }: Props) => {
     return (
         <div className="flex flex-col gap-1 my-2">
-            <label htmlFor={name} className="text-sm font-medium dark:text-primary">
+            <label htmlFor={name} className="text-sm font-medium dark:text-gray-300">
                 {label}
                 {required && <span className="text-red-500">*</span>} {/* Indicador visual de requerido */}
             </label>
@@ -34,7 +34,7 @@ export const TextInput = ({
                 // id={name} // Vincula el label con el input
                 type={type}
                 name={name} // Útil para formularios
-                className={`border border-slate-400 rounded px-2 py-1 dark:text-primaryhover focus:outline-none focus:ring-2 focus:ring-blue-500 ${className || ''}`}
+                className={`border border-slate-400 rounded px-2 py-1 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className || ''}`}
                 value={value}
                 required={required}
                 onChange={onChange}

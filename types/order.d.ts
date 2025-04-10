@@ -36,6 +36,7 @@ interface OrderCreateProps {
     doc_realeted: number, //Ver
     voucher_type: number,
     pay_method: number,
+    guia: string;
 }
 
 interface PayMethod {
@@ -48,4 +49,29 @@ interface EmisionPoint {
     store: string;
     point: string;
     recognition: string;
+}
+
+interface AditionalInformation {
+    id: number;
+    name: string;
+    description: string;
+}
+
+interface ProductOutput {
+    id: number;
+    product_id: number;
+    price: number | string;
+    quantity: number | string;
+    stock: number;
+    discount: number | string;
+    iva: undefined | number;
+    total_iva: number | string;
+    ice: undefined | number | string;
+    percentage: number;
+}
+
+interface ProductInput {
+    id: number;
+    code: number | null;
+    name: string;
 }

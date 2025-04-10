@@ -1,9 +1,13 @@
-export const TitleForm = () => {
+interface Props {
+    title: string;
+    description?: string;
+}
+export const TitleForm = ({ title, description }: Props) => {
     return (
         <div>
             <p>
-                <strong className='font-bold'>Nota: </strong>
-                Los campos marcados con * son obligatorios
+                <strong className='font-bold'>{title} </strong>
+                {description}
             </p>
         </div>
     )

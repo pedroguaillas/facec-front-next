@@ -15,13 +15,13 @@ interface Props {
 export const SelectOption = ({ options, label, selectedValue, handleSelect }: Props) => {
     return (
         <>
-            <label htmlFor='voucher_type' className="text-sm font-medium dark:text-primary">
+            <label htmlFor='voucher_type' className="text-sm font-medium dark:text-gray-300">
                 {label}
             </label>
             <select
                 // id={name} // Vincula el label con el input
                 name='voucher_type' // Útil para formularios
-                className={`border border-slate-400 rounded px-2 py-1 dark:text-primaryhover focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                className={`border border-slate-400 rounded px-2 py-1 text-sm dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 value={selectedValue} // 🔹 Controlado por una prop externa
                 required
                 onChange={handleSelect}

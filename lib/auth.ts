@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "./axios";
 import { jwtDecode } from "jwt-decode";
+import { signOut } from "next-auth/react";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -48,6 +49,8 @@ export const authOptions: NextAuthOptions = {
           token.user.token = res.data.token;
         } catch (error) {
           console.error("Error refrescando el token EN CALLBACKS: ", error);
+          // 🔴 Redirigir al login
+          signOut({ callbackUrl: "/app/auth/login" });
           return null;
         }
       }
