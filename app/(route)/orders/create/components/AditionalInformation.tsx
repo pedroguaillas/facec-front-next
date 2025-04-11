@@ -10,7 +10,7 @@ export const AditionalInformation = () => {
 
   const addItem = () => {
     const newAnditionalInformation: AditionalInformation = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       name: '',
       description: '',
     }
@@ -19,8 +19,9 @@ export const AditionalInformation = () => {
 
   // Modificar nombre o description
   const updateItem = (index: number, field: "name" | "description", value: string) => {
-    aditionalInformation[index][field] = value;
-    setAditionalInformation(aditionalInformation);
+    const updated = [...aditionalInformation]; // Copia del array
+    updated[index] = { ...updated[index], [field]: value }; // Copia del objeto y actualiza campo
+    setAditionalInformation(updated); // Actualiza el estado
   };
 
   // Eliminar informacion adicional

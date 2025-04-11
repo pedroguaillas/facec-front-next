@@ -3,25 +3,19 @@
 import { PrimaryButton, TableResponsive } from "@/components";
 import { ItemProduct } from "./ItemProduct";
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { initialProductItem } from "@/app/(route)/constants/initialValues";
 
 export const ListProducts = () => {
     const { productOutputs, setProductOutputs, setInvoice } = useCreateInvoice();
 
+    const createNewProductItem = (): ProductOutput => ({
+        ...initialProductItem,
+        id: crypto.randomUUID(),
+    });
+
     // Agregar producto a la lista
     const addItem = () => {
-        const newProduct = {
-            id: Date.now(),
-            product_id: 0,
-            price: 0,
-            quantity: 1,
-            stock: 1,
-            discount: 0,
-            iva: 0,
-            total_iva: 0,
-            ice: undefined,
-            percentage: 0
-        };
-        setProductOutputs((prev) => ([...prev, { ...newProduct }]));
+        setProductOutputs((prev) => ([...prev, { ...createNewProductItem() }]));
     };
 
     // Modificar cantidad o precio de un producto
@@ -70,6 +64,7 @@ export const ListProducts = () => {
                 base15 += iva === 4 ? Number(price) * Number(quantity) - Number(discount) : 0;
             }
         });
+
         const sub_total = no_iva + base0 + base5 + base8 + base12 + base15;
 
         const iva5 = Number((base5 * 0.05).toFixed(2));
@@ -110,7 +105,7 @@ export const ListProducts = () => {
         <>
             <TableResponsive>
                 <thead>
-                    <tr className="[&>th]:border [&>th]:border-gray-300">
+                    <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:dark:border-gray-500">
                         <th className="w-20 sm:w-24">Cant</th>
                         <th>Producto/Servicio</th>
                         <th className="w-20 sm:w-24">Precio</th>

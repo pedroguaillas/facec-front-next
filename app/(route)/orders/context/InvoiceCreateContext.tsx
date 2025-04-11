@@ -4,6 +4,7 @@ import { createContext, useState, useContext, useEffect, ReactNode, SetStateActi
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getCreateInvoice } from "../services/invoicesServices";
 import { useSession } from "next-auth/react";
+import { initialProductItem } from "../../constants/initialValues";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;
@@ -51,25 +52,15 @@ const initialInvoice = {
   guia: '',
 };
 
-const initialProductOutputs = [
-  {
-    id: Date.now(),
-    product_id: 0,
-    price: 0,
-    quantity: 1,
-    stock: 1,
-    discount: 0,
-    iva: 0,
-    total_iva: 0,
-    ice: undefined,
-    percentage: 0
-  }
-];
+const createNewProductItem = (): ProductOutput => ({
+  ...initialProductItem,
+  id: crypto.randomUUID(),
+});
 
 export const InvoiceCreateProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
   const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
-  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>(initialProductOutputs);
+  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([createNewProductItem()]);
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);

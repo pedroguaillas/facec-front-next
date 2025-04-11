@@ -1,3 +1,4 @@
+import { SelectProduct } from "@/components";
 import { FaTrash } from "react-icons/fa";
 
 interface Props {
@@ -18,7 +19,9 @@ export const ItemProduct = ({ index, productOutput, updateItem, removeItem }: Pr
                     className="w-full"
                 />
             </td>
-            <td>{productOutput.product_id}</td>
+            <td>
+                <SelectProduct label="Producto" />
+            </td>
             <td>
                 <input
                     onChange={(e) => updateItem(index, 'price', e.target.value)}

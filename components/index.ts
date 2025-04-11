@@ -9,3 +9,6 @@ export * from './title/Title';
 // IU
 export * from './ui/header/Header';
 export * from './ui/sidebar/Sidebar';
+
+// Selects
+export * from './selects/product/SelectProduct';

@@ -52,13 +52,13 @@ interface EmisionPoint {
 }
 
 interface AditionalInformation {
-    id: number;
+    id: string;
     name: string;
     description: string;
 }
 
 interface ProductOutput {
-    id: number;
+    id: string;
     product_id: number;
     price: number | string;
     quantity: number | string;
