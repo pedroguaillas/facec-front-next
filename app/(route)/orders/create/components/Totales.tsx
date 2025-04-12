@@ -1,7 +1,7 @@
 "use client";
 
+import { TableResponsive } from "@/components";
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
-
 
 export const Totales = () => {
 
@@ -9,7 +9,7 @@ export const Totales = () => {
 
     return (
         <div className="full">
-            <table className="w-full border-collapse border border-gray-400">
+            <TableResponsive>
                 <thead>
                     <tr className="[&>th]:p-2">
                         <th className="border border-gray-300">Resultados</th>
@@ -60,7 +60,7 @@ export const Totales = () => {
                         <th className="text-right p-2 border border-gray-300">{invoice.total.toFixed(2)}</th>
                     </tr>
                 </thead>
-            </table>
+            </TableResponsive>
         </div>
     )
 }

@@ -4,7 +4,7 @@ import { createContext, useState, useContext, useEffect, ReactNode, SetStateActi
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getCreateInvoice } from "../services/invoicesServices";
 import { useSession } from "next-auth/react";
-import { initialProductItem } from "../../constants/initialValues";
+import { initialProductItem } from "@/constants/initialValues";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;

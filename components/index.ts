@@ -5,6 +5,7 @@ export * from './primary-button/PrimaryButton';
 export * from './table-responsive/TableResponsive';
 export * from './paginate/Paginate';
 export * from './title/Title';
+export * from './separate/Separate';
 
 // IU
 export * from './ui/header/Header';

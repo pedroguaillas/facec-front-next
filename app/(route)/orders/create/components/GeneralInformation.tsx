@@ -14,7 +14,6 @@ export const GeneralInformation = () => {
 
     const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setInvoice((prevState) => ({ ...prevState, [event.target.name]: Number(event.target.value) }))
-        // console.log(event.target.value)
     }
 
     const invoiceTypes = [

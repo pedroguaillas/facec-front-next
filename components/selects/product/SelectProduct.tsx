@@ -1,26 +1,33 @@
 "use client";
 
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { GeneralPaginate, Links } from '@/types';
-import React, { useState } from 'react';
+import { GeneralPaginate } from '@/types';
+import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 interface Props {
-    label: string;
+    label?: string;
+    index: number;
+    selectProduct: (index: number, product: ProductPaginate) => void;
 }
 
-export const SelectProduct = ({ label }: Props) => {
-
-    const [search, setSearch] = useState(label);
+export const SelectProduct = ({ label, index, selectProduct }: Props) => {
+    const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
-    const [meta, setMeta] = useState<Meta>({});
-    const [links, setLinks] = useState<Links>({});
+    const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSkipFetch(false); // 👈 habilita búsqueda
         setSearch(event.target.value);
-        fetchProduct()
+    }
+
+    const handleSelect = (product: ProductPaginate) => {
+        setSearch(product.atts.name);
+        setShowDropdown(false);
+        setSkipFetch(true); // 👈 evita la búsqueda
+        selectProduct(index, product);
     }
 
     const fetchProduct = async (page: string = 'page=1') => {
@@ -30,36 +37,38 @@ export const SelectProduct = ({ label }: Props) => {
         try {
             const res = await axiosAuth.post<GeneralPaginate<ProductPaginate>>(`productlist?page=${pageNumber}`, {
                 search,
-                paginate: 10,
+                paginate: 5,
             });
-            const { data, links, meta } = res.data;
+            const { data } = res.data;
             setSuggestions(data);
-            setLinks(links);
-            setMeta(meta);
             setShowDropdown(true);
         } catch (error) {
             console.error(error);
         }
     };
 
-    const handleSelect = (product) => {
-
-    }
+    useEffect(() => {
+        if (search.length > 1 && !skipFetch) {
+            fetchProduct();
+        } else {
+            setShowDropdown(false);
+        }
+    }, [search, skipFetch]);
 
     return (
         <div className='flex flex-col w-full'>
-
             <div className='flex w-full'>
-
-                {/* Input search by suggestions */}
-                <input onChange={handleChange} value={search} className='w-full border border-primary rounded-l px-2' type='text' />
-
-                <span className='rounded-r p-2 bg-primary'>
+                <input
+                    onChange={handleChange}
+                    value={search}
+                    className='w-full border border-primary hover:border-primaryhover rounded-l px-2'
+                    type='text'
+                />
+                <span className='rounded-r p-2 bg-primary text-white'>
                     <FaSearch />
                 </span>
             </div>
 
-            {/* 🔽 Dropdown de sugerencias */}
             {showDropdown && suggestions.length > 0 && (
                 <div
                     className="border border-gray-300 shadow-md w-full rounded-b max-h-60 overflow-y-auto"
@@ -77,5 +86,5 @@ export const SelectProduct = ({ label }: Props) => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

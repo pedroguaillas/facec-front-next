@@ -26,8 +26,8 @@ export const ItemAditionalInformation = ({ index, aditionalInformation, updateIt
                     className="w-full dark:text-white"
                 />
             </td>
-            <td className='border border-gray-300'>
-                <button onClick={() => removeItem(index)} className="flex justify-end items-center text-red-500 cursor-pointer">
+            <td className='border border-gray-300 w-1'>
+                <button onClick={() => removeItem(index)} className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600">
                     <FaTrash />
                 </button>
             </td>

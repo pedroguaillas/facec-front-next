@@ -3,14 +3,16 @@
 import { PrimaryButton, TableResponsive } from '@/components';
 import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 import { ItemAditionalInformation } from './ItemAditionalInformation';
+import { nanoid } from 'nanoid';
 
 export const AditionalInformation = () => {
 
   const { aditionalInformation, setAditionalInformation } = useCreateInvoice();
+  const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
 
   const addItem = () => {
     const newAnditionalInformation: AditionalInformation = {
-      id: crypto.randomUUID(),
+      id,
       name: '',
       description: '',
     }
@@ -41,7 +43,7 @@ export const AditionalInformation = () => {
           <tr className="[&>th]:p-2">
             <th className="border border-gray-300">Nombre</th>
             <th className="border border-gray-300">Descripción</th>
-            <th className="border border-gray-300 w-12"></th>
+            <th className="border border-gray-300"></th>
           </tr>
         </thead>
         <tbody>
