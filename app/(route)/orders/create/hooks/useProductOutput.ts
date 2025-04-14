@@ -16,10 +16,10 @@ export const useProductOutput = () => {
         if (value && Number(value) < 0) return
         const prods = productOutputs;
         prods[index][field] = value;
-        let { price, quantity, discount } = prods[index]
+        let { quantity, price, discount } = prods[index]
         const { percentage } = prods[index]
-        price = price === '' ? 0 : Number(price);
         quantity = quantity === '' ? 0 : Number(quantity);
+        price = price === '' ? 0 : Number(price);
         discount = discount === '' ? 0 : Number(discount);
         if (field === 'total_iva') {
             prods[index].price = parseFloat((Number(value) / quantity / (1 + (percentage / 100))).toFixed(6))
@@ -105,6 +105,16 @@ export const useProductOutput = () => {
     };
 
     //Desglose del valor total
+    // const breakdown = useCallback((breakdown: boolean) => {
+    //     const updatedProds = productOutputs.map(item => {
+    //         const base = (Number(item.price) * Number(item.quantity)) - Number(item.discount);
+    //         return {
+    //             ...item,
+    //             total_iva: parseFloat((breakdown ? base : base * (1 + item.percentage / 100)).toFixed(2)),
+    //         };
+    //     });
+    //     setProductOutputs(updatedProds);
+    // }, [productOutputs]);
     const breakdown = (breakdown: boolean) => {
         const prods = productOutputs;
         prods.forEach(item => {

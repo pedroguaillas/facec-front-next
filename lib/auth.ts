@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 
       // Refrescar el token si está vencido
       const { exp } = jwtDecode(token.user.token);
-      console.log("Llega al JWT: ", token?.user?.token);
+      // console.log("Llega al JWT: ", token?.user?.token);
 
       if (Date.now() >= exp * 1000) {
         try {
@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
 
           token.user.token = res.data.token;
         } catch (error) {
-          console.error("Error refrescando el token EN CALLBACKS: ", error);
+          // console.error("Error refrescando el token EN CALLBACKS: ", error);
           // 🔴 Redirigir al login
           signOut({ callbackUrl: "/app/auth/login" });
           return null;

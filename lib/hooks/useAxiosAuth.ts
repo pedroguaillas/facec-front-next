@@ -10,9 +10,9 @@ const useAxiosAuth = () => {
     useEffect(() => {
         const requestIntercept = axiosAuth.interceptors.request.use(
             async (config) => {
-                console.log('Config: ', config)
+                // console.log('Config: ', config)
                 if (!session?.user?.token) return config;
-                console.log('Token: ', session.user.token);
+                // console.log('Token: ', session.user.token);
                 config.headers["Authorization"] = `Bearer ${session.user.token}`;
 
                 return config;

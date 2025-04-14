@@ -30,7 +30,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                     <h3 className="rounded hover:bg-primaryhover p-2 text-white">FAC<span className="font-semibold">EC</span></h3>
                 </header>
                 <nav className="p-2">
-                    <ul className="[&>li>a>h3]:hidden group-hover:[&>li>a>h3]:block [&>li>a>h3]:text-white [&>li>a>svg]:stroke-white">
+                    <ul className={`${menu ? "transition-all duration-300 [&>li>a>h3]:block" : "[&>li>a>h3]:hidden group-hover:[&>li>a>h3]:block"} [&>li>a>h3]:text-white [&>li>a>svg]:stroke-white`}>
                         <li>
                             <Link onClick={handleCloseSidebar}
                                 className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='dashboard'>
