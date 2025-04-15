@@ -15,9 +15,13 @@ interface InvoicesContextType {
   productInputs: ProductInput[];
   productOutputs: ProductOutput[];
   aditionalInformation: AditionalInformation[];
+  isTaxBreakdown: boolean;
+  isActiveIce: boolean;
   setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
+  setIsTaxBreakdown: Dispatch<SetStateAction<boolean>>;
+  setIsActiveIce: Dispatch<SetStateAction<boolean>>;
 }
 
 const InvoiceCreateContext = createContext<InvoicesContextType | undefined>(undefined);
@@ -65,6 +69,8 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const [points, setPoints] = useState<EmisionPoint[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
   const [tourism, setTourism] = useState(false);
+  const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
+  const [isActiveIce, setIsActiveIce] = useState(false);
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -88,7 +94,10 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   }, [status]);
 
   return (
-    <InvoiceCreateContext.Provider value={{ invoice, setInvoice, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, setProductInputs, setProductOutputs, setAditionalInformation }}>
+    <InvoiceCreateContext.Provider value={{
+      invoice, setInvoice, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, isTaxBreakdown, isActiveIce,
+      setProductInputs, setProductOutputs, setAditionalInformation, setIsTaxBreakdown, setIsActiveIce
+    }}>
       {children}
     </InvoiceCreateContext.Provider>
   );

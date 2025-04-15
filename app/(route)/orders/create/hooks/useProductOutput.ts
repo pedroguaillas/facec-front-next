@@ -1,9 +1,10 @@
-import { initialProductItem } from "@/constants/initialValues";
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { initialProductItem } from "@/constants/initialValues";
 import { nanoid } from "nanoid";
 
 // hooks/useProductOutput.ts
 export const useProductOutput = () => {
+
     const { productOutputs, setProductOutputs, setInvoice } = useCreateInvoice();
 
     // Agregar producto a la lista
@@ -12,7 +13,7 @@ export const useProductOutput = () => {
     };
 
     // Modificar cantidad o precio de un producto
-    const updateItem = (index: number, field: "quantity" | "price" | "discount" | "total_iva" | "ice", value: string | number) => {
+    const updateItem = (index: number, field: fields, value: string | number) => {
         if (value && Number(value) < 0) return
         const prods = productOutputs;
         prods[index][field] = value;
@@ -36,8 +37,14 @@ export const useProductOutput = () => {
         prods[index].price = product.atts.price1;
         prods[index].quantity = 1;
         prods[index].discount = 0;
-        prods[index].iva = product.iva.code;
+        prods[index].stock = 1;
         prods[index].total_iva = product.atts.price1.toFixed(2);
+        if (product.atts.ice !== null) {
+            prods[index].ice = '';
+        }
+        //   TODO Agregar Si es turismo
+        prods[index].iva = product.iva.code;
+        prods[index].percentage = product.iva.percentage;
         recalculate(prods);
     }
 
@@ -106,22 +113,15 @@ export const useProductOutput = () => {
 
     //Desglose del valor total
     // const breakdown = useCallback((breakdown: boolean) => {
-    //     const updatedProds = productOutputs.map(item => {
-    //         const base = (Number(item.price) * Number(item.quantity)) - Number(item.discount);
-    //         return {
-    //             ...item,
-    //             total_iva: parseFloat((breakdown ? base : base * (1 + item.percentage / 100)).toFixed(2)),
-    //         };
-    //     });
-    //     setProductOutputs(updatedProds);
-    // }, [productOutputs]);
     const breakdown = (breakdown: boolean) => {
-        const prods = productOutputs;
-        prods.forEach(item => {
-            const base = (Number(item.price) * Number(item.quantity)) - Number(item.discount)
-            item.total_iva = parseFloat((breakdown ? base : base * (1 + item.percentage / 100)).toFixed(2))
-        })
-        setProductOutputs(prods);
+        const updatedProds = productOutputs.map(item => {
+            const base = (Number(item.price) * Number(item.quantity)) - Number(item.discount);
+            return {
+                ...item,
+                total_iva: parseFloat((!breakdown ? base : base * (1 + item.percentage / 100)).toFixed(2)),
+            };
+        });
+        setProductOutputs(updatedProds);
     };
 
     return { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem }

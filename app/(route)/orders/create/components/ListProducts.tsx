@@ -3,23 +3,24 @@
 import { PrimaryButton } from "@/components";
 import { ItemProduct } from "./ItemProduct";
 import { useProductOutput } from "../hooks/useProductOutput";
-import { useState } from "react";
+import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 export const ListProducts = () => {
     const { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem } = useProductOutput();
-    const [isChecked, setIsChecked] = useState(false);
+    const isEnabledIce = productOutputs.filter(p => p.ice !== undefined).length > 0;
+    const { isTaxBreakdown, setIsTaxBreakdown } = useCreateInvoice();
 
     const handleChange = () => {
-        setIsChecked(!isChecked);
-        breakdown(!isChecked);
+        setIsTaxBreakdown(!isTaxBreakdown);
+        breakdown(!isTaxBreakdown);
     };
 
     return (
-        <div className="">
+        <>
             <div className="flex gap-16 my-4">
                 <span className="font-bold">Productos</span>
                 <label className=" inline-flex gap-2">
-                    <input type="checkbox" checked={isChecked} onChange={handleChange} />
+                    <input type="checkbox" checked={isTaxBreakdown} onChange={handleChange} />
                     Desglose
                 </label>
             </div>
@@ -30,8 +31,9 @@ export const ListProducts = () => {
                         <th>Producto/Servicio</th>
                         <th className="w-20 sm:w-24">Precio</th>
                         <th className="w-20 sm:w-24">Descuento</th>
-                        {/* <th className="w-24">IVA</th> */}
+                        {isTaxBreakdown ? <th className="w-24">IVA</th> : null}
                         <th className="w-20 sm:w-24">Subtotal</th>
+                        {isEnabledIce ? <th className="w-20 sm:w-24">ICE</th> : null}
                         <th></th>
                     </tr>
                 </thead>
@@ -47,6 +49,6 @@ export const ListProducts = () => {
                     <PrimaryButton onClick={addItem} label="Agregar" action="create" type="button" />
                 </div>
             </div>
-        </div>
+        </>
     )
 }

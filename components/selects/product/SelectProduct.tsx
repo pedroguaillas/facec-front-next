@@ -4,6 +4,7 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { GeneralPaginate } from '@/types';
 import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import ModalSelectProduct from './ModalSelectProduct';
 
 interface Props {
     label?: string;
@@ -12,11 +13,23 @@ interface Props {
 }
 
 export const SelectProduct = ({ label, index, selectProduct }: Props) => {
+
     const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
+    // Mostrar la modal
+    const [showModal, setShowModal] = useState(false);
+
+    const handleModal = () => {
+        setShowModal(!showModal);
+    }
+
+    const handleSelectLocal = (product: ProductPaginate) => {
+        handleSelect(product);
+        setShowModal(false);
+    }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSkipFetch(false); // 👈 habilita búsqueda
@@ -56,35 +69,39 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
     }, [search, skipFetch]);
 
     return (
-        <div className='flex flex-col w-full'>
-            <div className='flex w-full'>
-                <input
-                    onChange={handleChange}
-                    value={search}
-                    className='w-full border border-primary hover:border-primaryhover rounded-l px-2'
-                    type='text'
-                />
-                <span className='rounded-r p-2 bg-primary text-white'>
-                    <FaSearch />
-                </span>
+        <>
+            <div className='flex flex-col w-full'>
+                <div className='flex w-full'>
+                    <input
+                        onChange={handleChange}
+                        value={search}
+                        className='w-full border border-primary hover:border-primaryhover rounded-l px-2'
+                        type='text'
+                    />
+                    <span onClick={handleModal} className='rounded-r p-2 bg-primary text-white'>
+                        <FaSearch />
+                    </span>
+                    <ModalSelectProduct show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
+                </div>
+
+                {showDropdown && suggestions.length > 0 && (
+                    <div
+                        className="border border-gray-300 shadow-md w-full rounded-b max-h-60 overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {suggestions.map((product) => (
+                            <div
+                                key={product.id}
+                                className="px-4 py-2 hover:bg-gray-100 hover:dark:bg-primary rounded cursor-pointer text-sm text-left"
+                                onClick={() => handleSelect(product)}
+                            >
+                                {product.atts.code} - {product.atts.name}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {showDropdown && suggestions.length > 0 && (
-                <div
-                    className="border border-gray-300 shadow-md w-full rounded-b max-h-60 overflow-y-auto"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    {suggestions.map((product) => (
-                        <div
-                            key={product.id}
-                            className="px-4 py-2 hover:bg-gray-100 hover:dark:bg-primary rounded cursor-pointer text-sm text-left"
-                            onClick={() => handleSelect(product)}
-                        >
-                            {product.atts.code} - {product.atts.name}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+        </>
     );
 };

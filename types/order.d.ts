@@ -75,3 +75,5 @@ interface ProductInput {
     code: number | null;
     name: string;
 }
+
+type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';
