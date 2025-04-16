@@ -14,7 +14,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
         <nav aria-label="Navegación de páginas" className="flex justify-center mt-4">
             <ul className="inline-flex items-center gap-1 text-sm">
                 {/* Primera y Anterior */}
-                <li>
+                {/* <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.first)}
                         className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
@@ -31,7 +31,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                     >
                         {"<"}
                     </button>
-                </li>
+                </li> */}
 
                 {/* Páginas */}
                 {pageNumbers
@@ -41,8 +41,8 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                             <button
                                 onClick={(e) => reqNewPage(e, `${meta.path}?page=${page}`)}
                                 className={`px-3 py-1 rounded-md ${meta.current_page === page
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-200 hover:bg-gray-300"
+                                    ? "bg-primary dark:bg-slate-600 text-white"
+                                    : "bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600"
                                     }`}
                             >
                                 {page}
@@ -51,7 +51,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                     ))}
 
                 {/* Siguiente y Última */}
-                <li>
+                {/* <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.next)}
                         className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
@@ -68,7 +68,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                     >
                         {">>"}
                     </button>
-                </li>
+                </li> */}
             </ul>
         </nav>
     );

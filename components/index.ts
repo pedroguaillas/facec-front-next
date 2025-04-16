@@ -11,5 +11,9 @@ export * from './separate/Separate';
 export * from './ui/header/Header';
 export * from './ui/sidebar/Sidebar';
 
+// Modal
+export * from './modal/Modal';
+
 // Selects
 export * from './selects/product/SelectProduct';
+export * from './selects/customer/SelectCustomer';

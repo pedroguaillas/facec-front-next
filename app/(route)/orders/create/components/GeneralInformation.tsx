@@ -1,6 +1,6 @@
 "use client";
 
-import { SelectOption, TextInput } from '@/components';
+import { SelectCustomer, SelectOption, TextInput } from '@/components';
 import React from 'react';
 import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 
@@ -14,6 +14,10 @@ export const GeneralInformation = () => {
 
     const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setInvoice((prevState) => ({ ...prevState, [event.target.name]: Number(event.target.value) }))
+    }
+
+    const handleSelectCustomer = (customer: CustomerPaginate) => {
+        setInvoice((prevState) => ({ ...prevState, customer_id: customer.id }))
     }
 
     const invoiceTypes = [
@@ -37,7 +41,10 @@ export const GeneralInformation = () => {
                         <SelectOption label="Punto Emi" options={invoiceTypes} selectedValue={1} handleSelect={handleSelect} />
                     </div>
                     <div className='py-2'><span>N° de serie </span>{invoice.serie}</div>
-                    <div><span>Cliente </span> </div>
+                    <div>
+                        <span>Cliente</span>
+                        <SelectCustomer selectCustomer={handleSelectCustomer} />
+                    </div>
                 </div>
 
                 {/* Col 2 */}

@@ -4,18 +4,17 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { GeneralPaginate } from '@/types';
 import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import ModalSelectProduct from './ModalSelectProduct';
+import ModalSelectCustomer from './ModalSelectCustomer';
 
 interface Props {
     label?: string;
-    index: number;
-    selectProduct: (index: number, product: ProductPaginate) => void;
+    selectCustomer: (customer: CustomerPaginate) => void;
 }
 
-export const SelectProduct = ({ label, index, selectProduct }: Props) => {
+export const SelectCustomer = ({ label, selectCustomer }: Props) => {
 
     const [search, setSearch] = useState(label ?? "");
-    const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
+    const [suggestions, setSuggestions] = useState<CustomerPaginate[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
@@ -26,8 +25,8 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
         setShowModal(!showModal);
     }
 
-    const handleSelectLocal = (product: ProductPaginate) => {
-        handleSelect(product);
+    const handleSelectLocal = (customer: CustomerPaginate) => {
+        handleSelect(customer);
         setShowModal(false);
     }
 
@@ -36,19 +35,19 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
         setSearch(event.target.value);
     }
 
-    const handleSelect = (product: ProductPaginate) => {
-        setSearch(product.atts.name);
+    const handleSelect = (customer: CustomerPaginate) => {
+        setSearch(customer.atts.name);
         setShowDropdown(false);
         setSkipFetch(true); // 👈 evita la búsqueda
-        selectProduct(index, product);
+        selectCustomer(customer);
     }
 
-    const fetchProduct = async (page: string = 'page=1') => {
+    const fetchCustomer = async (page: string = 'page=1') => {
         if (!page) return;
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductPaginate>>(`productlist?page=${pageNumber}`, {
+            const res = await axiosAuth.post<GeneralPaginate<CustomerPaginate>>(`customerlist?page=${pageNumber}`, {
                 search,
                 paginate: 5,
             });
@@ -62,7 +61,7 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
 
     useEffect(() => {
         if (search.length > 1 && !skipFetch) {
-            fetchProduct();
+            fetchCustomer();
         } else {
             setShowDropdown(false);
         }
@@ -81,7 +80,7 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
                     <span onClick={handleModal} className='rounded-r p-2 bg-primary text-white cursor-pointer'>
                         <FaSearch />
                     </span>
-                    <ModalSelectProduct show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
+                    <ModalSelectCustomer show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
                 </div>
 
                 {showDropdown && suggestions.length > 0 && (
@@ -89,13 +88,13 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
                         className="border border-gray-300 shadow-md w-full rounded-b max-h-60 overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {suggestions.map((product) => (
+                        {suggestions.map((customer) => (
                             <div
-                                key={product.id}
+                                key={customer.id}
                                 className="px-4 py-2 hover:bg-gray-100 hover:dark:bg-primary rounded cursor-pointer text-sm text-left"
-                                onClick={() => handleSelect(product)}
+                                onClick={() => handleSelect(customer)}
                             >
-                                {product.atts.code} - {product.atts.name}
+                                {customer.atts.identication} - {customer.atts.name}
                             </div>
                         ))}
                     </div>
