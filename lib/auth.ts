@@ -51,7 +51,8 @@ export const authOptions: NextAuthOptions = {
           // console.error("Error refrescando el token EN CALLBACKS: ", error);
           // 🔴 Redirigir al login
           signOut({ callbackUrl: "/app/auth/login" });
-          return null;
+          // Retorno el user null para invalidar la sesión
+          return {};
         }
       }
 

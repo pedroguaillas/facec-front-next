@@ -28,10 +28,18 @@ export const Totales = () => {
                     </tr>
                 </thead>
                 <tbody className="[&>tr>td]:p-2">
-                    <tr>
-                        <td className="border border-gray-300">Subtotal 0%</td>
-                        <td className="text-right border border-gray-300">{invoice.base0.toFixed(2)}</td>
-                    </tr>
+                    {invoice.sub_total === 0 && (
+                        <tr>
+                            <td className="border border-gray-300">Subtotal</td>
+                            <td className="text-right border border-gray-300">{invoice.sub_total.toFixed(2)}</td>
+                        </tr>
+                    )}
+                    {invoice.base0 > 0 && (
+                        <tr>
+                            <td className="border border-gray-300">Subtotal 0%</td>
+                            <td className="text-right border border-gray-300">{invoice.base0.toFixed(2)}</td>
+                        </tr>
+                    )}
                     {invoice.base12 > 0 && (
                         <tr>
                             <td className="border border-gray-300">Subtotal 12%</td>
@@ -62,10 +70,12 @@ export const Totales = () => {
                             <td className="text-right border border-gray-300">{(invoice.base15 * .15).toFixed(2)}</td>
                         </tr>
                     )}
-                    <tr>
-                        <td className="border border-gray-300">No objeto de IVA</td>
-                        <td className="text-right border border-gray-300">{invoice.no_iva.toFixed(2)}</td>
-                    </tr>
+                    {invoice.no_iva > 0 && (
+                        <tr>
+                            <td className="border border-gray-300">No objeto de IVA</td>
+                            <td className="text-right border border-gray-300">{invoice.no_iva.toFixed(2)}</td>
+                        </tr>
+                    )}
                 </tbody>
                 <thead>
                     <tr>

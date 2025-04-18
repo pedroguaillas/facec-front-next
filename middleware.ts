@@ -8,5 +8,8 @@ export default withAuth({
 });
 
 export const config = {
-  matcher: ["/dashboard"], // Protect this route
+  matcher: [
+    "/dashboard",
+    "/orders/:path*",
+  ], // Protect this route
 };
