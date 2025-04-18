@@ -175,10 +175,10 @@ export const Dropdown = ({ isOpen, index, order, setIsOpen }: Props) => {
     }, [isOpen, setIsOpen]);
 
     return (
-        <div ref={dropdownRef} className="relative inline-block text-left min-w-[40px]">
+        <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
 
             {/* Dropdown Button */}
-            <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 my-auto font-bold cursor-pointer">&#60;</button>
+            <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer">&#60;</button>
 
             {/* Dropdown Menu */}
             {isOpen && (

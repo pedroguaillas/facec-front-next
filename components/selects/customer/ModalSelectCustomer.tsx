@@ -76,7 +76,7 @@ export const ModalSelectCustomer = ({ show, handleSelect, onClose }: Props) => {
                     <tr>
                         <th>#</th>
                         <th>Código</th>
-                        <th>Ciente/Razon social</th>
+                        <th className="text-left">Ciente/Razon social</th>
                     </tr>
                 </thead>
                 <tbody>

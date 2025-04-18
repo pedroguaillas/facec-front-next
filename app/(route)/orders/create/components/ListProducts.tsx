@@ -6,6 +6,7 @@ import { useProductOutput } from "../hooks/useProductOutput";
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 export const ListProducts = () => {
+    
     const { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem } = useProductOutput();
     const isEnabledIce = productOutputs.filter(p => p.ice !== undefined).length > 0;
     const { isTaxBreakdown, setIsTaxBreakdown } = useCreateInvoice();
@@ -26,7 +27,7 @@ export const ListProducts = () => {
             </div>
             <table className="w-full">
                 <thead>
-                    <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:dark:border-gray-500">
+                    <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500">
                         <th className="w-20 sm:w-24">Cant</th>
                         <th>Producto/Servicio</th>
                         <th className="w-20 sm:w-24">Precio</th>
@@ -45,8 +46,8 @@ export const ListProducts = () => {
             </table>
 
             <div className="flex justify-end mt-2">
-                <div className="w-28">
-                    <PrimaryButton onClick={addItem} label="Agregar" action="create" type="button" />
+                <div className="w-34">
+                    <PrimaryButton onClick={addItem} label="Añadir producto" action="create" type="button" />
                 </div>
             </div>
         </>

@@ -6,7 +6,7 @@ interface OrderProps {
         serie: string;
         state: 'CREADO' | 'FIRMADO' | 'ENVIADO' | 'RECIBIDA' | 'EN_PROCESO' | 'DEVUELTA' | 'AUTORIZADO' | 'NO AUTORIZADO' | 'ANULADO';
         total: number;
-        voucher_type: 1, 4, 5;
+        voucher_type: 1, 4;
         xml: string | null;
     }
     customer: {
@@ -23,9 +23,13 @@ interface OrderCreateProps {
     no_iva: number,
     base0: number,
     base5: number,
+    base8: number,
     base12: number,
     base15: number,
+    iva5: number,
+    iva8: number,
     iva: number,
+    iva15: number,
     ice: number,
     sub_total: number,
     discount: number,
@@ -46,6 +50,9 @@ interface PayMethod {
 
 interface EmisionPoint {
     id: number;
+    branch_id: number;
+    creditnote: number;
+    invoice: number;
     store: string;
     point: string;
     recognition: string;

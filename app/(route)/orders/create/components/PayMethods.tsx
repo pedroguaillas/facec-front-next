@@ -7,6 +7,9 @@ export const PayMethods = () => {
 
     const { invoice, payMethods, setInvoice } = useCreateInvoice();
 
+    // Si es Nota de Crédito no mostrar la fora de pago
+    if (invoice.voucher_type === 4) return null;
+
     const optionPayMethods = payMethods.map(pay => {
         return { value: pay.code, label: pay.description }
     });

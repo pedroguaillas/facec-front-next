@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 // hooks/useProductOutput.ts
 export const useProductOutput = () => {
 
-    const { productOutputs, setProductOutputs, setInvoice } = useCreateInvoice();
+    const { productOutputs, setInvoice, setProductOutputs } = useCreateInvoice();
 
     // Agregar producto a la lista
     const addItem = () => {

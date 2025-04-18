@@ -8,11 +8,12 @@ interface OptionProps {
 interface Props {
     options: OptionProps[];
     label: string;
-    selectedValue: number; // Agregar prop para controlar el valor seleccionado
+    select?: boolean;
+    selectedValue: string | number; // Agregar prop para controlar el valor seleccionado
     handleSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export const SelectOption = ({ options, label, selectedValue, handleSelect }: Props) => {
+export const SelectOption = ({ options, label, select = false, selectedValue, handleSelect }: Props) => {
     return (
         <>
             <label htmlFor='voucher_type' className="text-sm font-medium dark:text-gray-300">
@@ -26,6 +27,7 @@ export const SelectOption = ({ options, label, selectedValue, handleSelect }: Pr
                 required
                 onChange={handleSelect}
             >
+                {select && <option value="">Seleccione</option>}
                 {options.map(it => (
                     <option key={it.value} value={it.value}>{it.label}</option>
                 ))}

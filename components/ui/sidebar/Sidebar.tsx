@@ -16,7 +16,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
             {/* MENU only mobile */}
             {menu && (
                 <div
-                    className="fixed inset-0 bg-gray-500/50 md:hidden"
+                    className="fixed inset-0 bg-gray-500/50 dark:bg-black/50 md:hidden"
                     onClick={handleCloseSidebar}
                 ></div>
             )}

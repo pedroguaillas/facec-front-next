@@ -5,7 +5,18 @@ import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 export const Totales = () => {
 
-    const { invoice } = useCreateInvoice();
+    const { invoice, setInvoice } = useCreateInvoice();
+
+    const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value)) {
+            setInvoice((prev) => ({
+                ...prev,
+                discount: value,
+                total: prev.sub_total + Number(prev.ice) + prev.iva5 + prev.iva8 + prev.iva + prev.iva15 - Number(value)
+            }));
+        }
+    };
 
     return (
         <div className="full">
@@ -35,7 +46,9 @@ export const Totales = () => {
                     )}
                     <tr>
                         <td className="border border-gray-300">Descuento</td>
-                        <td className="text-right border border-gray-300">{invoice.discount.toFixed(2)}</td>
+                        <td className="text-right border border-gray-300">
+                            <input type="number" value={invoice.discount} onChange={handleDiscountChange} min={0} max={invoice.sub_total} className="w-16 border border-gray-300 rounded" />
+                        </td>
                     </tr>
                     {invoice.base12 > 0 && (
                         <tr>

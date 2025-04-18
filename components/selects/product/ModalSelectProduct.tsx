@@ -76,7 +76,7 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
                     <tr>
                         <th>#</th>
                         <th>Código</th>
-                        <th>Producto/Servicio</th>
+                        <th className="text-left">Producto/Servicio</th>
                     </tr>
                 </thead>
                 <tbody>

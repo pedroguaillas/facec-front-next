@@ -47,7 +47,7 @@ const InvoicesTable = () => {
                             </span>
                         </td>
                         <td className="text-right">${order.atts?.total || "0.00"}</td>
-                        <td className="flex justify-end relative">
+                        <td className="w-4">
                             <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
                         </td>
                     </tr>

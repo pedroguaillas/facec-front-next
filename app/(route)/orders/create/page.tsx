@@ -1,4 +1,4 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, TitleForm, Totales } from './components';
+import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, ButtonSubmit, TitleForm, Totales } from './components';
 import { InvoiceCreateProvider } from '../context/InvoiceCreateContext';
 import { Separate, Title } from '@/components';
 
@@ -29,6 +29,7 @@ const CreateOrderPage = () => {
               </div>
               <Totales />
             </div>
+            <ButtonSubmit />
           </div>
         </div>
 

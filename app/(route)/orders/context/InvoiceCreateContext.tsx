@@ -1,22 +1,25 @@
 "use client";
 
 import { createContext, useState, useContext, useEffect, ReactNode, SetStateAction, Dispatch } from "react";
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getCreateInvoice } from "../services/invoicesServices";
-import { useSession } from "next-auth/react";
 import { initialProductItem } from "@/constants/initialValues";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
+import { useSession } from "next-auth/react";
+import { nanoid } from "nanoid";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;
-  setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
   payMethods: PayMethod[];
   points: EmisionPoint[];
+  selectPoint: EmisionPoint | null;
   tourism: boolean;
   productInputs: ProductInput[];
   productOutputs: ProductOutput[];
   aditionalInformation: AditionalInformation[];
   isTaxBreakdown: boolean;
   isActiveIce: boolean;
+  setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
+  setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
   setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
@@ -58,11 +61,12 @@ const initialInvoice = {
 
 const createNewProductItem = (): ProductOutput => ({
   ...initialProductItem,
-  id: crypto.randomUUID(),
+  id: nanoid(),
 });
 
 export const InvoiceCreateProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
+  const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
   const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
   const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([createNewProductItem()]);
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
@@ -80,9 +84,9 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
     try {
       const data = await getCreateInvoice(axiosAuth);
       const { points, methodOfPayments, pay_method, tourism } = data;
+      setInvoice((prev) => ({ ...prev, pay_method }));
       setPoints(points);
       setPayMethods(methodOfPayments);
-      setInvoice((prev) => ({ ...prev, pay_method }));
       setTourism(tourism);
     } catch (error) {
       console.error("Error al obtener facturas:", error);
@@ -95,8 +99,8 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
 
   return (
     <InvoiceCreateContext.Provider value={{
-      invoice, setInvoice, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, isTaxBreakdown, isActiveIce,
-      setProductInputs, setProductOutputs, setAditionalInformation, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setAditionalInformation, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
     </InvoiceCreateContext.Provider>
