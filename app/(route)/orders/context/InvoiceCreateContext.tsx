@@ -36,16 +36,20 @@ const dateType = new Date();
 dateType.setHours(dateType.getHours() - 5);
 const date = dateType.toISOString().substring(0, 10);
 
-const initialInvoice = {
+const initialInvoice: OrderCreateProps = {
   serie: 'Cree un punto de emisión',
   date,
   expiration_days: 0,
   no_iva: 0,
   base0: 0,
   base5: 0,
+  base8: 0,
   base12: 0,
   base15: 0,
+  iva5: 0,
+  iva8: 0,
   iva: 0,
+  iva15: 0,
   ice: 0,
   sub_total: 0,
   discount: 0,
