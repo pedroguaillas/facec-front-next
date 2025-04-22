@@ -5,7 +5,7 @@ import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 export const PayMethods = () => {
 
-    const { invoice, payMethods, setInvoice } = useCreateInvoice();
+    const { invoice, formErrors, payMethods, setInvoice } = useCreateInvoice();
 
     // Si es Nota de Crédito no mostrar la fora de pago
     if (invoice.voucher_type === 4) return null;
@@ -20,7 +20,7 @@ export const PayMethods = () => {
 
     return (
         <div className="w-full overflow-x-auto my-2">
-            <SelectOption label="Forma de pago" options={optionPayMethods} selectedValue={invoice.pay_method} handleSelect={handleSelect} />
+            <SelectOption label="Forma de pago" name="pay_method" options={optionPayMethods} selectedValue={invoice.pay_method} error={formErrors.pay_method} handleSelect={handleSelect} />
         </div>
     )
 }

@@ -16,6 +16,7 @@ interface InvoicesContextType {
   productInputs: ProductInput[];
   productOutputs: ProductOutput[];
   aditionalInformation: AditionalInformation[];
+  formErrors: InvoiceErrors;
   isTaxBreakdown: boolean;
   isActiveIce: boolean;
   setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
@@ -23,6 +24,7 @@ interface InvoicesContextType {
   setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
+  setFormErrors: Dispatch<SetStateAction<InvoiceErrors>>;
   setIsTaxBreakdown: Dispatch<SetStateAction<boolean>>;
   setIsActiveIce: Dispatch<SetStateAction<boolean>>;
 }
@@ -60,7 +62,6 @@ const initialInvoice: OrderCreateProps = {
   doc_realeted: 0,
   voucher_type: 1,
   pay_method: 20,
-  guia: '',
 };
 
 const createNewProductItem = (): ProductOutput => ({
@@ -76,6 +77,7 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
+  const [formErrors, setFormErrors] = useState<InvoiceErrors>({});
   const [tourism, setTourism] = useState(false);
   const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
   const [isActiveIce, setIsActiveIce] = useState(false);
@@ -103,8 +105,8 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
 
   return (
     <InvoiceCreateContext.Provider value={{
-      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setAditionalInformation, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
     </InvoiceCreateContext.Provider>

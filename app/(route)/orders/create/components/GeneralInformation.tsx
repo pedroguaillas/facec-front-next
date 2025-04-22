@@ -7,7 +7,7 @@ import React from 'react';
 
 export const GeneralInformation = () => {
 
-    const { invoice, selectPoint, points, setInvoice, setSelectPoint } = useCreateInvoice();
+    const { invoice, formErrors, selectPoint, points, setInvoice, setSelectPoint } = useCreateInvoice();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -49,42 +49,42 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión' value={invoice.date} onChange={handleChange} name='date' />
+                        <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' />
                     </div>
                     {points.length > 1 && (
                         <div className="flex flex-col lg:w-2/3">
-                            <SelectOption label="Punto Emi" options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} handleSelect={handleSelectPoint} />
+                            <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} />
                         </div>
                     )}
                     <div className='py-2'><span>N° de serie </span>{invoice.serie}</div>
                     <div className='flex flex-col lg:w-2/3'>
                         <span>Cliente</span>
-                        <SelectCustomer selectCustomer={handleSelectCustomer} />
+                        <SelectCustomer selectCustomer={handleSelectCustomer} error={formErrors.customer_id} />
                     </div>
                 </div>
 
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className="flex flex-col lg:w-2/3">
-                        <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleSelect} />
+                        <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleSelect} />
                     </div>
                     {/* Solo en el caso de facturas */}
                     {invoice.voucher_type === 1 && (
                         <div className='lg:w-2/3'>
-                            <TextInput label='Guia de Remisión' value={invoice.guia} onChange={handleChange} name='guia' />
+                            <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} name='guia' />
                         </div>
                     )}
                     {/* En el caso de Notas de Crédito */}
                     {invoice.voucher_type === 4 && (
                         <>
                             <div className='lg:w-2/3'>
-                                <TextInput type='date' label='Emisión factura *' value='' onChange={handleChange} name='date_order' />
+                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' />
                             </div>
                             <div className='lg:w-2/3'>
-                                <TextInput label='Serie factura *' value='' onChange={handleChange} name='serie_order' />
+                                <TextInput label='Serie factura *' value={invoice.serie_order ?? ''} error={formErrors.serie_order} onChange={handleChange} name='serie_order' maxLength={17} />
                             </div>
                             <div className='lg:w-2/3'>
-                                <TextInput label='Motivo *' value='' onChange={handleChange} name='rason' />
+                                <TextInput label='Motivo *' value={invoice.rason ?? ''} error={formErrors.rason} onChange={handleChange} name='rason' />
                             </div>
                         </>
                     )}

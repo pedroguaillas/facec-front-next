@@ -8,10 +8,11 @@ import ModalSelectCustomer from './ModalSelectCustomer';
 
 interface Props {
     label?: string;
+    error?: string;
     selectCustomer: (customer: CustomerPaginate) => void;
 }
 
-export const SelectCustomer = ({ label, selectCustomer }: Props) => {
+export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
 
     const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<CustomerPaginate[]>([]);
@@ -74,7 +75,8 @@ export const SelectCustomer = ({ label, selectCustomer }: Props) => {
                     <input
                         onChange={handleChange}
                         value={search}
-                        className='w-full border border-primary hover:border-primaryhover rounded-l px-2'
+                        className={`w-full border border-primary hover:border-primaryhover rounded-l px-2
+                            ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                         type='text'
                     />
                     <span onClick={handleModal} className='rounded-r p-2 bg-primary text-white cursor-pointer'>
@@ -82,6 +84,8 @@ export const SelectCustomer = ({ label, selectCustomer }: Props) => {
                     </span>
                     <ModalSelectCustomer show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
                 </div>
+
+                {error && <p className="text-sm text-red-500">{error}</p>}
 
                 {showDropdown && suggestions.length > 0 && (
                     <div

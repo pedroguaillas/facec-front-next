@@ -4,4 +4,4 @@ export * from './ListProducts';
 export * from './PayMethods';
 export * from './AditionalInformation';
 export * from './Totales';
-export * from './Submit';
+export * from './ButtonSubmit';
