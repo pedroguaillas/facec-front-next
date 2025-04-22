@@ -15,7 +15,7 @@ export const ItemAditionalInformation = ({ index, aditionalInformation, updateIt
                     onChange={(e) => updateItem(index, 'name', e.target.value)}
                     value={aditionalInformation.name ?? ''}
                     type="text"
-                    className="w-full dark:text-white"
+                    className="w-full border border-gray-300 rounded px-1 dark:text-white"
                 />
             </td>
             <td className="border border-gray-300">
@@ -23,7 +23,7 @@ export const ItemAditionalInformation = ({ index, aditionalInformation, updateIt
                     onChange={(e) => updateItem(index, 'description', e.target.value)}
                     value={aditionalInformation.description ?? ''}
                     type="text"
-                    className="w-full dark:text-white"
+                    className="w-full border border-gray-300 rounded px-1 dark:text-white"
                 />
             </td>
             <td className='border border-gray-300 w-1'>

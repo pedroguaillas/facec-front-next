@@ -33,7 +33,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                     onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                     value={productOutput.quantity ?? ''}
                     type="number"
-                    className="w-full"
+                    className="w-full border border-gray-300 px-1 rounded text-gray-600"
                 />
             </td>
             <td>
@@ -50,7 +50,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                                 onChange={(e) => updateItem(index, 'price', e.target.value)}
                                 value={productOutput.price ?? ''}
                                 type="number"
-                                className="w-full"
+                                className="w-full border border-gray-300 px-1 rounded text-gray-600"
                             />
                         )
                 }
@@ -60,7 +60,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                     onChange={(e) => updateItem(index, 'discount', e.target.value)}
                     value={productOutput.discount ?? ''}
                     type="number"
-                    className="w-full"
+                    className="w-full border border-gray-300 px-1 rounded text-gray-600"
                 />
             </td>
             {isTaxBreakdown ? <td className="text-right">{ivaCalculation().toFixed(2)}</td> : ''}
@@ -71,7 +71,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                             onChange={(e) => updateItem(index, 'total_iva', e.target.value)}
                             value={productOutput.total_iva ?? ''}
                             type="number"
-                            className="w-full"
+                            className="w-full border border-gray-300 px-1 rounded text-gray-600"
                         />
                     ) :
                         (productOutput.total_iva ?? '0.00')
@@ -84,7 +84,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                             onChange={(e) => updateItem(index, 'ice', e.target.value)}
                             value={productOutput.ice}
                             type="number"
-                            className="w-full"
+                            className="w-full border border-gray-300 px-1 rounded text-gray-600"
                         />
                     ) : null}
                 </td>

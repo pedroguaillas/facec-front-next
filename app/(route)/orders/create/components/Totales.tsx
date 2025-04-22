@@ -2,6 +2,7 @@
 
 import { TableResponsive } from "@/components";
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { ButtonSubmit } from "./ButtonSubmit";
 
 export const Totales = () => {
 
@@ -55,7 +56,7 @@ export const Totales = () => {
                     <tr>
                         <td className="border border-gray-300">Descuento</td>
                         <td className="text-right border border-gray-300">
-                            <input type="number" value={invoice.discount} onChange={handleDiscountChange} min={0} max={invoice.sub_total} className="w-16 border border-gray-300 rounded" />
+                            <input type="number" value={invoice.discount} onChange={handleDiscountChange} min={0} max={invoice.sub_total} className="w-16 border border-gray-300 rounded px-1" />
                         </td>
                     </tr>
                     {invoice.base12 > 0 && (
@@ -84,6 +85,7 @@ export const Totales = () => {
                     </tr>
                 </thead>
             </TableResponsive>
+            <ButtonSubmit />
         </div>
     )
 }
