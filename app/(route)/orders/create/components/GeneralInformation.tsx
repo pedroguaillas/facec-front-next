@@ -7,7 +7,7 @@ import React from 'react';
 
 export const GeneralInformation = () => {
 
-    const { invoice, formErrors, selectPoint, points, setInvoice, setSelectPoint } = useCreateInvoice();
+    const { invoice, formErrors, selectPoint, setSelectCustom, points, setInvoice, setSelectPoint } = useCreateInvoice();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -37,6 +37,7 @@ export const GeneralInformation = () => {
 
     const handleSelectCustomer = (customer: CustomerPaginate) => {
         setInvoice((prevState) => ({ ...prevState, customer_id: customer.id }))
+        setSelectCustom(customer);
     }
 
     return (
@@ -71,7 +72,7 @@ export const GeneralInformation = () => {
                     {/* Solo en el caso de facturas */}
                     {invoice.voucher_type === 1 && (
                         <div className='lg:w-2/3'>
-                            <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} name='guia' />
+                            <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} maxLength={17} name='guia' />
                         </div>
                     )}
                     {/* En el caso de Notas de Crédito */}

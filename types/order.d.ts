@@ -32,7 +32,7 @@ interface OrderCreateProps {
     iva15: number,
     ice: number,
     sub_total: number,
-    discount: number,
+    discount: string | number,
     total: number,
     description: string | null,
     customer_id: number,

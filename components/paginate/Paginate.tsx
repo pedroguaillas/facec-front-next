@@ -1,20 +1,44 @@
 import { PaginateProps } from "@/types/paginate";
 import React from "react";
 
-export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
-    if (!meta || meta.last_page < 2) return null;
+export const Paginate: React.FC<PaginateProps> = ({ meta, links, reqNewPage }) => {
+    if (!meta || meta.last_page < 2 || links === null) return null;
 
-    const pageNumbers = Array.from({ length: meta.last_page }, (_, i) => i + 1);
+    const getVisiblePages = () => {
+        const pages: number[] = [];
 
-    const { links } = meta
+        const total = meta.last_page;
+        const current = meta.current_page;
 
-    if (!links) return;
+        let start = 1;
+        let end = 5;
+
+        if (current <= 3) {
+            start = 1;
+            end = Math.min(5, total);
+        } else if (current >= total - 2) {
+            start = Math.max(total - 4, 1);
+            end = total;
+        } else {
+            start = current - 2;
+            end = current + 2;
+        }
+
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+
+        return pages;
+    };
+
+    const visiblePages = getVisiblePages();
 
     return (
         <nav aria-label="Navegación de páginas" className="flex justify-center mt-4">
             <ul className="inline-flex items-center gap-1 text-sm">
-                {/* Primera y Anterior */}
-                {/* <li>
+
+                {/* Primera página */}
+                <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.first)}
                         className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
@@ -23,43 +47,24 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                         {"<<"}
                     </button>
                 </li>
-                <li>
-                    <button
-                        onClick={(e) => reqNewPage(e, links.prev)}
-                        className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
-                        disabled={!links.prev}
-                    >
-                        {"<"}
-                    </button>
-                </li> */}
 
-                {/* Páginas */}
-                {pageNumbers
-                    .filter((i) => Math.abs(meta.current_page - i) <= 4) // Mostrar +-4 páginas alrededor de la actual
-                    .map((page) => (
-                        <li key={page}>
-                            <button
-                                onClick={(e) => reqNewPage(e, `${meta.path}?page=${page}`)}
-                                className={`px-3 py-1 rounded-md ${meta.current_page === page
+                {/* Botones de páginas */}
+                {visiblePages.map((page) => (
+                    <li key={page}>
+                        <button
+                            onClick={(e) => reqNewPage(e, `${meta.path}?page=${page}`)}
+                            className={`px-3 py-1 rounded-md ${
+                                meta.current_page === page
                                     ? "bg-primary dark:bg-slate-600 text-white"
                                     : "bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600"
-                                    }`}
-                            >
-                                {page}
-                            </button>
-                        </li>
-                    ))}
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    </li>
+                ))}
 
-                {/* Siguiente y Última */}
-                {/* <li>
-                    <button
-                        onClick={(e) => reqNewPage(e, links.next)}
-                        className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
-                        disabled={!links?.next}
-                    >
-                        {">"}
-                    </button>
-                </li>
+                {/* Última página */}
                 <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.last)}
@@ -68,7 +73,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, reqNewPage }) => {
                     >
                         {">>"}
                     </button>
-                </li> */}
+                </li>
             </ul>
         </nav>
     );

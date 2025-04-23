@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getInvoices } from "../services/invoicesServices";
-import { Meta } from "@/types";
+import { Links, Meta } from "@/types";
 import { useSession } from "next-auth/react";
 
 interface InvoicesContextType {
@@ -11,6 +11,7 @@ interface InvoicesContextType {
   page: number;
   setPage: (value: number) => void;
   meta: Meta | null;
+  links: Links | null;
   fetchInvoices: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
 }
 
@@ -25,6 +26,7 @@ export const InvoicesProvider = ({ children }: Props) => {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<Meta | null>(null);
+  const [links, setLinks] = useState<Links | null>(null);
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -35,6 +37,7 @@ export const InvoicesProvider = ({ children }: Props) => {
       const data = await getInvoices(axiosAuth, pageUrl, search, page);
       setInvoices(data.data);
       setMeta(data.meta);
+      setLinks(data.links);
     } catch (error) {
       console.error("Error al obtener facturas:", error);
     }
@@ -45,7 +48,10 @@ export const InvoicesProvider = ({ children }: Props) => {
   }, [status, search, page]);
 
   return (
-    <InvoicesContext.Provider value={{ invoices, search, setSearch, page, setPage, meta, fetchInvoices }}>
+    <InvoicesContext.Provider value={{
+      invoices, search, setSearch, page, setPage, meta, links,
+      fetchInvoices
+    }}>
       {children}
     </InvoicesContext.Provider>
   );

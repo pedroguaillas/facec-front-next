@@ -14,16 +14,25 @@ export const ButtonSubmit = () => {
 
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        // 1. Aquí puedes manejar el envío del formulario
+
+        // 1. Creación del formulario
         const form = {
             ...invoice,
             products: productOutputs,
             send: false,
-            aditionals: aditionalInformation,
+            aditionals: aditionalInformation.map(aditional => ({
+                id: aditional.id,
+                name: aditional.name.trim(),
+                description: aditional.description.trim(),
+            })),
             point_id: selectPoint?.id,
         };
 
-        // 1. llamar a schema de validación
+        if (form.voucher_type === 4 && form.rason) {
+            form.rason = form.rason.trim();
+        }
+
+        // 2. Validar el formulario
         const parsed = invoiceSchema.safeParse(form);
 
         if (!parsed.success) {
@@ -32,6 +41,7 @@ export const ButtonSubmit = () => {
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
             });
+
             setFormErrors(formatted);
 
             // 🔹 Errores dentro del array `products`
@@ -41,8 +51,6 @@ export const ButtonSubmit = () => {
                 if (err.path[0] === 'products' && typeof err.path[1] === 'number') {
                     const index = err.path[1]; // posición del item
                     const field = err.path[2] as keyof ProductOutput; // campo del producto
-                    // if (!productErrors[index]) productErrors[index] = {};
-                    // productErrors[index][field] = err.message;
                     const productId = form.products[index]?.id;
                     if (productId) {
                         if (!productErrors[productId]) productErrors[productId] = {};
@@ -73,6 +81,7 @@ export const ButtonSubmit = () => {
             return;
         }
 
+        // 3. Enviar el formulario
         try {
             axiosAuth
                 .post('orders', form)

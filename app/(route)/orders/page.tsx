@@ -18,14 +18,14 @@ const InvoicesPage = () => {
     }
 
     const ProductsPagination = () => {
-        const { meta, fetchInvoices } = useInvoices();
+        const { meta, links, fetchInvoices } = useInvoices();
 
         const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
             e.preventDefault();
             fetchInvoices(pageUrl);
         };
 
-        return <Paginate meta={meta} reqNewPage={handlePageChange} />;
+        return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
     };
 
     return (

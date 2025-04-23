@@ -1,8 +1,8 @@
 import { Modal, TableResponsive, Paginate } from "@/components";
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useEffect, useState } from "react";
-import { GeneralPaginate, Meta } from "@/types";
-import { initialMeta } from "@/constants/initialValues";
+import { GeneralPaginate, Links, Meta } from "@/types";
+import { initialLinks, initialMeta } from "@/constants/initialValues";
 
 interface Props {
     show: boolean;
@@ -14,6 +14,7 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
 
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta>({ ...initialMeta });
+    const [links, setLinks] = useState<Links>({ ...initialLinks });
     const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
     const axiosAuth = useAxiosAuth();
 
@@ -26,9 +27,10 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
                 search,
                 paginate: 10,
             });
-            const { data, meta } = res.data;
+            const { data, meta, links } = res.data;
             setSuggestions(data);
             setMeta(meta);
+            setLinks(links);
         } catch (error) {
             console.error(error);
         }
@@ -41,7 +43,7 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
             fetchProduct(pageUrl);
         };
 
-        return <Paginate meta={meta} reqNewPage={handlePageChange} />;
+        return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
     };
 
     useEffect(() => {

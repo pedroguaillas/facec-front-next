@@ -10,8 +10,10 @@ interface Meta {
     path: string;
     per_page?: number;
     total?: number;
-    links?: LinkMeta; // Se hace opcional para evitar errores si no se incluye
-}; // Permite agregar propiedades adicionales sin romper el código
+    from: number | null;
+    to?: number;
+    links?: LinkMeta[]; // Se hace opcional para evitar errores si no se incluye
+};
 
 interface Links {
     first: string;
@@ -28,5 +30,6 @@ interface LinkMeta {
 
 export type PaginateProps = {
     meta: Meta | null;
+    links: Links | null;
     reqNewPage: (e: React.MouseEvent<HTMLButtonElement>, url: string) => void;
 };

@@ -5,6 +5,7 @@ export const initialMeta: Meta = {
   current_page: 1,
   last_page: 1,
   path: '',
+  from: null,
 };
 
 export const initialLinks: Links = {

@@ -12,6 +12,7 @@ interface InvoicesContextType {
   payMethods: PayMethod[];
   points: EmisionPoint[];
   selectPoint: EmisionPoint | null;
+  selectCustom: CustomerPaginate | null;
   tourism: boolean;
   productInputs: ProductInput[];
   productOutputs: ProductOutput[];
@@ -23,6 +24,7 @@ interface InvoicesContextType {
   isActiveIce: boolean;
   setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
   setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
+  setSelectCustom: Dispatch<SetStateAction<CustomerPaginate | null>>;
   setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
   setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
@@ -76,6 +78,7 @@ const createNewProductItem = (): ProductOutput => ({
 export const InvoiceCreateProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
   const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
+  const [selectCustom, setSelectCustom] = useState<CustomerPaginate | null>(null);
   const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
   const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([createNewProductItem()]);
   const [errorProductOutputs, setErrorProductOutputs] = useState<Record<string, Partial<Record<keyof ProductOutput, string>>>>({});
@@ -111,8 +114,8 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
 
   return (
     <InvoiceCreateContext.Provider value={{
-      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, selectCustom, payMethods, points, tourism, productInputs, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setSelectCustom, setProductInputs, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
     </InvoiceCreateContext.Provider>

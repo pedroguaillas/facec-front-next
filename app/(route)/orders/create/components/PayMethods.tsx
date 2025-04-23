@@ -19,8 +19,15 @@ export const PayMethods = () => {
     }
 
     return (
-        <div className="w-full overflow-x-auto my-2">
-            <SelectOption label="Forma de pago" name="pay_method" options={optionPayMethods} selectedValue={invoice.pay_method} error={formErrors.pay_method} handleSelect={handleSelect} />
+        <div className="w-full overflow-x-auto sm:max-w-sm md:max-w-md lg:max-w-lg my-2">
+            <SelectOption
+                label="Forma de pago"
+                name="pay_method"
+                options={optionPayMethods}
+                selectedValue={invoice.pay_method}
+                error={formErrors.pay_method}
+                handleSelect={handleSelect}
+            />
         </div>
     )
 }
