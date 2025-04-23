@@ -97,4 +97,5 @@ type InvoiceErrors = {
     date_order?: string;
     serie_order?: string;
     rason?: string;
+    discount?: string;
 };

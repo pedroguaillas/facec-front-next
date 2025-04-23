@@ -1,3 +1,5 @@
+import { aditionalInformationSchema } from './aditional-information.schema';
+import { productOutputSchema } from './product-output.schema';
 import { z } from 'zod';
 
 export const invoiceSchema = z
@@ -9,12 +11,20 @@ export const invoiceSchema = z
     }),
     voucher_type: z.number(), // 1 = Factura, 4 = Nota de crédito
     total: z.number(),
+    discount: z.union([
+      z.string().refine(val => val.trim() !== "", { message: "Descuento requerida" }),
+      z.number()
+    ])
+      .transform(val => Number(val))
+      .refine(val => val >= 0, { message: "Descuento debe ser mayor o igual a 0" }),
     pay_method: z.number(),
     guia: z.string().optional(),
     // Para notas de crédito
     date_order: z.string().optional(),
     serie_order: z.string().optional(),
     rason: z.string().optional(),
+    products: z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
+    aditionals: z.array(aditionalInformationSchema).optional(),
   })
   .refine(
     (data) =>

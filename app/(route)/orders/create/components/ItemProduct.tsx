@@ -1,16 +1,17 @@
+import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { SelectProduct } from "@/components";
 import { FaTrash } from "react-icons/fa";
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 interface Props {
     index: number;
     productOutput: ProductOutput;
+    error?: Partial<Record<keyof ProductOutput, string>>;
     updateItem: (index: number, field: fields, value: number | string) => void;
     selectProduct: (index: number, product: ProductPaginate) => void;
     removeItem: (index: number) => void;
 }
 
-export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, removeItem }: Props) => {
+export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
     const { isTaxBreakdown, isActiveIce } = useCreateInvoice();
 
@@ -33,14 +34,15 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                     onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                     value={productOutput.quantity ?? ''}
                     type="number"
-                    className="w-full border border-gray-300 px-1 rounded text-gray-600"
+                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
+                        ${error?.quantity ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
                 />
             </td>
             <td>
-                <SelectProduct index={index} selectProduct={selectProduct} />
+                <SelectProduct index={index} selectProduct={selectProduct} error={error?.product_id} />
             </td>
             <td className={isTaxBreakdown ? 'text-right' : ''}>
-                {/* TODO agregar la cantidad de decimales correspondientes */}
+                {/* TODO: agregar la cantidad de decimales correspondientes */}
                 {
                     isTaxBreakdown ? (
                         (+productOutput.price).toFixed(2)
@@ -50,7 +52,8 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                                 onChange={(e) => updateItem(index, 'price', e.target.value)}
                                 value={productOutput.price ?? ''}
                                 type="number"
-                                className="w-full border border-gray-300 px-1 rounded text-gray-600"
+                                className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
+                        ${error?.price ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
                             />
                         )
                 }
@@ -60,7 +63,8 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                     onChange={(e) => updateItem(index, 'discount', e.target.value)}
                     value={productOutput.discount ?? ''}
                     type="number"
-                    className="w-full border border-gray-300 px-1 rounded text-gray-600"
+                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
+                        ${error?.discount ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
                 />
             </td>
             {isTaxBreakdown ? <td className="text-right">{ivaCalculation().toFixed(2)}</td> : ''}
@@ -71,7 +75,8 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                             onChange={(e) => updateItem(index, 'total_iva', e.target.value)}
                             value={productOutput.total_iva ?? ''}
                             type="number"
-                            className="w-full border border-gray-300 px-1 rounded text-gray-600"
+                            className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
+                        ${error?.total_iva ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
                         />
                     ) :
                         (productOutput.total_iva ?? '0.00')
@@ -84,7 +89,8 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, r
                             onChange={(e) => updateItem(index, 'ice', e.target.value)}
                             value={productOutput.ice}
                             type="number"
-                            className="w-full border border-gray-300 px-1 rounded text-gray-600"
+                            className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
+                        ${error?.ice ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
                         />
                     ) : null}
                 </td>

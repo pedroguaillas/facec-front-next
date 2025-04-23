@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 
 export const AditionalInformation = () => {
 
-  const { aditionalInformation, setAditionalInformation } = useCreateInvoice();
+  const { aditionalInformation, setAditionalInformation, errorAditionalInformation } = useCreateInvoice();
   const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
 
   const addItem = () => {
@@ -48,7 +48,12 @@ export const AditionalInformation = () => {
         </thead>
         <tbody>
           {aditionalInformation.map((aditional, index) => (
-            <ItemAditionalInformation key={aditional.id} index={index} aditionalInformation={aditional} updateItem={updateItem} removeItem={removeItem} />
+            <ItemAditionalInformation
+              key={aditional.id} index={index}
+              aditionalInformation={aditional}
+              error={errorAditionalInformation[aditional.id]} // 🔴 pasamos errores por ID
+              updateItem={updateItem} removeItem={removeItem}
+            />
           ))}
         </tbody>
       </TableResponsive>

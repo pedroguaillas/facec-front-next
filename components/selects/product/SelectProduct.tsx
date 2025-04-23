@@ -1,18 +1,19 @@
 "use client";
 
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { GeneralPaginate } from '@/types';
-import React, { useEffect, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import ModalSelectProduct from './ModalSelectProduct';
+import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import React, { useEffect, useState } from 'react';
+import { GeneralPaginate } from '@/types';
+import { FaSearch } from 'react-icons/fa';
 
 interface Props {
     label?: string;
+    error?: string;
     index: number;
     selectProduct: (index: number, product: ProductPaginate) => void;
 }
 
-export const SelectProduct = ({ label, index, selectProduct }: Props) => {
+export const SelectProduct = ({ label, error, index, selectProduct }: Props) => {
 
     const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
@@ -75,7 +76,8 @@ export const SelectProduct = ({ label, index, selectProduct }: Props) => {
                     <input
                         onChange={handleChange}
                         value={search}
-                        className='w-full border border-primary hover:border-primaryhover rounded-l px-2'
+                        className={`w-full border border-primary hover:border-primaryhover rounded-l px-2
+                            ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                         type='text'
                     />
                     <span onClick={handleModal} className='rounded-r p-2 bg-primary text-white cursor-pointer'>

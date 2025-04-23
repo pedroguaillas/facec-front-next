@@ -15,7 +15,9 @@ interface InvoicesContextType {
   tourism: boolean;
   productInputs: ProductInput[];
   productOutputs: ProductOutput[];
+  errorProductOutputs: Record<string, Partial<Record<keyof ProductOutput, string>>>;
   aditionalInformation: AditionalInformation[];
+  errorAditionalInformation: Record<string, Partial<Record<keyof AditionalInformation, string>>>;
   formErrors: InvoiceErrors;
   isTaxBreakdown: boolean;
   isActiveIce: boolean;
@@ -23,7 +25,9 @@ interface InvoicesContextType {
   setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
   setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
+  setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
+  setErrorAditionalInformation: Dispatch<SetStateAction<Record<string, Partial<Record<keyof AditionalInformation, string>>>>>;
   setFormErrors: Dispatch<SetStateAction<InvoiceErrors>>;
   setIsTaxBreakdown: Dispatch<SetStateAction<boolean>>;
   setIsActiveIce: Dispatch<SetStateAction<boolean>>;
@@ -74,9 +78,11 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
   const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
   const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([createNewProductItem()]);
+  const [errorProductOutputs, setErrorProductOutputs] = useState<Record<string, Partial<Record<keyof ProductOutput, string>>>>({});
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
+  const [errorAditionalInformation, setErrorAditionalInformation] = useState<Record<string, Partial<Record<keyof AditionalInformation, string>>>>({});
   const [formErrors, setFormErrors] = useState<InvoiceErrors>({});
   const [tourism, setTourism] = useState(false);
   const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
@@ -105,8 +111,8 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
 
   return (
     <InvoiceCreateContext.Provider value={{
-      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, aditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, payMethods, points, tourism, productInputs, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setProductInputs, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
     </InvoiceCreateContext.Provider>

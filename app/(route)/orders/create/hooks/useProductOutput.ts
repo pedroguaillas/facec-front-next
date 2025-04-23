@@ -1,11 +1,12 @@
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { initialProductItem } from "@/constants/initialValues";
+import { productOutputSchema } from "@/schemas/product-output.schema";
 import { nanoid } from "nanoid";
 
 // hooks/useProductOutput.ts
 export const useProductOutput = () => {
 
-    const { productOutputs, setInvoice, setProductOutputs } = useCreateInvoice();
+    const { productOutputs, setInvoice, setProductOutputs, setErrorProductOutputs } = useCreateInvoice();
 
     // Agregar producto a la lista
     const addItem = () => {
@@ -17,6 +18,30 @@ export const useProductOutput = () => {
         if (value && Number(value) < 0) return
         const prods = productOutputs;
         prods[index][field] = value;
+
+        // Validar ese campo
+        const validation = productOutputSchema.safeParse(prods[index]);
+
+        if (!validation.success) {
+            const fieldError = validation.error.flatten().fieldErrors;
+            setErrorProductOutputs(prev => ({
+                ...prev,
+                [prods[index].id]: {
+                    ...prev[prods[index].id],
+                    [field]: fieldError[field]?.[0] || ""
+                }
+            }));
+        } else {
+            // Si está correcto, limpiar error de ese campo
+            setErrorProductOutputs(prev => ({
+                ...prev,
+                [prods[index].id]: {
+                    ...prev[prods[index].id],
+                    [field]: ""
+                }
+            }));
+        }
+
         let { quantity, price, discount } = prods[index]
         const { percentage } = prods[index]
         quantity = quantity === '' ? 0 : Number(quantity);
@@ -25,7 +50,7 @@ export const useProductOutput = () => {
         if (field === 'total_iva') {
             prods[index].price = parseFloat((Number(value) / quantity / (1 + (percentage / 100))).toFixed(6))
         } else if (field !== 'ice') {
-            prods[index].total_iva = price * quantity - discount
+            prods[index].total_iva = parseFloat((price * quantity - discount).toFixed(2));
         }
         recalculate(prods);
     };
@@ -45,6 +70,7 @@ export const useProductOutput = () => {
         //   TODO Agregar Si es turismo
         prods[index].iva = product.iva.code;
         prods[index].percentage = product.iva.percentage;
+
         recalculate(prods);
     }
 

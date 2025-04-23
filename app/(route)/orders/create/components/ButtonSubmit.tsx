@@ -8,7 +8,7 @@ import { FaSave } from 'react-icons/fa';
 
 export const ButtonSubmit = () => {
 
-    const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors } = useCreateInvoice();
+    const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors, setErrorProductOutputs, setErrorAditionalInformation } = useCreateInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
 
@@ -17,10 +17,7 @@ export const ButtonSubmit = () => {
         // 1. Aquí puedes manejar el envío del formulario
         const form = {
             ...invoice,
-            products:
-                productOutputs.length > 0
-                    ? productOutputs.filter((product: ProductOutput) => product.product_id !== 0)
-                    : [],
+            products: productOutputs,
             send: false,
             aditionals: aditionalInformation,
             point_id: selectPoint?.id,
@@ -30,12 +27,49 @@ export const ButtonSubmit = () => {
         const parsed = invoiceSchema.safeParse(form);
 
         if (!parsed.success) {
-            console.log('Validación error', parsed.error.errors);
+            console.log('Validación order', parsed.error.errors);
             const formatted: Record<string, string> = {};
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
             });
             setFormErrors(formatted);
+
+            // 🔹 Errores dentro del array `products`
+            const productErrors: Record<string, Partial<Record<keyof ProductOutput, string>>> = {};
+
+            parsed.error.errors.forEach((err) => {
+                if (err.path[0] === 'products' && typeof err.path[1] === 'number') {
+                    const index = err.path[1]; // posición del item
+                    const field = err.path[2] as keyof ProductOutput; // campo del producto
+                    // if (!productErrors[index]) productErrors[index] = {};
+                    // productErrors[index][field] = err.message;
+                    const productId = form.products[index]?.id;
+                    if (productId) {
+                        if (!productErrors[productId]) productErrors[productId] = {};
+                        productErrors[productId][field] = err.message;
+                    }
+                }
+            });
+
+            setErrorProductOutputs(productErrors); // ← Necesitas este estado para manejar errores por producto
+
+            // 🔹 Errores dentro del array `aditionals`
+            const aditionalErrors: Record<string, Partial<Record<keyof AditionalInformation, string>>> = {};
+
+            parsed.error.errors.forEach((err) => {
+                if (err.path[0] === 'aditionals' && typeof err.path[1] === 'number') {
+                    const index = err.path[1]; // posición del item
+                    const field = err.path[2] as keyof AditionalInformation; // campo del producto
+                    const aditionalId = form.aditionals[index]?.id;
+                    if (aditionalId) {
+                        if (!aditionalErrors[aditionalId]) aditionalErrors[aditionalId] = {};
+                        aditionalErrors[aditionalId][field] = err.message;
+                    }
+                }
+            });
+
+            setErrorAditionalInformation(aditionalErrors); // ← Necesitas este estado para manejar errores por producto
+
             return;
         }
 

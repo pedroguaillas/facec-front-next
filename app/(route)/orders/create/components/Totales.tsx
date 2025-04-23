@@ -6,7 +6,7 @@ import { ButtonSubmit } from "./ButtonSubmit";
 
 export const Totales = () => {
 
-    const { invoice, setInvoice } = useCreateInvoice();
+    const { invoice, setInvoice, formErrors } = useCreateInvoice();
 
     const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseFloat(e.target.value);
@@ -56,7 +56,15 @@ export const Totales = () => {
                     <tr>
                         <td className="border border-gray-300">Descuento</td>
                         <td className="text-right border border-gray-300">
-                            <input type="number" value={invoice.discount} onChange={handleDiscountChange} min={0} max={invoice.sub_total} className="w-16 border border-gray-300 rounded px-1" />
+                            <input
+                                type="number"
+                                value={invoice.discount}
+                                onChange={handleDiscountChange}
+                                min={0}
+                                max={invoice.sub_total}
+                                className={`w-16 border rounded px-1
+                                ${formErrors.discount ? 'border-red-500' : 'border-gray-300'}`}
+                            />
                         </td>
                     </tr>
                     {invoice.base12 > 0 && (

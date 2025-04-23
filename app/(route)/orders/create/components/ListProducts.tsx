@@ -1,15 +1,15 @@
 "use client";
 
+import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { useProductOutput } from "../hooks/useProductOutput";
 import { PrimaryButton } from "@/components";
 import { ItemProduct } from "./ItemProduct";
-import { useProductOutput } from "../hooks/useProductOutput";
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 
 export const ListProducts = () => {
-    
+
     const { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem } = useProductOutput();
     const isEnabledIce = productOutputs.filter(p => p.ice !== undefined).length > 0;
-    const { isTaxBreakdown, setIsTaxBreakdown } = useCreateInvoice();
+    const { errorProductOutputs, isTaxBreakdown, setIsTaxBreakdown } = useCreateInvoice();
 
     const handleChange = () => {
         setIsTaxBreakdown(!isTaxBreakdown);
@@ -40,7 +40,15 @@ export const ListProducts = () => {
                 </thead>
                 <tbody>
                     {productOutputs.map((op, index) => (
-                        <ItemProduct key={op.id} index={index} productOutput={op} updateItem={updateItem} selectProduct={selectProduct} removeItem={removeItem} />
+                        <ItemProduct
+                            key={op.id}
+                            index={index}
+                            productOutput={op}
+                            error={errorProductOutputs[op.id]} // 🔴 pasamos errores por ID
+                            updateItem={updateItem}
+                            selectProduct={selectProduct}
+                            removeItem={removeItem}
+                        />
                     ))}
                 </tbody>
             </table>
