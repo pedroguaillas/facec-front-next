@@ -41,7 +41,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, links, reqNewPage }) =
                 <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.first)}
-                        className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
+                        className="px-3 py-1 rounded-md bg-gray-200 dark:bg-slate-700 hover:bg-gray-300"
                         disabled={meta.current_page === 1}
                     >
                         {"<<"}
@@ -55,7 +55,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, links, reqNewPage }) =
                             onClick={(e) => reqNewPage(e, `${meta.path}?page=${page}`)}
                             className={`px-3 py-1 rounded-md ${
                                 meta.current_page === page
-                                    ? "bg-primary dark:bg-slate-600 text-white"
+                                    ? "bg-primary dark:bg-blue-600 text-white"
                                     : "bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600"
                             }`}
                         >
@@ -68,7 +68,7 @@ export const Paginate: React.FC<PaginateProps> = ({ meta, links, reqNewPage }) =
                 <li>
                     <button
                         onClick={(e) => reqNewPage(e, links.last)}
-                        className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300"
+                        className="px-3 py-1 rounded-md bg-gray-200 dark:bg-slate-700 hover:bg-gray-300"
                         disabled={meta.current_page === meta.last_page}
                     >
                         {">>"}

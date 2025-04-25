@@ -6,7 +6,7 @@ import { initialLinks, initialMeta } from "@/constants/initialValues";
 
 interface Props {
     show: boolean;
-    handleSelect: (product: ProductPaginate) => void;
+    handleSelect: (product: ProductProps) => void;
     onClose: () => void; // Nuevo
 }
 
@@ -15,7 +15,7 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta>({ ...initialMeta });
     const [links, setLinks] = useState<Links>({ ...initialLinks });
-    const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
+    const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
     const axiosAuth = useAxiosAuth();
 
     const fetchProduct = async (page: string = 'page=1') => {
@@ -23,7 +23,7 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductPaginate>>(`productlist?page=${pageNumber}`, {
+            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
                 search,
                 paginate: 10,
             });

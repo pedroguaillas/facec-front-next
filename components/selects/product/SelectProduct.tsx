@@ -10,13 +10,13 @@ interface Props {
     label?: string;
     error?: string;
     index: number;
-    selectProduct: (index: number, product: ProductPaginate) => void;
+    selectProduct: (index: number, product: ProductProps) => void;
 }
 
 export const SelectProduct = ({ label, error, index, selectProduct }: Props) => {
 
     const [search, setSearch] = useState(label ?? "");
-    const [suggestions, setSuggestions] = useState<ProductPaginate[]>([]);
+    const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
@@ -27,7 +27,7 @@ export const SelectProduct = ({ label, error, index, selectProduct }: Props) => 
         setShowModal(!showModal);
     }
 
-    const handleSelectLocal = (product: ProductPaginate) => {
+    const handleSelectLocal = (product: ProductProps) => {
         handleSelect(product);
         setShowModal(false);
     }
@@ -37,7 +37,7 @@ export const SelectProduct = ({ label, error, index, selectProduct }: Props) => 
         setSearch(event.target.value);
     }
 
-    const handleSelect = (product: ProductPaginate) => {
+    const handleSelect = (product: ProductProps) => {
         setSearch(product.atts.name);
         setShowDropdown(false);
         setSkipFetch(true); // 👈 evita la búsqueda
@@ -49,7 +49,7 @@ export const SelectProduct = ({ label, error, index, selectProduct }: Props) => 
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductPaginate>>(`productlist?page=${pageNumber}`, {
+            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
                 search,
                 paginate: 5,
             });

@@ -33,14 +33,14 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                     <ul className={`${menu ? "transition-all duration-300 [&>li>a>h3]:block" : "[&>li>a>h3]:hidden group-hover:[&>li>a>h3]:block"} [&>li>a>h3]:text-white [&>li>a>svg]:stroke-white`}>
                         <li>
                             <Link onClick={handleCloseSidebar}
-                                className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='dashboard'>
+                                className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='/dashboard'>
                                 <svg fill="none" viewBox="0 0 22 22" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                                 </svg>
                                 <h3>Inicio</h3>
                             </Link>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link onClick={handleCloseSidebar}
                                 className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='business'>
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
@@ -48,10 +48,10 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                 </svg>
                                 <h3>Empresa</h3>
                             </Link>
-                        </li>
+                        </li> */}
                         <li>
                             <Link onClick={handleCloseSidebar}
-                                className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='business'>
+                                className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='/products'>
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                 </svg>
@@ -84,7 +84,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                 <h3>Contactos</h3>
                             </Link>
                         </li>
-                        <li>
+                        {/* <li>
                             <Link onClick={handleCloseSidebar}
                                 className="rounded hover:bg-primaryhover flex gap-2 px-2 py-2" href='/business'>
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
@@ -92,7 +92,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                 </svg>
                                 <h3>Guias de remisión</h3>
                             </Link>
-                        </li>
+                        </li> */}
                         <li>
                             <Link onClick={handleCloseSidebar}
                                 className="rounded hover:bg-primaryhover flex gap-2 px-2 py-2" href='/business'>
