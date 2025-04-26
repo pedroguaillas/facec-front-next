@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
 
 interface OptionProps {
-    value: number;
+    value: number | string;
     label: string;
 }
 
@@ -24,7 +24,7 @@ export const SelectOption = ({ options, label, name, select = false, selectedVal
             <select
                 // id={name} // Vincula el label con el input
                 name={name} // Útil para formularios
-                className={`border rounded px-2 py-1 focus:outline-none focus:ring-2 ${error
+                className={`border rounded p-2 focus:outline-none focus:ring-2 ${error
                     ? "border-red-500 focus:ring-red-500"
                     : "border-slate-400 focus:ring-blue-500"
                     } dark:text-gray-300`}

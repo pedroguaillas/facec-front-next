@@ -35,7 +35,7 @@ export const GeneralInformation = () => {
         setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
     }
 
-    const handleSelectCustomer = (customer: CustomerPaginate) => {
+    const handleSelectCustomer = (customer: CustomerProps) => {
         setInvoice((prevState) => ({ ...prevState, customer_id: customer.id }))
         setSelectCustom(customer);
     }

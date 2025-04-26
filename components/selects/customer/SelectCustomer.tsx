@@ -9,13 +9,13 @@ import ModalSelectCustomer from './ModalSelectCustomer';
 interface Props {
     label?: string;
     error?: string;
-    selectCustomer: (customer: CustomerPaginate) => void;
+    selectCustomer: (customer: CustomerProps) => void;
 }
 
 export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
 
     const [search, setSearch] = useState(label ?? "");
-    const [suggestions, setSuggestions] = useState<CustomerPaginate[]>([]);
+    const [suggestions, setSuggestions] = useState<CustomerProps[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
     const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
@@ -26,7 +26,7 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
         setShowModal(!showModal);
     }
 
-    const handleSelectLocal = (customer: CustomerPaginate) => {
+    const handleSelectLocal = (customer: CustomerProps) => {
         handleSelect(customer);
         setShowModal(false);
     }
@@ -36,7 +36,7 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
         setSearch(event.target.value);
     }
 
-    const handleSelect = (customer: CustomerPaginate) => {
+    const handleSelect = (customer: CustomerProps) => {
         setSearch(customer.atts.name);
         setShowDropdown(false);
         setSkipFetch(true); // 👈 evita la búsqueda
@@ -48,7 +48,7 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<CustomerPaginate>>(`customerlist?page=${pageNumber}`, {
+            const res = await axiosAuth.post<GeneralPaginate<CustomerProps>>(`customerlist?page=${pageNumber}`, {
                 search,
                 paginate: 5,
             });

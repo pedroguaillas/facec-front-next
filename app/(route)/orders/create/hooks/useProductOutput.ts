@@ -56,7 +56,7 @@ export const useProductOutput = () => {
     };
 
     // Seleccionar producto para un Item
-    const selectProduct = (index: number, product: ProductPaginate) => {
+    const selectProduct = (index: number, product: ProductProps) => {
         const prods = productOutputs;
         prods[index].product_id = product.id;
         prods[index].price = product.atts.price1;

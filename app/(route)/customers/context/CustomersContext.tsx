@@ -1,30 +1,30 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { getProducts } from "../services/ordersServices";
+import { getCustomers } from "../services/customersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { Links, Meta } from "@/types";
 
-interface ProductsContextType {
-    products: ProductProps[];
+interface CustomersContextType {
+    customers: CustomerProps[];
     search: string;
     page: number;
     meta: Meta | null;
     links: Links | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
-    fetchProducts: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
+    fetchCustomers: (pageUrl?: string) => Promise<void>;
 }
 
-const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
+const CustomersContext = createContext<CustomersContextType | undefined>(undefined);
 
 interface Props {
     children: ReactNode;
 }
 
-export const ProductsProvider = ({ children }: Props) => {
-    const [products, setProducts] = useState<ProductProps[]>([]);
+export const CustomersProvider = ({ children }: Props) => {
+    const [customers, setCustomers] = useState<CustomerProps[]>([]);
     const [search, setSearch] = useState<string>("");
     const [page, setPage] = useState(1);
     const [meta, setMeta] = useState<Meta | null>(null);
@@ -32,37 +32,36 @@ export const ProductsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchProducts = async (pageUrl = `productlist?page=${page}`) => {
+    const fetchCustomers = async (pageUrl = `customerlist?page=${page}`) => {
         if (status !== "authenticated") return;
 
         try {
-            const data = await getProducts(axiosAuth, pageUrl, search, page);
-            setProducts(data.data);
+            const data = await getCustomers(axiosAuth, pageUrl, search, page);
+            setCustomers(data.data);
             setMeta(data.meta);
             setLinks(data.links);
         } catch (error) {
-            console.error("Error al obtener facturas:", error);
+            console.error("Error al obtener clientes:", error);
         }
     };
 
     useEffect(() => {
-        fetchProducts();
+        fetchCustomers();
     }, [status, search, page]);
-
     return (
-        <ProductsContext.Provider value={{
-            products, search, page, meta, links,
-            fetchProducts, setSearch, setPage
+        <CustomersContext.Provider value={{
+            customers, search, page, meta, links,
+            fetchCustomers, setSearch, setPage
         }}>
             {children}
-        </ProductsContext.Provider>
+        </CustomersContext.Provider>
     );
 }
 
-export const useProducts = () => {
-    const context = useContext(ProductsContext);
+export const useCustomers = () => {
+    const context = useContext(CustomersContext);
     if (!context) {
-        throw new Error("useOrders must be used within an OrdersProvider");
+        throw new Error("useCustomers must be used within a CustomersProvider");
     }
     return context;
 }

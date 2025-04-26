@@ -35,3 +35,10 @@ export const initialProductItem: ProductOutput = {
   ice: undefined,
   percentage: 0,
 };
+
+export const initialCustomer: Customer = {
+  id,
+  type_identification: 'cédula',
+  identication: '',
+  name: '',
+};
