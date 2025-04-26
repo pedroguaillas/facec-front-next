@@ -1,14 +1,26 @@
-import NextAuth from "next-auth";
+// import NextAuth from "next-auth";
+
+// declare module "next-auth" {
+//     interface Session {
+//         user: {
+//             decimal: number,
+//             expires_in: number,
+//             inventory: boolean,
+//             token: string,
+//             token_type: string,
+//             user: { id: number, user: string, email: string, avatar: null, user_type_id: number }
+//         };
+//     };
+// }
+
+// import NextAuth from "next-auth";
+import { AuthUser } from "./types/auth"; // ajusta la ruta si está en otro lugar
 
 declare module "next-auth" {
-    interface Session {
-        user: {
-            decimal: Number,
-            expires_in: Number,
-            inventory: Boolean,
-            token: string,
-            token_type: String,
-            user: { id: Number, user: String, email: String, avatar: null, user_type_id: Number }
-        };
-    };
+  interface Session {
+    user: AuthUser;
+  }
+  interface JWT {
+    user: AuthUser;
+  }
 }

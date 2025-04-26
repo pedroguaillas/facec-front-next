@@ -13,6 +13,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials || !credentials.user || !credentials.password) return null;
         const res = await axios.post("api/login", {
           user: credentials.user,
           password: credentials.password
@@ -20,13 +21,6 @@ export const authOptions: NextAuthOptions = {
 
         const user = res.data;
         return user ? user : null;
-        // if (
-        //   credentials?.user === "Peterio" &&
-        //   credentials?.password === "password123"
-        // ) {
-        //   return { id: "1", user: "Peterio", name: "Test User" };
-        // }
-        // return null;
       },
     }),
   ],
@@ -34,22 +28,22 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     jwt: async ({ token, user }) => {
-      if (user) token.user = user; // Store the token
+      if (user) token.user = user as AuthUser; // Store the token
 
       // Refrescar el token si está vencido
-      const { exp } = jwtDecode(token.user.token);
-      // console.log("Llega al JWT: ", token?.user?.token);
+      const { exp } = jwtDecode<{ exp: number }>((token.user as { token: string }).token);
 
       if (Date.now() >= exp * 1000) {
         try {
           const res = await axios.get("api/refreshtoken", {
-            headers: { Authorization: `Bearer ${token.user.token}` },
+            headers: { Authorization: `Bearer ${(token.user as { token: string }).token}` },
           });
 
-          token.user.token = res.data.token;
+          (token.user as { token: string }).token = res.data.token;
         } catch (error) {
           // console.error("Error refrescando el token EN CALLBACKS: ", error);
           // 🔴 Redirigir al login
+          console.log(error)
           signOut({ callbackUrl: "/app/auth/login" });
           // Retorno el user null para invalidar la sesión
           return {};
