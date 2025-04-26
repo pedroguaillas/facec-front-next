@@ -73,8 +73,8 @@ export const ProductForm = () => {
                             <input type='text' value={total} onChange={handleTotal} placeholder='Total' maxLength={15}
                                 className={`p-1 border border-l-slate-400 border-r-white border-y-slate-400 rounded-l 
                                 ${breakdown ? 'block' : 'hidden'}`} />
-                            <input type='number' value={product.price1} onChange={handleChange} name='price1' 
-                            className={`p-1 border 
+                            <input type='number' value={product.price1} onChange={handleChange} name='price1'
+                                className={`p-1 border 
                                 ${breakdown ? 'rounded-r' : 'rounded'}
                                 ${errorProduct.price1 ? 'border-red-400' : 'border-slate-400'}
                                 `} />
@@ -102,7 +102,7 @@ export const ProductForm = () => {
                 {iceCataloges.length > 0 && (
                     <div className='w-full'>
                         <div className='lg:w-2/3'>
-                            <SelectOption label="Imp. al ICE" name='iva' options={iceCataloges} selectedValue={product.iva} handleSelect={handleSelect} />
+                            <SelectOption label="Imp. al ICE" name='ice' options={iceCataloges} selectedValue={product.ice ?? ''} handleSelect={handleSelect} />
                         </div>
                     </div>
                 )}

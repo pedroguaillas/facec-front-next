@@ -47,7 +47,7 @@ export const Totals = () => {
     ].filter(item => item.value > 0);
 
     return (
-        <div className="full">
+        <div className="flex flex-col">
             <TableResponsive>
                 <thead>
                     <tr className="[&>th]:p-2">

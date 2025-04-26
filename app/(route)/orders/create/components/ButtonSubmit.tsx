@@ -4,15 +4,17 @@ import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 import { invoiceSchema } from '@/schemas/invoice.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter } from 'next/navigation';
-import { FaSave } from 'react-icons/fa';
+import { FaSave, FaSpinner } from 'react-icons/fa';
+import { useState } from 'react';
 
 export const ButtonSubmit = () => {
 
     const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors, setErrorProductOutputs, setErrorAditionalInformation } = useCreateInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
+    const [isPending, setIsPending] = useState(false);
 
-    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
         // 1. Creación del formulario
@@ -36,7 +38,7 @@ export const ButtonSubmit = () => {
         const parsed = invoiceSchema.safeParse(form);
 
         if (!parsed.success) {
-            console.log('Validación order', parsed.error.errors);
+            console.log('Validación ', parsed.error)
             const formatted: Record<string, string> = {};
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
@@ -83,11 +85,9 @@ export const ButtonSubmit = () => {
 
         // 3. Enviar el formulario
         try {
-            axiosAuth
-                .post('orders', form)
-                .then(() => {
-                    router.push('/orders');
-                });
+            setIsPending(true);
+            await axiosAuth.post('orders', form);
+            router.push('/orders');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);
         }
@@ -95,8 +95,17 @@ export const ButtonSubmit = () => {
 
     return (
         <div className='flex justify-end mt-4'>
-            <button onClick={handleSubmit} id='btn-save' className="btn btn-primary flex items-center gap-2 bg-primary hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                <FaSave /> Guardar y procesar
+            <button
+                onClick={handleSubmit}
+                disabled={isPending}
+                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
+                {isPending && (
+                    <FaSpinner className='animate-spin' />
+                )}
+                {!isPending && (
+                    <FaSave />
+                )}
+                Guardar y procesar
             </button>
         </div>
     )

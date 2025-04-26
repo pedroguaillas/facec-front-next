@@ -3,17 +3,18 @@
 import { useProductCreateContext } from '../../context/ProductCreateContext';
 import { productSchema } from '@/schemas/product.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaSave } from 'react-icons/fa';
+import { FaSave, FaSpinner } from 'react-icons/fa';
 
 export const ButtonSubmit = () => {
 
     const { product, setErrorProduct } = useProductCreateContext();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
+    const [isPending, setIsPending] = useState(false);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // 1. Crear el formulario
         const form = {
             ...product,
@@ -33,11 +34,9 @@ export const ButtonSubmit = () => {
 
         // 3. Enviar el formulario
         try {
-            axiosAuth
-                .post('product', form)
-                .then(() => {
-                    router.push('/products');
-                });
+            setIsPending(true);
+            await axiosAuth.post('product', form);
+            router.push('/products');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);
         }
@@ -48,9 +47,15 @@ export const ButtonSubmit = () => {
             <button
                 onClick={handleSubmit}
                 type='submit'
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2'
+                disabled={isPending}
+                className='bg-blue-500 hover:bg-blue-700 disabled:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2'
             >
-                <FaSave />
+                {isPending && (
+                    <FaSpinner className='animate-spin' />
+                )}
+                {!isPending && (
+                    <FaSave />
+                )}
                 Guardar
             </button>
         </div>

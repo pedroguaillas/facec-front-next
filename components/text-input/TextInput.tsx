@@ -2,7 +2,7 @@ import React from 'react';
 
 // Definición de la interfaz Props con tipado correcto
 interface Props {
-    type?: 'text' | 'email' | 'password' | 'number' | 'date'; // Restringe los tipos válidos
+    type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'month'; // Restringe los tipos válidos
     value: string;
     required?: boolean;
     label: string;
