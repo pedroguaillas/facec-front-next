@@ -3,12 +3,15 @@
 
 import { PrimaryButton, TextInput } from "@/components";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
+
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUser(event.target.value);
@@ -30,7 +33,8 @@ export default function LoginPage() {
     if (result?.error) {
       setError("Invalid credentials");
     } else {
-      window.location.href = "/dashboard"; // Redirect on success
+      router.push("dashboard");
+      // window.location.href = "/dashboard"; // Redirect on success
     }
   };
 
