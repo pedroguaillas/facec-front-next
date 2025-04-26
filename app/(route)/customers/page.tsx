@@ -16,7 +16,7 @@ const CustomersPagination = () => {
     return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
 };
 
-export const PageCustomers = () => {
+const PageCustomers = () => {
     return (
         <CustomersProvider>
             <div className="dark:text-gray-300">

@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     jwt: async ({ token, user }) => {
-      if (user) token.user = user as AuthUser; // Store the token
+      if (user) token.user = user; // Store the token
 
       // Refrescar el token si está vencido
       const { exp } = jwtDecode<{ exp: number }>((token.user as { token: string }).token);

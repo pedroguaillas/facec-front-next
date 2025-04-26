@@ -1,5 +1,3 @@
-// types/auth.ts
-
 export type AuthUser = {
     decimal: number;
     expires_in: number;
