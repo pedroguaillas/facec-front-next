@@ -9,7 +9,7 @@ export default withAuth({
 
 export const config = {
   matcher: [
-    "/dashboard",
-    "/orders/:path*",
+    // "/dashboard",
+    // "/orders/:path*",
   ], // Protect this route
 };
