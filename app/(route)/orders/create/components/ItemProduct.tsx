@@ -7,7 +7,7 @@ interface Props {
     productOutput: ProductOutput;
     error?: Partial<Record<keyof ProductOutput, string>>;
     updateItem: (index: number, field: fields, value: number | string) => void;
-    selectProduct: (index: number, product: ProductPaginate) => void;
+    selectProduct: (index: number, product: ProductProps) => void;
     removeItem: (index: number) => void;
 }
 
