@@ -1,14 +1,17 @@
 "use client";
 
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { ShopCreateProps, Tax } from "@/types";
+import { EmisionPoint, ShopCreateProps, Tax, TaxInput } from "@/types";
 import { useSession } from "next-auth/react";
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { getCreateShop } from "../services/getCreateShop";
 import { getDate } from "@/helpers/dateHelper";
+import { initialTax } from "@/constants/initialValues";
 
 interface ShopContextType {
     shop: ShopCreateProps;
+    points: EmisionPoint[];
+    taxInputs: TaxInput[];
     taxes: Tax[];
     setShop: Dispatch<SetStateAction<ShopCreateProps>>;
     setTaxes: Dispatch<SetStateAction<Tax[]>>;
@@ -48,10 +51,16 @@ const initialShop: ShopCreateProps = {
     date_retention: getDate(),
 }
 
+const createNewTaxItem = (): Tax => ({
+    ...initialTax,
+});
+
 export const ShopCreateProvider = ({ children }: Props) => {
     const [shop, setShop] = useState<ShopCreateProps>(initialShop);
+    const [points, setPoints] = useState<EmisionPoint[]>([]);
     const [errorShop, setErrorShop] = useState<Record<keyof ShopCreateProps, string>>({} as Record<keyof ShopCreateProps, string>);
-    const [taxes, setTaxes] = useState<Tax[]>([]);
+    const [taxInputs, setTaxInputs] = useState<TaxInput[]>([]);
+    const [taxes, setTaxes] = useState<Tax[]>([createNewTaxItem()]);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth();
 
@@ -60,7 +69,8 @@ export const ShopCreateProvider = ({ children }: Props) => {
 
         try {
             const data = await getCreateShop(axiosAuth);
-            setTaxes(data.taxes);
+            setPoints(data.points);
+            setTaxInputs(data.taxInputs);
         } catch (error) {
             console.log("Error al cargar: ", error);
         }
@@ -72,7 +82,7 @@ export const ShopCreateProvider = ({ children }: Props) => {
 
     return (
         <ShopCreateContext.Provider value={{
-            shop, errorShop, taxes,
+            shop, points, taxInputs, errorShop, taxes,
             setShop, setErrorShop, setTaxes,
         }}>
             {children}

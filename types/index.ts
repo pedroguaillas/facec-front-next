@@ -5,3 +5,4 @@ export * from './paginate';
 export * from './dashboard';
 export * from './shop';
 export * from './supplier';
+export * from './general';

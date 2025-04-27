@@ -3,6 +3,7 @@ import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getInvoices } from "../services/invoicesServices";
 import { Links, Meta } from "@/types";
 import { useSession } from "next-auth/react";
+import { OrderProps } from "@/types/order";
 
 interface InvoicesContextType {
   invoices: OrderProps[];

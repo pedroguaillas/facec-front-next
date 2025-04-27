@@ -1,3 +1,4 @@
+import { AditionalInformation } from "@/types/order";
 import { FaTrash } from "react-icons/fa";
 
 interface Props {

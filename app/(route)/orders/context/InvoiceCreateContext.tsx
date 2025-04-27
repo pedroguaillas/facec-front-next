@@ -6,6 +6,8 @@ import { initialProductItem } from "@/constants/initialValues";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
+import { AditionalInformation, InvoiceErrors, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
+import { EmisionPoint } from "@/types";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;

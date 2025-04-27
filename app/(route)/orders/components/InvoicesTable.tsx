@@ -17,10 +17,10 @@ const InvoicesTable = () => {
         });
     };
 
-    const calPrefix = {
-        '1': 'FAC',
-        '4': 'N/C',
-        '5': 'N/D',
+    const calPrefix: Record<number, string> = {
+        1: 'FAC',
+        4: 'N/C',
+        5: 'N/D',
     }
 
     return (

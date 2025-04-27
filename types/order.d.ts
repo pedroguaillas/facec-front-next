@@ -1,10 +1,12 @@
+import { states } from "./general";
+
 interface OrderProps {
     atts: {
         date: string;
         extra_detail: string | null;
         send_mail: boolean;
         serie: string;
-        state: 'CREADO' | 'FIRMADO' | 'ENVIADO' | 'RECIBIDA' | 'EN_PROCESO' | 'DEVUELTA' | 'AUTORIZADO' | 'NO AUTORIZADO' | 'ANULADO';
+        state: states;
         total: number;
         voucher_type: 1, 4;
         xml: string | null;
@@ -49,16 +51,6 @@ interface OrderCreateProps {
 interface PayMethod {
     code: number;
     description: string;
-}
-
-interface EmisionPoint {
-    id: number;
-    branch_id: number;
-    creditnote: number;
-    invoice: number;
-    store: string;
-    point: string;
-    recognition: string;
 }
 
 interface AditionalInformation {

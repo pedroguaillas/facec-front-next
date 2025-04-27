@@ -2,6 +2,7 @@ import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el p
 import { useInvoices } from "../context/InvoicesContext";
 import { useEffect, useRef } from "react";
 import { AxiosInstance } from "axios";
+import { OrderProps } from "@/types/order";
 
 interface Props {
     isOpen: boolean;

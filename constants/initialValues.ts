@@ -1,4 +1,5 @@
-import { LinkMeta, Links, Meta } from "@/types";
+import { LinkMeta, Links, Meta, Tax } from "@/types";
+import { ProductOutput } from "@/types/order";
 import { nanoid } from "nanoid";
 
 export const initialMeta: Meta = {
@@ -42,3 +43,12 @@ export const initialCustomer: Customer = {
   identication: '',
   name: '',
 };
+
+export const initialTax:Tax={
+  code: '',
+  tax_code: '',
+  base: '',
+  porcentage: '',
+  value: 0,
+  editable_porcentage: false,
+}

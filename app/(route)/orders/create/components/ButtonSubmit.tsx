@@ -6,6 +6,7 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter } from 'next/navigation';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
+import { AditionalInformation, ProductOutput } from '@/types/order';
 
 export const ButtonSubmit = () => {
 

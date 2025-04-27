@@ -2,6 +2,7 @@ import { Separate, Title } from "@/components";
 import { ShopCreateProvider } from "./context/ShopCreateContext";
 import { GeneralInformation } from "./components/GeneralInformation";
 import { RetentionInformation } from "./components/RetentionInformation";
+import { ListTaxes } from "./components/ListTaxes";
 
 const PageCreateShop = () => {
     return (
@@ -25,6 +26,8 @@ const PageCreateShop = () => {
                         <GeneralInformation />
                         <Separate />
                         <RetentionInformation />
+                        <ListTaxes />
+                        <Separate />
                     </div>
                 </div>
 

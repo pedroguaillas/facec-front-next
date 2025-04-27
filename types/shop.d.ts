@@ -49,11 +49,18 @@ interface ShopCreateProps {
     date_retention: string,
 }
 
+interface TaxInput {
+    code: string,
+    conception: string,
+    porcentage: number,
+    type: "iva" | "rente";
+}
+
 interface Tax {
-    code: null | string,
-    tax_code: null | string,
-    base: null | string,
-    porcentage: null | number,
+    code: string,
+    tax_code: string,
+    base: string | number,
+    porcentage: string | number,
     value: number,
     editable_porcentage: boolean,
 }

@@ -4,6 +4,7 @@ import { PrimaryButton, TableResponsive } from '@/components';
 import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 import { ItemAditionalInformation } from './ItemAditionalInformation';
 import { nanoid } from 'nanoid';
+import { AditionalInformation as AditionalInformationType } from '@/types/order';
 
 export const AditionalInformation = () => {
 
@@ -11,7 +12,7 @@ export const AditionalInformation = () => {
   const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
 
   const addItem = () => {
-    const newAnditionalInformation: AditionalInformation = {
+    const newAnditionalInformation: AditionalInformationType = {
       id,
       name: '',
       description: '',
