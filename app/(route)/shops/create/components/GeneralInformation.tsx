@@ -2,6 +2,7 @@
 
 import { SelectOption, SelectProvider, TextInput } from "@/components"
 import { useCreateShop } from "../context/ShopCreateContext"
+import { SupplierProps } from "@/types";
 
 export const GeneralInformation = () => {
 

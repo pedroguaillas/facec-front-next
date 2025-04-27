@@ -1,4 +1,4 @@
-interface SupplierProps {
+export interface SupplierProps {
     id: number,
     atts: {
         identication: string;

@@ -1,7 +1,7 @@
 import { Modal, TableResponsive, Paginate } from "@/components";
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useEffect, useState } from "react";
-import { GeneralPaginate, Links, Meta } from "@/types";
+import { GeneralPaginate, Links, Meta, SupplierProps } from "@/types";
 import { initialLinks, initialMeta } from "@/constants/initialValues";
 
 interface Props {

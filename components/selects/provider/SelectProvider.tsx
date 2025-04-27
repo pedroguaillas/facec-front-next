@@ -2,7 +2,7 @@
 
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import React, { useEffect, useState } from 'react';
-import { GeneralPaginate } from '@/types';
+import { GeneralPaginate, SupplierProps } from '@/types';
 import { FaSearch } from 'react-icons/fa';
 import ModalSelectProvider from './ModalSelectProvider';
 

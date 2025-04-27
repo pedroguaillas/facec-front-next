@@ -22,12 +22,8 @@ export const GeneralInformation = () => {
     // Solo le llamo a este Hooks para que se ejecute el useEffect que tiene dentro
     useSelectPoint();
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         setInvoice((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
-    }
-
-    const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setInvoice((prevState) => ({ ...prevState, [event.target.name]: Number(event.target.value) }))
     }
 
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -67,7 +63,7 @@ export const GeneralInformation = () => {
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className="flex flex-col lg:w-2/3">
-                        <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleSelect} />
+                        <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleChange} />
                     </div>
                     {/* Solo en el caso de facturas */}
                     {invoice.voucher_type === 1 && (

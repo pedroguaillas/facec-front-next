@@ -1,6 +1,7 @@
 import { Separate, Title } from "@/components";
 import { ShopCreateProvider } from "./context/ShopCreateContext";
 import { GeneralInformation } from "./components/GeneralInformation";
+import { RetentionInformation } from "./components/RetentionInformation";
 
 const PageCreateShop = () => {
     return (
@@ -22,6 +23,8 @@ const PageCreateShop = () => {
                         </h2>
                         <Separate />
                         <GeneralInformation />
+                        <Separate />
+                        <RetentionInformation />
                     </div>
                 </div>
 
