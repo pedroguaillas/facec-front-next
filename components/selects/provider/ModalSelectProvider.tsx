@@ -6,24 +6,24 @@ import { initialLinks, initialMeta } from "@/constants/initialValues";
 
 interface Props {
     show: boolean;
-    handleSelect: (product: ProductProps) => void;
+    handleSelect: (custom: SupplierProps) => void;
     onClose: () => void; // Nuevo
 }
 
-const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
+export const ModalSelectProvider = ({ show, handleSelect, onClose }: Props) => {
 
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta>({ ...initialMeta });
     const [links, setLinks] = useState<Links>({ ...initialLinks });
-    const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
+    const [suggestions, setSuggestions] = useState<SupplierProps[]>([]);
     const axiosAuth = useAxiosAuth();
 
-    const fetchProduct = async (page: string = 'page=1') => {
+    const fetchProvider = async (page: string = 'page=1') => {
         if (!page) return;
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
+            const res = await axiosAuth.post<GeneralPaginate<CustomerProps>>(`providerlist?page=${pageNumber}`, {
                 search,
                 paginate: 10,
             });
@@ -36,11 +36,11 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
         }
     };
 
-    const ProductsPagination = () => {
+    const CustomPagination = () => {
 
         const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
             e.preventDefault();
-            fetchProduct(pageUrl);
+            fetchProvider(pageUrl);
         };
 
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
@@ -48,26 +48,26 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
-            fetchProduct();
+            fetchProvider();
         }, 300); // 300ms delay
 
         return () => clearTimeout(delayDebounce);
     }, [search]);
 
     useEffect(() => {
-        if (show) fetchProduct();
+        if (show) fetchProvider();
     }, [show]);
 
     return (
         <Modal
             isOpen={show}
             onClose={onClose}
-            title="Seleccionar producto"
+            title="Seleccionar proveedor"
             modalSize="lg"
         >
             <input
                 type="search"
-                placeholder="Buscar producto..."
+                placeholder="Buscar proveedor ..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full mb-2 border border-gray-300 dark:border-slate-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -77,31 +77,31 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
                 <thead>
                     <tr>
                         <th className="hidden sm:block">#</th>
-                        <th>Código</th>
-                        <th className="text-left">Producto/Servicio</th>
+                        <th>Identificación</th>
+                        <th className="text-left">Razon social</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {suggestions.map((product, indexItem) => (
+                    {suggestions.map((provider, indexItem) => (
                         <tr
-                            key={product.id}
-                            onClick={() => handleSelect(product)}
+                            key={provider.id}
+                            onClick={() => handleSelect(provider)}
                             className={`hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer
                                 ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}`}
                         >
                             <td className="hidden sm:block">{indexItem + 1}</td>
-                            <td>{product.atts.code}</td>
-                            <td className="text-left">{product.atts.name}</td>
+                            <td>{provider.atts.identication}</td>
+                            <td className="text-left">{provider.atts.name}</td>
                         </tr>
                     ))}
                 </tbody>
             </TableResponsive>
 
             <div className="flex justify-center">
-                <ProductsPagination />
+                <CustomPagination />
             </div>
         </Modal>
     );
 }
 
-export default ModalSelectProduct;
+export default ModalSelectProvider;

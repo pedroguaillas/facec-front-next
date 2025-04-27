@@ -104,7 +104,7 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
       setPayMethods(methodOfPayments);
       setTourism(tourism);
     } catch (error) {
-      console.error("Error al obtener facturas:", error);
+      console.error("Error al cargar: ", error);
     }
   };
 

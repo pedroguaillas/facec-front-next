@@ -17,3 +17,4 @@ export * from './modal/Modal';
 // Selects
 export * from './selects/product/SelectProduct';
 export * from './selects/customer/SelectCustomer';
+export * from './selects/provider/SelectProvider';

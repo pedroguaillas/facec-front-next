@@ -34,7 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-100 flex items-center justify-center p-2 sm:p-0 bg-black/50"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
@@ -42,7 +42,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         // TODO: add recip class to Dialog
-        className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full ${sizeClasses[modalSize]} overflow-auto`}
+        className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 w-full ${sizeClasses[modalSize]} overflow-auto`}
       >
         <div className="relative">
           {title && (

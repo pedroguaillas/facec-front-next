@@ -37,16 +37,16 @@ const InvoicesTable = () => {
             </thead>
             <tbody>
                 {invoices.map((order, index) => (
-                    <tr key={`order${index}`} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
-                        <td>{order.atts?.date || "N/A"}</td>
-                        <td>{`${calPrefix[order.atts.voucher_type]} ${order.atts?.serie}`}</td>
+                    <tr key={order.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                        <td>{order.atts.date}</td>
+                        <td>{`${calPrefix[order.atts.voucher_type]} ${order.atts.serie}`}</td>
                         <td className="text-left uppercase">{order.customer?.name || "Desconocido"}</td>
                         <td>
                             <span className={order.atts?.state === 'AUTORIZADO' ? 'bg-green-700 px-2 py-1 text-gray-100 rounded-2xl' : ''}>
-                                {order.atts?.state || "N/A"}
+                                {order.atts?.state || "CREADO"}
                             </span>
                         </td>
-                        <td className="text-right">${order.atts?.total || "0.00"}</td>
+                        <td className="text-right">${order.atts.total}</td>
                         <td className="w-4">
                             <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
                         </td>
