@@ -60,8 +60,8 @@ interface Tax {
     id: string;
     code: '' | number,
     tax_code: string,
-    base: string | number,
-    porcentage: string | number | null,
+    base: '' | number,
+    porcentage: '' | number | null,
     value: number,
     editable_porcentage: boolean,
 }

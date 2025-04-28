@@ -3,6 +3,7 @@ import { ShopCreateProvider } from "./context/ShopCreateContext";
 import { GeneralInformation } from "./components/GeneralInformation";
 import { RetentionInformation } from "./components/RetentionInformation";
 import { ListTaxes } from "./components/ListTaxes";
+import { Totals } from "./components/Totals";
 
 const PageCreateShop = () => {
     return (
@@ -28,6 +29,7 @@ const PageCreateShop = () => {
                         <RetentionInformation />
                         <ListTaxes />
                         <Separate />
+                        <Totals />
                     </div>
                 </div>
 

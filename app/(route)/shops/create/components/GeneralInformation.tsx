@@ -20,7 +20,7 @@ export const GeneralInformation = () => {
     }
 
     const handleSelectProvider = (provider: SupplierProps) => {
-        setShop((prevState) => ({ ...prevState, customer_id: provider.id }))
+        setShop((prevState) => ({ ...prevState, provider_id: provider.id }))
     }
 
     return (
