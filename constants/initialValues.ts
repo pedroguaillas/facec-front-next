@@ -44,11 +44,12 @@ export const initialCustomer: Customer = {
   name: '',
 };
 
-export const initialTax:Tax={
+export const initialTax: Tax = {
+  id,
   code: '',
   tax_code: '',
   base: '',
-  porcentage: '',
+  porcentage: 0,
   value: 0,
   editable_porcentage: false,
 }

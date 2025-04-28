@@ -57,6 +57,7 @@ interface TaxInput {
 }
 
 interface Tax {
+    id: string;
     code: string,
     tax_code: string,
     base: string | number,

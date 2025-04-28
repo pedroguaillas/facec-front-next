@@ -76,6 +76,7 @@ export const SelectProduct = ({ label, error, index, selectProduct }: Props) => 
                     <input
                         onChange={handleChange}
                         value={search}
+                        placeholder='...'
                         className={`w-full border border-primary hover:border-primaryhover rounded-l px-2
                             ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                         type='text'

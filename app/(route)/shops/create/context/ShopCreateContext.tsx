@@ -70,7 +70,7 @@ export const ShopCreateProvider = ({ children }: Props) => {
         try {
             const data = await getCreateShop(axiosAuth);
             setPoints(data.points);
-            setTaxInputs(data.taxInputs);
+            setTaxInputs(data.taxes);
         } catch (error) {
             console.log("Error al cargar: ", error);
         }
