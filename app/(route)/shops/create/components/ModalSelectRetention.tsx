@@ -4,19 +4,26 @@ import { Modal } from '@/components/modal/Modal'
 import { TableResponsive } from '@/components';
 import React, { useState } from 'react'
 import { useCreateShop } from '../context/ShopCreateContext';
+import { TaxInput } from '@/types';
 
 interface Props {
   show: boolean;
-  // handleSelect: (retention: TaxInput) => void;
-  onClose: () => void; // Nuevo
+  code: number;
+  onClose: () => void;
+  selectRetetion: (tax: TaxInput) => void;
 }
 
-const ModalSelectRetention = ({ show, onClose }: Props) => {
+const ModalSelectRetention = ({ show, code, onClose, selectRetetion }: Props) => {
 
   const [search, setSearch] = useState('');
   const { taxInputs } = useCreateShop();
 
-  // console.log(taxInputs);
+  const filterTaxInputs = taxInputs.filter(retention => {
+    const matchesType = code === 2 ? retention.type === 'iva' : retention.type === 'renta';
+    const matchesSearch = retention.code.includes(search) || retention.conception.toLowerCase().includes(search.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+
 
   return (
     <Modal
@@ -33,7 +40,8 @@ const ModalSelectRetention = ({ show, onClose }: Props) => {
         className="w-full mb-2 border border-gray-300 dark:border-slate-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
-      <div className='max-h-[calc(100vh-20em)] overflow-y-auto'>
+      {/* Scroll */}
+      <div className='max-h-[calc(100vh-20em)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary'>
 
         <TableResponsive>
           <thead>
@@ -44,15 +52,16 @@ const ModalSelectRetention = ({ show, onClose }: Props) => {
             </tr>
           </thead>
           <tbody>
-            {taxInputs.map((tax, indexItem) => (
+            {filterTaxInputs.map((taxInput, indexItem) => (
               <tr
-                key={tax.code}
+                key={taxInput.code}
+                onClick={() => selectRetetion(taxInput)}
                 className={`hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer
-                                    ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}`}
+                                    ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900' : ''}`}
               >
                 <td className="hidden sm:block">{indexItem + 1}</td>
-                <td>{tax.code}</td>
-                <td className="text-left">{tax.conception}</td>
+                <td>{taxInput.code}</td>
+                <td className="text-left">{taxInput.conception}</td>
               </tr>
             ))}
           </tbody>

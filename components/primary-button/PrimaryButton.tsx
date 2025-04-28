@@ -20,14 +20,14 @@ export const PrimaryButton = ({
     if (type === 'link')
         return (
             <Link
-                className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 ${color[action]}`}
+                className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
                 href={url}
             >{label}</Link>
         )
 
     return (
         <button
-            className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 ${color[action]}`}
+            className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
             onClick={onClick}
             type={type}
         >{label}</button>

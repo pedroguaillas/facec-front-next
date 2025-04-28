@@ -52,16 +52,16 @@ interface ShopCreateProps {
 interface TaxInput {
     code: string,
     conception: string,
-    porcentage: number,
-    type: "iva" | "rente";
+    porcentage: number | null,
+    type: "iva" | "renta";
 }
 
 interface Tax {
     id: string;
-    code: string,
+    code: '' | number,
     tax_code: string,
     base: string | number,
-    porcentage: string | number,
+    porcentage: string | number | null,
     value: number,
     editable_porcentage: boolean,
 }

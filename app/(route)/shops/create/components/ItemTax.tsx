@@ -10,7 +10,7 @@ interface Props {
 
 export const ItemTax = ({ index, tax }: Props) => {
 
-    const { updateItem } = useTaxes();
+    const { updateItem, deleteItem } = useTaxes();
 
     return (
         <tr className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-1 [&>td]:dark:border-gray-500">
@@ -22,11 +22,11 @@ export const ItemTax = ({ index, tax }: Props) => {
                 </select>
             </td>
             <td className="p-1">
-                <SelectRetention />
+                <SelectRetention index={index} tax={tax} />
             </td>
             <td className="p-1 text-right">
                 {tax.editable_porcentage ? (
-                    <input type="number" className="w-fit border border-slate-300 rounded p-1" value={tax.porcentage} onChange={(e) => updateItem(index, 'porcentage', e.target.value)} />
+                    <input type="number" className="w-fit border border-slate-300 rounded p-1" value={tax.porcentage ?? ''} onChange={(e) => updateItem(index, 'porcentage', e.target.value)} />
                 ) : (`${tax.porcentage}%`)}
             </td>
             <td className="p-1">
@@ -34,7 +34,9 @@ export const ItemTax = ({ index, tax }: Props) => {
             </td>
             <td className="p-1 text-right">{tax.value.toFixed(2)}</td>
             <td className="w-1">
-                <button className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600">
+                <button
+                    onClick={() => deleteItem(index)}
+                    className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600">
                     <FaTrash />
                 </button>
             </td>
