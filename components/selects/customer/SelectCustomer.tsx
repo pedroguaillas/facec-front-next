@@ -5,6 +5,7 @@ import { GeneralPaginate } from '@/types';
 import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import ModalSelectCustomer from './ModalSelectCustomer';
+import { ModalCreateCustomer } from './ModalCreateCustomer';
 
 interface Props {
     label?: string;
@@ -80,10 +81,11 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
                             ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                         type='text'
                     />
-                    <span onClick={handleModal} className='rounded-r p-2 bg-primary text-white cursor-pointer'>
+                    <span onClick={handleModal} className='p-2 bg-primary text-white cursor-pointer'>
                         <FaSearch />
                     </span>
                     <ModalSelectCustomer show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
+                    <ModalCreateCustomer />
                 </div>
 
                 {error && <p className="text-sm text-red-500">{error}</p>}

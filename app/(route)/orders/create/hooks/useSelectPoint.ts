@@ -24,14 +24,17 @@ export const useSelectPoint = () => {
     }, [points]);
 
     useEffect(() => {
+        // se ejecuta en las acciones de selectPoint y handleSelectPointHook
         handleSelectPointHook();
     }, [selectPoint, handleSelectPointHook]);
 
     useEffect(() => {
+        // Se ejecuenta solo cuando cambia el tipo de comprobante
         handleSelectPointHook();
     }, [voucher_type]);
 
     useEffect(() => {
+        // Se ejecuta solo al inicio cuando llega los datos
         handleChangePoints();
     }, [points]);
 
