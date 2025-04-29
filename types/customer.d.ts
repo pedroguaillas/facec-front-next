@@ -17,4 +17,5 @@ interface Customer {
     address?: string;
     phone?: string;
     email?: string;
+    branch_id?: number; // Utilizo para recuperar un custom del SRI  o base de datos
 }
