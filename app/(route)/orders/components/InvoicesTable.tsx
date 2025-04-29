@@ -2,6 +2,7 @@ import { TableResponsive } from "@/components/table-responsive/TableResponsive";
 import { useInvoices } from "../context/InvoicesContext";
 import { useState } from "react";
 import { Dropdown } from "./Dropdown";
+import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
@@ -32,6 +33,9 @@ const InvoicesTable = () => {
                     <th className="text-left">CLIENTE</th>
                     <th>ESTADO</th>
                     <th className="text-right">TOTAL</th>
+                    <th className="flex justify-center">
+                        <FaMailBulk />
+                    </th>
                     <th></th>
                 </tr>
             </thead>
@@ -47,6 +51,13 @@ const InvoicesTable = () => {
                             </span>
                         </td>
                         <td className="text-right">${order.atts.total}</td>
+                        <td>
+                            {Number(order.atts.send_mail) === 1 && (
+                                <div className="flex justify-center text-green-600/90">
+                                    <FaCheckCircle />
+                                </div>
+                            )}
+                        </td>
                         <td className="w-4">
                             <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
                         </td>

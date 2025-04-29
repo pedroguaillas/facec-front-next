@@ -4,6 +4,7 @@ import { TableResponsive } from "@/components"
 import { useShops } from "../context/ShopsContext"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
+import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
 
 export const ShopsTable = () => {
 
@@ -38,7 +39,9 @@ export const ShopsTable = () => {
                     <th className="text-right">Total</th>
                     <th className="text-right">Ret</th>
                     <th className="text-right">Pagar</th>
-                    <th></th>
+                    <th className="flex justify-center">
+                        <FaMailBulk />
+                    </th>
                     <th></th>
                 </tr>
             </thead>
@@ -67,7 +70,13 @@ export const ShopsTable = () => {
                                 )
                             ).toFixed(2)}
                         </td>
-                        <td></td>
+                        <td>
+                            {Number(shop.atts.send_mail_retention) === 1 && (
+                                <div className="flex justify-center text-green-600/90">
+                                    <FaCheckCircle />
+                                </div>
+                            )}
+                        </td>
                         <td className="w-4">
                             <Dropdown index={index} shop={shop} isOpen={dropdown[index]} setIsOpen={handleDrops} />
                         </td>
