@@ -71,6 +71,14 @@ export const useProductOutput = () => {
         //   TODO Agregar Si es turismo
         prods[index].iva = product.iva.code;
         prods[index].percentage = product.iva.percentage;
+        // Si está correcto, limpiar error de ese campo
+        setErrorProductOutputs(prev => ({
+            ...prev,
+            [prods[index].id]: {
+                ...prev[prods[index].id],
+                product_id: ""
+            }
+        }));
 
         recalculate(prods);
     }

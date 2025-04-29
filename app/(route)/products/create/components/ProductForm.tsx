@@ -6,16 +6,20 @@ import React, { useState } from 'react';
 
 export const ProductForm = () => {
 
-    const { product, errorProduct, setProduct, ivaTaxes, iceCataloges } = useProductCreateContext();
+    const { product, errorProduct, ivaTaxes, iceCataloges, setProduct, setErrorProduct } = useProductCreateContext();
     const [breakdown, setBreakdown] = useState<boolean>(false);
     const [total, setTotal] = useState('');
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setProduct((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
+        const { name, value } = event.target;
+        setProduct((prevState) => ({ ...prevState, [name]: value }))
+        setErrorProduct(prev => ({ ...prev, [name]: '' }))
     }
 
     const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setProduct((prevState) => ({ ...prevState, [event.target.name]: Number(event.target.value) }))
+        const { name, value } = event.target;
+        setProduct((prevState) => ({ ...prevState, [name]: Number(value) }))
+        setErrorProduct(prev => ({ ...prev, [name]: '' }))
     }
 
     const onChangeCheckbox = () => {

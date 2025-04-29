@@ -31,11 +31,13 @@ export const GeneralInformation = () => {
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedPoint = points.find(point => point.id === Number(event.target.value));
         setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
+        setFormErrors(prev => ({ ...prev, serie: '' }));
     }
-
+    
     const handleSelectCustomer = (customer: CustomerProps) => {
         setInvoice((prevState) => ({ ...prevState, customer_id: customer.id }))
         setSelectCustom(customer);
+        setFormErrors(prev => ({ ...prev, customer_id: '' }));
     }
 
     return (

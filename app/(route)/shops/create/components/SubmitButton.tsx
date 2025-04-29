@@ -22,7 +22,7 @@ export const SubmitButton = () => {
             taxes,
             state_retencion: 'CREADO',
             app_retention: true,
-            send: false,
+            send: true,
             // point_id: selectPoint?.id,
         };
 

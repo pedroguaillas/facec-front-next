@@ -22,7 +22,7 @@ export const ButtonSubmit = () => {
         const form = {
             ...invoice,
             products: productOutputs,
-            send: false,
+            send: true,
             aditionals: aditionalInformation.map(aditional => ({
                 id: aditional.id,
                 name: aditional.name.trim(),
