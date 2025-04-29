@@ -7,7 +7,7 @@ import { EmisionPoint } from '@/types';
 
 export const RetentionInformation = () => {
 
-    const { shop, points, errorShop, setShop } = useCreateShop();
+    const { shop, points, errorShop, setShop, setErrorShop } = useCreateShop();
     const [selectPoint, setSelectPoint] = useState<EmisionPoint | undefined>(undefined);
 
     const optionPoints = points.map((point) => ({
@@ -16,14 +16,20 @@ export const RetentionInformation = () => {
     }));
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setShop((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
+        const { name, value } = event.target;
+        setShop((prevState) => ({ ...prevState, [name]: value }))
+        setErrorShop((prevState) => ({ ...prevState, [name]: '' }))
     }
 
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedPoint = points.find(point => point.id === Number(event.target.value));
         if (selectedPoint) {
-            setSelectPoint(selectPoint)
-            setShop((prevState) => ({ ...prevState, serie_retencion: `${selectedPoint.store}-${selectedPoint.point}-${(selectedPoint.retention + '').padStart(9, '0')}` }))
+            setSelectPoint(selectedPoint)
+            setShop((prevState) => ({
+                ...prevState,
+                serie_retencion: `${selectedPoint.store}-${selectedPoint.point}-${(selectedPoint.retention + '').padStart(9, '0')}`
+            }))
+            setErrorShop((prevState) => ({ ...prevState, serie_retencion: '' }))
         }
     }
 

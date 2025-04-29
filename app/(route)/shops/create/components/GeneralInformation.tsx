@@ -3,10 +3,11 @@
 import { SelectOption, SelectProvider, TextInput } from "@/components"
 import { useCreateShop } from "../context/ShopCreateContext"
 import { SupplierProps } from "@/types";
+import { ImportXml } from "./ImportXml";
 
 export const GeneralInformation = () => {
 
-    const { shop, errorShop, setShop } = useCreateShop();
+    const { shop, errorShop, selectProvider, setShop, setErrorShop } = useCreateShop();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -16,11 +17,14 @@ export const GeneralInformation = () => {
     ];
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-        setShop((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
+        const { name, value } = event.target;
+        setShop((prevState) => ({ ...prevState, [name]: value }))
+        setErrorShop((prevState) => ({ ...prevState, [name]: '' }))
     }
 
     const handleSelectProvider = (provider: SupplierProps) => {
         setShop((prevState) => ({ ...prevState, provider_id: provider.id }))
+        setErrorShop((prevState) => ({ ...prevState, provider_id: '' }))
     }
 
     return (
@@ -40,7 +44,7 @@ export const GeneralInformation = () => {
                     </div>
                     <div className='flex flex-col lg:w-2/3'>
                         <span>Proveedor</span>
-                        <SelectProvider selectProvider={handleSelectProvider} error={errorShop.provider_id} />
+                        <SelectProvider selectProvider={handleSelectProvider} label={selectProvider?.atts.name} error={errorShop.provider_id} />
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='Autorización' value={shop.authorization} error={errorShop.authorization} onChange={handleChange} name='authorization' maxLength={49} />
@@ -49,11 +53,11 @@ export const GeneralInformation = () => {
 
                 {/* Col 2 */}
                 <div className='w-full'>
-                    <div className='lg:w-2/3'>
+                    <div className='flex gap-2 items-center'>
                         <SelectOption label="Tipo de comprobante" options={invoiceTypes} select={true} selectedValue={shop.voucher_type} error={errorShop.voucher_type} handleSelect={handleChange} name='voucher_type' />
+                        <ImportXml />
                     </div>
                 </div>
-                {/* Add button import XML */}
             </div>
         </div>
     )

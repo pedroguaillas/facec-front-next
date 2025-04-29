@@ -9,7 +9,7 @@ export const invoiceSchema = z
     serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
       message: 'Seleccione el punto de emisión',
     }),
-    voucher_type: z.number(), // 1 = Factura, 4 = Nota de crédito
+    voucher_type: z.coerce.number(), // 1 = Factura, 4 = Nota de crédito
     total: z.number(),
     discount: z.union([
       z.string().refine(val => val.trim() !== "", { message: "Descuento requerida" }),

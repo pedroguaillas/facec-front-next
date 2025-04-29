@@ -68,6 +68,11 @@ export const SelectProvider = ({ label, error, selectProvider }: Props) => {
         }
     }, [search, skipFetch]);
 
+    useEffect(() => {
+        setSearch(label ?? '');
+        setSkipFetch(true);
+    }, [label]);
+
     return (
         <div className='flex flex-col w-full'>
             <div className='flex w-full'>

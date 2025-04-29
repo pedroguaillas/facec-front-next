@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 export const useTaxes = () => {
 
-    const { taxes, setTaxes } = useCreateShop();
+    const { taxes, setTaxes, setErrorTaxes } = useCreateShop();
 
     // Agregar producto a la lista
     const addItem = () => {
@@ -37,6 +37,16 @@ export const useTaxes = () => {
         }
 
         setTaxes(newTaxes); // Seteamos el nuevo array
+
+        // 💥 Aquí quitamos el error específico
+        const id = newTaxes[index].id;
+        setErrorTaxes(prev => ({
+            ...prev,
+            [id]: {
+                ...prev[id],
+                [field]: '', // ✅ Limpiar solo el campo corregido
+            }
+        }));
     };
 
 
@@ -49,6 +59,16 @@ export const useTaxes = () => {
             editable_porcentage: retention.porcentage === null,
         };
         setTaxes(newTaxes);
+
+        // 💥 Aquí quitamos el error específico
+        const id = newTaxes[index].id;
+        setErrorTaxes(prev => ({
+            ...prev,
+            [id]: {
+                ...prev[id],
+                tax_code: '', // ✅ Limpiar solo el campo corregido
+            }
+        }));
     };
 
     const deleteItem = (index: number) => {

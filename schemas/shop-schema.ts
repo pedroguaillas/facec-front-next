@@ -14,12 +14,12 @@ export const shopSchema = z
       message: 'Seleccione un punto de emisión',
     }),
     date_retention: z.string().min(1, { message: 'Escriba una fecha correcta' }),
+    no_iva: z.number(),
+    base0: z.number(),
+    base5: z.number(),
+    base12: z.number(),
+    base15: z.number(),
     total: z.number(),
-    discount: z.union([
-      z.string().refine(val => val.trim() !== "", { message: "Descuento requerida" }),
-      z.number()
-    ])
-      .transform(val => Number(val))
-      .refine(val => val >= 0, { message: "Descuento debe ser mayor o igual a 0" }),
+    discount: z.number(),
     taxes: z.array(taxSchema).min(1, { message: 'Debe agregar al menos una retención' }),
   });

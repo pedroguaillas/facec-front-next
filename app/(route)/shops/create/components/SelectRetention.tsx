@@ -9,14 +9,14 @@ import { useTaxes } from '../hooks/useTaxes';
 interface Props {
     index: number;
     tax: Tax;
+    error?: string;
 }
 
-export const SelectRetention = ({ index, tax }: Props) => {
+export const SelectRetention = ({ index, tax, error }: Props) => {
 
     const [label, setlabel] = useState('');
     const [modal, setModal] = useState<boolean>(false);
     const { selectRetention } = useTaxes();
-    const error = true;
 
     const toggle = () => {
         setModal(!modal);

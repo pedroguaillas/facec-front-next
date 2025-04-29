@@ -8,9 +8,9 @@ export const useSelectPoint = () => {
 
     const handleSelectPointHook = useCallback(() => {
 
-        if (selectPoint && invoice?.voucher_type) {
+        if (selectPoint && invoice.voucher_type) {
 
-            const nextNumber = invoice.voucher_type === 1 ? selectPoint.invoice : selectPoint.creditnote;
+            const nextNumber = Number(invoice.voucher_type) === 1 ? selectPoint.invoice : selectPoint.creditnote;
             const serie = `${selectPoint.store}-${selectPoint.point}-${String(nextNumber).padStart(9, '0')}`;
 
             setInvoice((prev) => ({ ...prev, serie }));

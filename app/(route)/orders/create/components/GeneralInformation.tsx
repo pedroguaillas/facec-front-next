@@ -7,7 +7,7 @@ import React from 'react';
 
 export const GeneralInformation = () => {
 
-    const { invoice, formErrors, selectPoint, setSelectCustom, points, setInvoice, setSelectPoint } = useCreateInvoice();
+    const { invoice, formErrors, points, selectPoint, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useCreateInvoice();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -23,7 +23,9 @@ export const GeneralInformation = () => {
     useSelectPoint();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-        setInvoice((prevState) => ({ ...prevState, [event.target.name]: event.target.value }))
+        const { name, value } = event.target;
+        setInvoice((prevState) => ({ ...prevState, [name]: value }))
+        setFormErrors(prev => ({ ...prev, name: '' }));
     }
 
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -66,13 +68,13 @@ export const GeneralInformation = () => {
                         <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleChange} />
                     </div>
                     {/* Solo en el caso de facturas */}
-                    {invoice.voucher_type === 1 && (
+                    {Number(invoice.voucher_type) === 1 && (
                         <div className='lg:w-2/3'>
                             <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} maxLength={17} name='guia' />
                         </div>
                     )}
                     {/* En el caso de Notas de Crédito */}
-                    {invoice.voucher_type === 4 && (
+                    {Number(invoice.voucher_type) === 4 && (
                         <>
                             <div className='lg:w-2/3'>
                                 <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' />

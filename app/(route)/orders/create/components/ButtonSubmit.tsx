@@ -31,7 +31,7 @@ export const ButtonSubmit = () => {
             point_id: selectPoint?.id,
         };
 
-        if (form.voucher_type === 4 && form.rason) {
+        if (Number(form.voucher_type) === 4 && form.rason) {
             form.rason = form.rason.trim();
         }
 

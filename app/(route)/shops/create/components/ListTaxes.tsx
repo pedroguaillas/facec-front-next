@@ -7,7 +7,7 @@ import { useTaxes } from '../hooks/useTaxes';
 
 export const ListTaxes = () => {
 
-    const { taxes } = useCreateShop();
+    const { taxes, errorTaxes } = useCreateShop();
     const { addItem } = useTaxes();
 
     return (
@@ -25,7 +25,12 @@ export const ListTaxes = () => {
                 </thead>
                 <tbody>
                     {taxes.map((tax, index) => (
-                        <ItemTax key={tax.id} index={index} tax={tax} />
+                        <ItemTax
+                            key={tax.id}
+                            index={index}
+                            tax={tax}
+                            error={errorTaxes[tax.id]}
+                        />
                     ))}
                 </tbody>
                 <tfoot>

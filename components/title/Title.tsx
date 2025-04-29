@@ -9,7 +9,7 @@ interface Props {
 
 export const Title = ({ title, subTitle, actions }: Props) => {
     return (
-        <div className="p-4 md:p-8 flex justify-between items-center bg-gray-100 dark:bg-gray-700">
+        <div className="p-4 md:p-8 flex justify-between items-center bg-gray-100 dark:bg-gray-700/70">
             <div>
                 <h2 className="text-xl font-semibold">{title}</h2>
                 <h3>{subTitle}</h3>

@@ -40,7 +40,7 @@ interface OrderCreateProps {
     customer_id: number,
     received: number, //Ver
     doc_realeted: number, //Ver
-    voucher_type: number,
+    voucher_type: 1 | 4,
     pay_method: number,
     guia?: string;
     date_order?: string;
@@ -79,15 +79,3 @@ interface ProductInput {
 }
 
 type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';
-
-type InvoiceErrors = {
-    serie?: string;
-    date?: string;
-    customer_id?: string;
-    pay_method?: string;
-    guia?: string;
-    date_order?: string;
-    serie_order?: string;
-    rason?: string;
-    discount?: string;
-};

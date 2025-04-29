@@ -24,6 +24,7 @@ export const ShopsTable = () => {
         1: 'FAC',
         2: 'N/V',
         3: 'L/C',
+        5: 'N/D',
     }
 
     return (

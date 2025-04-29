@@ -6,7 +6,7 @@ import { initialProductItem } from "@/constants/initialValues";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { AditionalInformation, InvoiceErrors, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
+import { AditionalInformation, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
 import { EmisionPoint } from "@/types";
 
 interface InvoicesContextType {
@@ -21,7 +21,7 @@ interface InvoicesContextType {
   errorProductOutputs: Record<string, Partial<Record<keyof ProductOutput, string>>>;
   aditionalInformation: AditionalInformation[];
   errorAditionalInformation: Record<string, Partial<Record<keyof AditionalInformation, string>>>;
-  formErrors: InvoiceErrors;
+  formErrors: Partial<Record<keyof OrderCreateProps, string>>;
   isTaxBreakdown: boolean;
   isActiveIce: boolean;
   setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
@@ -32,7 +32,7 @@ interface InvoicesContextType {
   setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
   setErrorAditionalInformation: Dispatch<SetStateAction<Record<string, Partial<Record<keyof AditionalInformation, string>>>>>;
-  setFormErrors: Dispatch<SetStateAction<InvoiceErrors>>;
+  setFormErrors: Dispatch<SetStateAction<Partial<Record<keyof OrderCreateProps, string>>>>;
   setIsTaxBreakdown: Dispatch<SetStateAction<boolean>>;
   setIsActiveIce: Dispatch<SetStateAction<boolean>>;
 }
@@ -88,7 +88,7 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const [points, setPoints] = useState<EmisionPoint[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
   const [errorAditionalInformation, setErrorAditionalInformation] = useState<Record<string, Partial<Record<keyof AditionalInformation, string>>>>({});
-  const [formErrors, setFormErrors] = useState<InvoiceErrors>({});
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof OrderCreateProps, string>>>({});
   const [tourism, setTourism] = useState(false);
   const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
   const [isActiveIce, setIsActiveIce] = useState(false);
