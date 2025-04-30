@@ -34,7 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center p-2 sm:p-0 bg-black/50"
+      className="fixed inset-0 z-100 flex items-center justify-center p-2 bg-black/50"
       onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"

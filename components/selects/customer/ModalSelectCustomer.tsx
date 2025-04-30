@@ -40,6 +40,11 @@ export const ModalSelectCustomer = ({ handleSelect }: Props) => {
         }
     };
 
+    const handleSelectLocal = (custom: CustomerProps) => {
+        handleSelect(custom);
+        toggle();
+    }
+
     const CustomPagination = () => {
 
         const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
@@ -97,7 +102,7 @@ export const ModalSelectCustomer = ({ handleSelect }: Props) => {
                         {suggestions.map((custom, indexItem) => (
                             <tr
                                 key={custom.id}
-                                onClick={() => handleSelect(custom)}
+                                onClick={() => handleSelectLocal(custom)}
                                 className={`hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer
                                 ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}`}
                             >

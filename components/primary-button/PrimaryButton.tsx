@@ -1,6 +1,6 @@
 import { ActionsTitle } from "@/types";
 import Link from "next/link";
-import { FaPlusCircle, FaSave, FaSpinner, FaUpload } from "react-icons/fa";
+import { FaPencilAlt, FaPlus, FaPlusCircle, FaSave, FaSpinner, FaUpload } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
@@ -13,8 +13,8 @@ export const PrimaryButton = ({
 }: ActionsTitle) => {
 
     const color: Record<ActionsTitle['action'], string> = {
-        'add': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'create': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
+        'add': 'bg-primary dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
+        'store': 'bg-primary dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'edit': 'bg-lime-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'import': 'bg-blue-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'export': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
@@ -24,9 +24,14 @@ export const PrimaryButton = ({
     if (type === 'link')
         return (
             <Link
-                className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
+                className={`w-full rounded p-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
                 href={url}
-            >{label}</Link>
+            >
+                {!isLoading && action === 'add' && (
+                    <FaPlus />
+                )}
+                {label}
+            </Link>
         )
 
     return (
@@ -34,6 +39,7 @@ export const PrimaryButton = ({
             className={`w-full rounded px-2 py-1 inline-flex justify-center items-center gap-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
             onClick={onClick}
             type={type}
+            disabled={isLoading}
         >
             {isLoading && (
                 <FaSpinner className="animate-spin" />
@@ -41,8 +47,11 @@ export const PrimaryButton = ({
             {!isLoading && action === 'add' && (
                 <FaPlusCircle />
             )}
-            {!isLoading && action === 'create' && (
+            {!isLoading && action === 'store' && (
                 <FaSave />
+            )}
+            {!isLoading && action === 'edit' && (
+                <FaPencilAlt />
             )}
             {!isLoading && action === 'import' && (
                 <FaUpload />

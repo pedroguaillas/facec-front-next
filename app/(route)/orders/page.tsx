@@ -10,7 +10,7 @@ const InvoicesPage = () => {
 
     const multipleActions: ActionsTitle[] = [
         { label: "Importar", type: "button", action: 'import', onClick: () => importOrders() },
-        { label: "+", type: "link", url: 'orders/create', action: 'create' },
+        { label: "", type: "link", url: 'orders/create', action: 'add' },
     ];
 
     const importOrders = () => {

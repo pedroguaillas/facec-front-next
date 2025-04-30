@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,8 +31,11 @@ export default function LoginPage() {
       redirect: false, // Prevent automatic redirect
     });
 
+    setIsLoading(true);
+    
     if (result?.error) {
-      setError("Invalid credentials");
+      setError("Credenciales incorrecto");
+      setIsLoading(false);
     } else {
       router.push("/dashboard");
       // window.location.href = "/dashboard"; // Redirect on success
@@ -59,12 +63,13 @@ export default function LoginPage() {
           label="Contraseña"
           name="password"
         />
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <div className="mt-6">
           <PrimaryButton
             label="Ingresar"
             type="submit"
-            action="create"
+            isLoading={isLoading}
+            action="store"
           />
         </div>
       </form>

@@ -20,7 +20,7 @@ const ShopsPagination = () => {
 const PageShops = () => {
 
     const multipleActions: ActionsTitle[] = [
-        { label: "+", type: "link", url: 'shops/create', action: 'create' },
+        { label: "", type: "link", url: 'shops/create', action: 'add' },
     ];
 
     return (

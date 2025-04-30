@@ -23,7 +23,7 @@ const PageCustomers = () => {
                 <Title
                     title='Clientes'
                     subTitle='Lista de todos los clientes'
-                    actions={[{ label: "+", type: "link", url: "customers/create", action: "create" }]}
+                    actions={[{ label: "", type: "link", url: "customers/create", action: "add" }]}
                 />
                 <div className="md:mx-8 py-4">
                     <CustomersFilter />

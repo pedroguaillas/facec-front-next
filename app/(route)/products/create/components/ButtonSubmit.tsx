@@ -5,7 +5,7 @@ import { productSchema } from '@/schemas/product.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaSave, FaSpinner } from 'react-icons/fa';
+import { PrimaryButton } from '@/components';
 
 export const ButtonSubmit = () => {
 
@@ -38,26 +38,16 @@ export const ButtonSubmit = () => {
             await axiosAuth.post('product', form);
             router.push('/products');
         } catch (error) {
+            setIsPending(false);
             console.log('Error al guardar el formulario' + error);
         }
     }
 
     return (
         <div className='flex justify-end'>
-            <button
-                onClick={handleSubmit}
-                type='submit'
-                disabled={isPending}
-                className='bg-blue-500 hover:bg-blue-700 disabled:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2'
-            >
-                {isPending && (
-                    <FaSpinner className='animate-spin' />
-                )}
-                {!isPending && (
-                    <FaSave />
-                )}
-                Guardar
-            </button>
+            <div className='w-28'>
+                <PrimaryButton label='Guardar' type='button' action='store' isLoading={isPending} onClick={handleSubmit} />
+            </div>
         </div>
     )
 }

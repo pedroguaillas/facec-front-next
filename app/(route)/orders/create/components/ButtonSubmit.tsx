@@ -91,6 +91,7 @@ export const ButtonSubmit = () => {
             router.push('/orders');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);
+            setIsPending(false);
         }
     };
 

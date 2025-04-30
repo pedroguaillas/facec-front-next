@@ -24,7 +24,7 @@ const OrdersPage = () => {
                 <Title
                     title='Productos'
                     subTitle='Lista de todos los productos'
-                    actions={[{ label: "+", type: "link", url: "products/create", action: "create" }]}
+                    actions={[{ label: "", type: "link", url: "products/create", action: "add" }]}
                 />
                 <div className="md:mx-8 py-4">
                     <ProductsFilter />
