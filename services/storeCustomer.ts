@@ -1,13 +1,16 @@
 import { AxiosInstance } from "axios";
 
-export const storeCustomer = async (axiosAuth: AxiosInstance, data: unknown) => {
+export const storeCustomer = async (
+    axiosAuth: AxiosInstance,
+    data: unknown
+): Promise<Customer | null> => {
 
     try {
         const response = await axiosAuth.post('customers', data);
-        return response.data;
+        return response.data.customer as Customer;
     }
     catch (error) {
         console.error('Error creating customer:', error);
-        return [];
+        return null;
     }
 }

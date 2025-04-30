@@ -4,7 +4,7 @@ import { customerSchema } from '@/schemas/customer.schema';
 import { useCustomerForm } from '../hook/useCustomerForm';
 import { SelectOption, TextInput } from '@/components';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { storeCustomer } from '../customerServices';
+import { storeCustomer } from '../../../../../services/storeCustomer';
 import { ButtonSubmit } from './ButtonSubmit';
 import { useRouter } from 'next/navigation';
 import { useActionState } from 'react';

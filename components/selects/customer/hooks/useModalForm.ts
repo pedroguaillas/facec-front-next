@@ -1,6 +1,8 @@
 import { initialCustomer } from "@/constants/initialValues";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { customerSchema } from "@/schemas/customer.schema";
 import { getCustomer } from "@/services/getCustomer";
+import { storeCustomer } from "@/services/storeCustomer";
 import { ChangeEvent, useEffect, useState } from "react";
 
 export const useModalForm = () => {
@@ -32,24 +34,49 @@ export const useModalForm = () => {
                 return;
             }
             const { name, address, email, phone } = res
+            const updatedCustomer = {
+                ...({ name }),
+                ...(address ? { address } : {}),
+                ...(email ? { email } : {}),
+                ...(phone ? { phone } : {}),
+            };
             setCustomer(prev => ({
                 ...prev,
-                name, address, email, phone
+                ...updatedCustomer,
             }));
         }
     }
 
-    const save = () => {
+    const saveCustomer = async (handleSelect: (custom: CustomerProps) => void) => {
+        const parsed = customerSchema.safeParse(customer);
 
+        if (!parsed.success) {
+            console.log('errores', parsed.error)
+            const formatted: Record<string, string> = {};
+            parsed.error.errors.forEach(err => {
+                formatted[err.path[0] as string] = err.message;
+            });
+            setErrors(formatted);
+            return;
+        }
+
+        const res = await storeCustomer(axiosAuth, customer);
+        
+        if (res !== null) {
+            console.log('storeCustomer in useModalForm: ', res);
+            handleSelect({ id: Number(res.id), atts: { identication: res.identication, name: res.name } });
+            toogle();
+        }
     }
 
     useEffect(() => {
         const identication = customer.identication.trim()
         if ((customer.type_identification === 'cédula' && identication.length === 10) || (customer.type_identification === 'ruc' && identication.length === 13)) {
-            console.log(identication);
+            // VALIDADO: que no entre blucle
+            // console.log(identication);
             getCustom()
         }
     }, [customer.identication])
 
-    return { isOpen, customer, errors, optionType, toogle, handleChange, save }
+    return { isOpen, customer, errors, optionType, toogle, handleChange, saveCustomer }
 }

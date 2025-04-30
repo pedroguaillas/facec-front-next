@@ -7,9 +7,13 @@ import { TextInput } from '@/components/text-input/TextInput';
 import { FaPlusCircle } from 'react-icons/fa';
 import { useModalForm } from './hooks/useModalForm';
 
-export const ModalCreateCustomer = () => {
+interface Props {
+    handleSelect: (custom: CustomerProps) => void;
+}
 
-    const { isOpen, customer, errors, optionType, toogle, handleChange, save } = useModalForm();
+export const ModalCreateCustomer = ({ handleSelect }: Props) => {
+
+    const { isOpen, customer, errors, optionType, toogle, handleChange, saveCustomer } = useModalForm();
 
     return (
         <>
@@ -34,7 +38,7 @@ export const ModalCreateCustomer = () => {
                 <TextInput type='text' label='Teléfono' value={customer.phone ?? ''} error={errors.phone} onChange={handleChange} name='phone' maxLength={20} />
                 <TextInput type='email' label='Correo' value={customer.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={50} />
 
-                <PrimaryButton type='button' label='Guardar' onClick={save} action='create' />
+                <PrimaryButton type='button' label='Guardar' onClick={() => saveCustomer(handleSelect)} action='create' />
 
             </Modal>
         </>

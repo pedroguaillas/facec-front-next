@@ -74,7 +74,7 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
                         type='text'
                     />
                     <ModalSelectCustomer handleSelect={handleSelectLocal} />
-                    <ModalCreateCustomer />
+                    <ModalCreateCustomer handleSelect={handleSelectLocal} />
                 </div>
 
                 {error && <p className="text-sm text-red-500">{error}</p>}
