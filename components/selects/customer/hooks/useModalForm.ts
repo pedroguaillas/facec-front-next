@@ -7,6 +7,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 
 export const useModalForm = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [customer, setCustomer] = useState<Customer>(initialCustomer);
     const [errors, setErrors] = useState<Partial<Record<keyof Customer, string>>>({});
     const axiosAuth = useAxiosAuth();
@@ -51,7 +52,6 @@ export const useModalForm = () => {
         const parsed = customerSchema.safeParse(customer);
 
         if (!parsed.success) {
-            console.log('errores', parsed.error)
             const formatted: Record<string, string> = {};
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
@@ -60,10 +60,10 @@ export const useModalForm = () => {
             return;
         }
 
+        setIsSaving(!isSaving);
         const res = await storeCustomer(axiosAuth, customer);
-        
+
         if (res !== null) {
-            console.log('storeCustomer in useModalForm: ', res);
             handleSelect({ id: Number(res.id), atts: { identication: res.identication, name: res.name } });
             toogle();
         }
@@ -78,5 +78,5 @@ export const useModalForm = () => {
         }
     }, [customer.identication])
 
-    return { isOpen, customer, errors, optionType, toogle, handleChange, saveCustomer }
+    return { isOpen, customer, errors, optionType, isSaving, toogle, handleChange, saveCustomer }
 }

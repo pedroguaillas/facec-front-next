@@ -1,6 +1,6 @@
 import { ActionsTitle } from "@/types";
 import Link from "next/link";
-import { FaPlusCircle, FaSave, FaUpload } from "react-icons/fa";
+import { FaPlusCircle, FaSave, FaSpinner, FaUpload } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
@@ -8,6 +8,7 @@ export const PrimaryButton = ({
     type = 'button', // Valor por defecto más explícito
     onClick,
     url = '/',
+    isLoading,
     action
 }: ActionsTitle) => {
 
@@ -34,16 +35,19 @@ export const PrimaryButton = ({
             onClick={onClick}
             type={type}
         >
-            {action === 'add' && (
+            {isLoading && (
+                <FaSpinner className="animate-spin" />
+            )}
+            {!isLoading && action === 'add' && (
                 <FaPlusCircle />
             )}
-            {action === 'create' && (
+            {!isLoading && action === 'create' && (
                 <FaSave />
             )}
-            {action === 'import' && (
+            {!isLoading && action === 'import' && (
                 <FaUpload />
             )}
-            {action === 'export' && (
+            {!isLoading && action === 'export' && (
                 <FaDownload />
             )}
             {label}
