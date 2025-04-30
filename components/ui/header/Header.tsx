@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction } from "react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface Props {
     menu: boolean;
@@ -9,6 +9,10 @@ interface Props {
 }
 
 const Header = ({ menu, setMenu }: Props) => {
+
+    const { data: session, status } = useSession();
+    const userName = status === 'authenticated' ? session?.user?.user?.user : "Usuario";
+
     return (
         <header className={`${menu ? 'ml-[16em] w-[calc(100%-16em)]' : 'ml-0 w-full'} ease-out duration-300 h-[4em] bg-gray-800 z-50 sticky flex justify-between items-center px-2`}>
             <button onClick={() => setMenu(!menu)} className="cursor-pointer">
@@ -17,7 +21,7 @@ const Header = ({ menu, setMenu }: Props) => {
                 </svg>
             </button>
             <div className="text-white flex items-center gap-4">
-                <h3>Peterio</h3>
+                <h3>{userName}</h3>
                 <button onClick={() => signOut()} className="cursor-pointer">
                     <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 stroke-white">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
