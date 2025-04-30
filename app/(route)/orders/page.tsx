@@ -9,7 +9,7 @@ import { ActionsTitle } from "@/types";
 const InvoicesPage = () => {
 
     const multipleActions: ActionsTitle[] = [
-        { label: "Import", type: "button", action: 'import', onClick: () => importOrders() },
+        { label: "Importar", type: "button", action: 'import', onClick: () => importOrders() },
         { label: "+", type: "link", url: 'orders/create', action: 'create' },
     ];
 

@@ -60,7 +60,7 @@ export const AditionalInformation = () => {
       </TableResponsive>
       <div className="flex justify-end mt-2">
         <div className="w-28">
-          <PrimaryButton onClick={addItem} label="Agregar" action="create" type="button" />
+          <PrimaryButton onClick={addItem} label="Añadir" action="add" type="button" />
         </div>
       </div>
     </div>

@@ -1,22 +1,30 @@
 import { initialCustomer } from "@/constants/initialValues";
-import { ChangeEvent, useEffect, useState } from "react";
-import { getCustomer } from "../../../../../services/getCustomer";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { getCustomer } from "@/services/getCustomer";
+import { ChangeEvent, useEffect, useState } from "react";
 
-export const useCustomerForm = () => {
-
+export const useModalForm = () => {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const [customer, setCustomer] = useState<Customer>(initialCustomer);
-    type CustomerErrors = Partial<Record<keyof Customer, string>>;
-    const [errors, setErrors] = useState<CustomerErrors>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof Customer, string>>>({});
     const axiosAuth = useAxiosAuth();
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const optionType = [
+        { label: 'Cédula', value: 'cédula' },
+        { label: 'RUC', value: 'ruc' },
+    ]
+
+    const toogle = () => {
+        setIsOpen(!isOpen)
+    }
+
+    const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = event.target;
         setCustomer(prev => ({ ...prev, [name]: value }));
         setErrors(prev => ({ ...prev, [name]: '' }));
-    };
+    }
 
-    const handleCustom = async () => {
+    const getCustom = async () => {
         const res = await getCustomer(axiosAuth, customer.identication);
         if (res !== null) {
             if (res.branch_id !== 0) {
@@ -31,12 +39,17 @@ export const useCustomerForm = () => {
         }
     }
 
+    const save = () => {
+
+    }
+
     useEffect(() => {
-        const identication = customer.identication.trim();
+        const identication = customer.identication.trim()
         if ((customer.type_identification === 'cédula' && identication.length === 10) || (customer.type_identification === 'ruc' && identication.length === 13)) {
-            handleCustom();
+            console.log(identication);
+            getCustom()
         }
     }, [customer.identication])
 
-    return { customer, errors, setErrors, handleChange };
-};
+    return { isOpen, customer, errors, optionType, toogle, handleChange, save }
+}

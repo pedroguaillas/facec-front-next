@@ -62,7 +62,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                             <Link
                                 onClick={handleCloseSidebar}
                                 className={`rounded hover:bg-primaryhover flex gap-2 px-2 py-2 
-                                    ${pathname === '/products' ? 'bg-primary' : ''}`}
+                                    ${pathname.includes('/products') ? 'bg-primary' : ''}`}
                                 href='/products'
                             >
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
@@ -74,7 +74,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                             <Link
                                 onClick={handleCloseSidebar}
                                 className={`rounded hover:bg-primaryhover flex gap-2 px-2 py-2 
-                                    ${pathname === '/orders' ? 'bg-primary' : ''}`}
+                                    ${pathname.includes('/orders') ? 'bg-primary' : ''}`}
                                 href='/orders'
                             >
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
@@ -87,7 +87,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                             <Link
                                 onClick={handleCloseSidebar}
                                 className={`rounded hover:bg-primaryhover flex gap-2 px-2 py-2 
-                                    ${pathname === '/shops' ? 'bg-primary' : ''}`}
+                                    ${pathname.includes('/shops') ? 'bg-primary' : ''}`}
                                 href='/shops'
                             >
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
@@ -100,7 +100,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                             <Link
                                 onClick={handleCloseSidebar}
                                 className={`rounded hover:bg-primaryhover flex gap-2 px-2 py-2 
-                                    ${pathname === '/customers' ? 'bg-primary' : ''}`}
+                                    ${pathname.includes('/customers') ? 'bg-primary' : ''}`}
                                 href='/customers'
                             >
                                 <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">

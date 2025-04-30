@@ -33,8 +33,10 @@ const InvoicesTable = () => {
                     <th className="text-left">CLIENTE</th>
                     <th>ESTADO</th>
                     <th className="text-right">TOTAL</th>
-                    <th className="flex justify-center">
-                        <FaMailBulk />
+                    <th>
+                        <div className="flex justify-center">
+                            <FaMailBulk />
+                        </div>
                     </th>
                     <th></th>
                 </tr>

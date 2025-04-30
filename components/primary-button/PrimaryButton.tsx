@@ -1,5 +1,7 @@
 import { ActionsTitle } from "@/types";
 import Link from "next/link";
+import { FaPlusCircle, FaSave, FaUpload } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
     label,
@@ -10,6 +12,7 @@ export const PrimaryButton = ({
 }: ActionsTitle) => {
 
     const color: Record<ActionsTitle['action'], string> = {
+        'add': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'create': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'edit': 'bg-lime-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
         'import': 'bg-blue-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
@@ -27,9 +30,23 @@ export const PrimaryButton = ({
 
     return (
         <button
-            className={`w-full rounded px-2 py-1 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
+            className={`w-full rounded px-2 py-1 inline-flex justify-center items-center gap-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
             onClick={onClick}
             type={type}
-        >{label}</button>
+        >
+            {action === 'add' && (
+                <FaPlusCircle />
+            )}
+            {action === 'create' && (
+                <FaSave />
+            )}
+            {action === 'import' && (
+                <FaUpload />
+            )}
+            {action === 'export' && (
+                <FaDownload />
+            )}
+            {label}
+        </button>
     )
 }

@@ -42,7 +42,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         // TODO: add recip class to Dialog
-        className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 w-full ${sizeClasses[modalSize]} overflow-auto`}
+        className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 sm:p-6 w-full ${sizeClasses[modalSize]} overflow-auto`}
       >
         <div className="relative">
           {title && (

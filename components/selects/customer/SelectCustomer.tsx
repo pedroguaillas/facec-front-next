@@ -3,7 +3,6 @@
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { GeneralPaginate } from '@/types';
 import React, { useEffect, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
 import ModalSelectCustomer from './ModalSelectCustomer';
 import { ModalCreateCustomer } from './ModalCreateCustomer';
 
@@ -20,16 +19,9 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
-    // Mostrar la modal
-    const [showModal, setShowModal] = useState(false);
-
-    const handleModal = () => {
-        setShowModal(!showModal);
-    }
 
     const handleSelectLocal = (customer: CustomerProps) => {
         handleSelect(customer);
-        setShowModal(false);
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,10 +73,7 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
                             ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                         type='text'
                     />
-                    <span onClick={handleModal} className='p-2 bg-primary text-white cursor-pointer'>
-                        <FaSearch />
-                    </span>
-                    <ModalSelectCustomer show={showModal} handleSelect={handleSelectLocal} onClose={handleModal} />
+                    <ModalSelectCustomer handleSelect={handleSelectLocal} />
                     <ModalCreateCustomer />
                 </div>
 

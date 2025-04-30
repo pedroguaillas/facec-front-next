@@ -1,12 +1,16 @@
+"use client";
+
 import { Modal } from '@/components/modal/Modal';
-import React, { useState } from 'react'
+import { PrimaryButton } from '@/components/primary-button/PrimaryButton';
+import { SelectOption } from '@/components/select-option/SelectOption';
+import { TextInput } from '@/components/text-input/TextInput';
 import { FaPlusCircle } from 'react-icons/fa';
+import { useModalForm } from './hooks/useModalForm';
 
 export const ModalCreateCustomer = () => {
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const toogle = () => {
-        setIsOpen(!isOpen)
-    }
+
+    const { isOpen, customer, errors, optionType, toogle, handleChange, save } = useModalForm();
+
     return (
         <>
             <button
@@ -19,9 +23,19 @@ export const ModalCreateCustomer = () => {
                 isOpen={isOpen}
                 onClose={toogle}
                 title="Registrar un nuevo cliente"
-                modalSize="lg"
+                modalSize="sm"
             >
-                <h1>Saludos</h1>
+
+                <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={customer.type_identification} handleSelect={handleChange} />
+                <TextInput type='text' label='Identificación *' value={customer.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={customer.type_identification === 'cédula' ? 10 : 13} />
+                <TextInput type='text' label='Nombre *' value={customer.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} />
+
+                <TextInput type='text' label='Dirección' value={customer.address ?? ''} error={errors.address} onChange={handleChange} name='address' maxLength={300} />
+                <TextInput type='text' label='Teléfono' value={customer.phone ?? ''} error={errors.phone} onChange={handleChange} name='phone' maxLength={20} />
+                <TextInput type='email' label='Correo' value={customer.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={50} />
+
+                <PrimaryButton type='button' label='Guardar' onClick={save} action='create' />
+
             </Modal>
         </>
     )

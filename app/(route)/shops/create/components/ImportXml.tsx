@@ -75,7 +75,7 @@ export const ImportXml = () => {
     };
 
     return (
-        <div>
+        <div className='mb-0'>
             <PrimaryButton type='button' onClick={handleButton} label='Cargar XML' action='import' />
             <input type='file' id='file_invoice' onChange={handleSelectFile} className='hidden' accept='.xml' />
         </div>

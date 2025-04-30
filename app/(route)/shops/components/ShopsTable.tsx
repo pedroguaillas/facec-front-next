@@ -39,8 +39,10 @@ export const ShopsTable = () => {
                     <th className="text-right">Total</th>
                     <th className="text-right">Ret</th>
                     <th className="text-right">Pagar</th>
-                    <th className="flex justify-center">
-                        <FaMailBulk />
+                    <th>
+                        <div className="flex justify-center">
+                            <FaMailBulk />
+                        </div>
                     </th>
                     <th></th>
                 </tr>

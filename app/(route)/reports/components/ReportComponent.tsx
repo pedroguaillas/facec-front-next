@@ -1,6 +1,6 @@
 "use client";
 
-import { TextInput } from "@/components";
+import { PrimaryButton, TextInput } from "@/components";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { ChangeEvent, useState } from "react";
 
@@ -51,13 +51,10 @@ export const ReportComponent = () => {
                     <TextInput type='month' label='Mes' value={month} onChange={handleChange} name='month' />
                 </div>
 
-                <div>
-                    <button
-                        onClick={() => donwloadExcel('Ventas')}
-                        className="rounded bg-blue-500 px-4 py-2 text-white"
-                    >
-                        Ventas
-                    </button>
+                <div className="flex mt-2">
+                    <div className="w-28">
+                        <PrimaryButton label="Ventas" onClick={() => donwloadExcel('Ventas')} type="button" action="export" />
+                    </div>
                 </div>
             </div>
         </div>
