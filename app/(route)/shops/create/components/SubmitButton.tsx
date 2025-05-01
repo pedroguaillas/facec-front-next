@@ -8,7 +8,7 @@ import { Tax } from '@/types';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
-    const { shop, taxes, setErrorShop, setErrorTaxes } = useCreateShop();
+    const { shop, taxes, selectPoint, setErrorShop, setErrorTaxes } = useCreateShop();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
 
@@ -23,7 +23,7 @@ export const SubmitButton = () => {
             state_retencion: 'CREADO',
             app_retention: true,
             send: true,
-            // point_id: selectPoint?.id,
+            point_id: selectPoint?.id,
         };
 
         // 2. Validar el formulario
