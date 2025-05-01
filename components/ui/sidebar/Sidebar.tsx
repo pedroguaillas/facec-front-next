@@ -32,7 +32,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
           ${!menu ? "hidden md:flex" : "flex"}`}
             >
                 <header className="w-fit h-[4em] px-2 flex items-center">
-                    <div className="bg-gradient-to-r from-green-500 to-primaryhover bg-clip-text text-transparent font-semibold text-3xl text-center">
+                    <div className="bg-gradient-to-r from-green-500 to-primaryhover bg-clip-text text-transparent font-semibold text-2xl text-center">
                         facec
                     </div>
                     {/* <h3 className="rounded hover:bg-primaryhover p-2 text-white">FAC<span className="font-semibold">EC</span></h3> */}
