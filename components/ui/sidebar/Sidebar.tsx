@@ -32,7 +32,10 @@ const Sidebar = ({ menu, setMenu }: Props) => {
           ${!menu ? "hidden md:flex" : "flex"}`}
             >
                 <header className="w-fit h-[4em] px-2 flex items-center">
-                    <h3 className="rounded hover:bg-primaryhover p-2 text-white">FAC<span className="font-semibold">EC</span></h3>
+                    <div className="bg-gradient-to-r from-green-500 to-primaryhover bg-clip-text text-transparent font-semibold text-3xl text-center">
+                        facec
+                    </div>
+                    {/* <h3 className="rounded hover:bg-primaryhover p-2 text-white">FAC<span className="font-semibold">EC</span></h3> */}
                 </header>
                 <nav className="p-2">
                     <ul className={`${menu ? "transition-all duration-300 [&>li>a>h3]:block" : "[&>li>a>h3]:hidden group-hover:[&>li>a>h3]:block"} [&>li>a>h3]:text-white [&>li>a>svg]:stroke-white`}>
