@@ -1,9 +1,10 @@
 "use client";
 
-import { SelectOption, TextInput } from '@/components';
 import { useCreateShop } from '../context/ShopCreateContext'
-import { useState } from 'react';
+import { SelectOption, TextInput } from '@/components';
 import { EmisionPoint } from '@/types';
+import { useState } from 'react';
+import { useSelectPoint } from '../hooks/useSelectPoint';
 
 export const RetentionInformation = () => {
 
@@ -14,6 +15,9 @@ export const RetentionInformation = () => {
         value: point.id,
         label: `${point.store} - ${point.point} - ${point.recognition}`
     }));
+
+    // Solo le llamo a este Hooks para que se ejecute el useEffect que tiene dentro
+    useSelectPoint();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -41,24 +45,24 @@ export const RetentionInformation = () => {
             <div className='sm:flex gap-4'>
 
                 {/* Col 1 */}
-                <div className='w-full'>
-                    {points.length > 1 && (
+                {points.length > 1 && (
+                    <div className='w-full'>
                         <div className="lg:w-2/3">
                             <SelectOption label="Punto Emi" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} />
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {/* Col 2 */}
-                <div className='lg:w-full flex items-center'>
-                    <div className="lg:w-2/3">
+                <div className='w-full flex items-center'>
+                    <div className="lg:w-2/3 mx-auto">
                         <span className='font-semibold'>Serie ret: </span>{shop.serie_retencion}
                     </div>
                 </div>
 
                 {/* Col 3 */}
                 <div className='w-full'>
-                    <div className='lg:w-2/3'>
+                    <div className='lg:w-2/3 mx-auto'>
                         <TextInput type='date' label='Fecha emisión' value={shop.date_retention} error={errorShop.date_retention} onChange={handleChange} name='date_retention' />
                     </div>
                 </div>

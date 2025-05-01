@@ -17,6 +17,7 @@ export const useSelectPoint = () => {
         }
     }, [selectPoint, voucher_type]);
 
+    // Se ejecuta en la primera peteción de carga
     const handleChangePoints = useCallback(() => {
         if (points.length === 1) {
             setSelectPoint(points[0]);

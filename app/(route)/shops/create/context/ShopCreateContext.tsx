@@ -13,11 +13,13 @@ interface ShopContextType {
     selectProvider: SupplierProps | null;
     errorShop: Partial<Record<keyof ShopCreateProps, string>>;
     points: EmisionPoint[];
+    selectPoint: EmisionPoint | null;
     taxInputs: TaxInput[];
     taxes: Tax[];
     errorTaxes: Record<string, Partial<Record<keyof Tax, string>>>;
     setShop: Dispatch<SetStateAction<ShopCreateProps>>;
     setSelectProvider: Dispatch<SetStateAction<SupplierProps | null>>;
+    setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
     setErrorShop: Dispatch<SetStateAction<Partial<Record<keyof ShopCreateProps, string>>>>;
     setTaxes: Dispatch<SetStateAction<Tax[]>>;
     setErrorTaxes: Dispatch<SetStateAction<Record<string, Partial<Record<keyof Tax, string>>>>>;
@@ -63,6 +65,7 @@ export const ShopCreateProvider = ({ children }: Props) => {
     const [shop, setShop] = useState<ShopCreateProps>(initialShop);
     const [selectProvider, setSelectProvider] = useState<SupplierProps | null>(null);
     const [points, setPoints] = useState<EmisionPoint[]>([]);
+    const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
     const [errorShop, setErrorShop] = useState<Partial<Record<keyof ShopCreateProps, string>>>({});
     const [taxInputs, setTaxInputs] = useState<TaxInput[]>([]);
     const [errorTaxes, setErrorTaxes] = useState<Record<string, Partial<Record<keyof Tax, string>>>>({});
@@ -88,8 +91,8 @@ export const ShopCreateProvider = ({ children }: Props) => {
 
     return (
         <ShopCreateContext.Provider value={{
-            shop, errorShop, selectProvider, points, taxInputs, taxes, errorTaxes,
-            setShop, setErrorShop, setSelectProvider, setTaxes, setErrorTaxes,
+            shop, errorShop, selectProvider, points, selectPoint, taxInputs, taxes, errorTaxes,
+            setShop, setErrorShop, setSelectProvider, setSelectPoint, setTaxes, setErrorTaxes,
         }}>
             {children}
         </ShopCreateContext.Provider>
