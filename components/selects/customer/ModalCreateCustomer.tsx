@@ -38,7 +38,7 @@ export const ModalCreateCustomer = ({ handleSelect }: Props) => {
                 <TextInput type='text' label='Teléfono' value={customer.phone ?? ''} error={errors.phone} onChange={handleChange} name='phone' maxLength={20} />
                 <TextInput type='email' label='Correo' value={customer.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={50} />
 
-                <PrimaryButton type='button' label='Guardar' action='create' isLoading={isSaving} onClick={() => saveCustomer(handleSelect)} />
+                <PrimaryButton type='button' label='Guardar' action='store' isLoading={isSaving} onClick={() => saveCustomer(handleSelect)} />
 
             </Modal>
         </>
