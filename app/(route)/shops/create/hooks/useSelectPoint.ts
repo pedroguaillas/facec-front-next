@@ -8,11 +8,16 @@ export const useSelectPoint = () => {
     const handleSelectPointHook = useCallback(() => {
 
         if (selectPoint && shop.voucher_type) {
-            console.log('useCallback de selectPoint')
-            if (Number(shop.voucher_type) === 3) {
-                const serie = `${selectPoint.store}-${selectPoint.point}-${String(selectPoint.retention).padStart(9, '0')}`;
-                setShop((prev) => ({ ...prev, serie }));
-            }
+            console.log('useCallback de selectPoint para las liquidaciones en compra')
+            // if (Number(shop.voucher_type) === 3) {
+            //     // TODO: Cambiar retention por liqidacion en compra al final
+            //     const serie = `${selectPoint.store}-${selectPoint.point}-${String(selectPoint.retention).padStart(9, '0')}`;
+            //     setShop((prev) => ({ ...prev, serie }));
+            // }
+            setShop((prevState) => ({
+                ...prevState,
+                serie_retencion: `${selectPoint.store}-${selectPoint.point}-${(selectPoint.retention + '').padStart(9, '0')}`
+            }))
         }
     }, [selectPoint]);
 
@@ -42,10 +47,10 @@ export const useSelectPoint = () => {
     useEffect(() => {
         // 3ro en ejecutar
         // se ejecuta en las acciones de selectPoint y handleSelectPointHook
-        if (selectPoint !== null) {
-            // console.log('useEffect de: selectPoint, handleSelectPointHook')
-            handleSelectPointHook();
-        }
+        // if (selectPoint !== null) {
+        // console.log('useEffect de: selectPoint, handleSelectPointHook')
+        handleSelectPointHook();
+        // }
     }, [selectPoint, handleSelectPointHook]);
 
     // TODO: cuando se cambia a Liquidación en compra

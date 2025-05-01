@@ -3,10 +3,10 @@ export type states = '' | 'CREADO' | 'FIRMADO' | 'ENVIADO' | 'RECIBIDA' | 'EN_PR
 interface EmisionPoint {
     id: number;
     branch_id: number;
-    creditnote: number;
+    creditnote?: number;
     invoice?: number;
     store?: string;
     retention?: number;
     point: string;
-    recognition: string;
+    recognition: string | null;
 }

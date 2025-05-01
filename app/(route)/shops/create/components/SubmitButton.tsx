@@ -15,6 +15,7 @@ export const SubmitButton = () => {
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
+        console.log(selectPoint);
         // 1. Creación del formulario
         const form = {
             ...shop,
