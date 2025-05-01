@@ -8,6 +8,7 @@ interface Props {
     isOpen: boolean;
     index: number;
     order: OrderProps;
+    only?: boolean;
     setIsOpen: (index: number | null) => void;
 }
 
@@ -56,7 +57,7 @@ const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetch
     NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
 };
 
-export const Dropdown = ({ isOpen, index, order, setIsOpen }: Props) => {
+export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchInvoices } = useInvoices();
@@ -183,7 +184,8 @@ export const Dropdown = ({ isOpen, index, order, setIsOpen }: Props) => {
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute right-0 z-1000 w-40 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                <div className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700 
+                ${only ? '-mt-24' : '-mt-4'}`}>
                     <div className="py-1">
                         {getOptions().map((option, indexOption) => (
                             <button

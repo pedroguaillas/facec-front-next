@@ -1,6 +1,6 @@
 import { TableResponsive } from "@/components/table-responsive/TableResponsive";
 import { useInvoices } from "../context/InvoicesContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "./Dropdown";
 import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
 
@@ -23,6 +23,12 @@ const InvoicesTable = () => {
         4: 'N/C',
         5: 'N/D',
     }
+
+    // Dentro de InvoicesTable
+    useEffect(() => {
+        console.log('useEffect para llenar el dropdown')
+        setDropdown(Array(invoices.length).fill(false));
+    }, [invoices]);
 
     return (
         <TableResponsive>
@@ -61,7 +67,7 @@ const InvoicesTable = () => {
                             )}
                         </td>
                         <td className="w-4">
-                            <Dropdown isOpen={dropdown[index]} index={index} order={order} setIsOpen={handleDrops} />
+                            <Dropdown isOpen={dropdown[index]} index={index} order={order} only={invoices.length === 1} setIsOpen={handleDrops} />
                         </td>
                     </tr>
                 ))}

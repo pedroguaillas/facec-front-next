@@ -80,7 +80,7 @@ export const ShopsTable = () => {
                             )}
                         </td>
                         <td className="w-4">
-                            <Dropdown index={index} shop={shop} isOpen={dropdown[index]} setIsOpen={handleDrops} />
+                            <Dropdown index={index} shop={shop} isOpen={dropdown[index]} only={shops.length === 1} setIsOpen={handleDrops} />
                         </td>
                     </tr>
                 ))}
