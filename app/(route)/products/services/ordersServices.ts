@@ -29,3 +29,16 @@ export const getCreateProduct = async (
     return {};
   }
 };
+
+export const getProduct = async (
+  id: string,
+  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+) => {
+  try {
+    const response = await axiosAuth.get('product/' + id);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener facturas:", error);
+    return {};
+  }
+};

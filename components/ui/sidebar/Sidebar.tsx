@@ -26,7 +26,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                 ></div>
             )}
 
-            <aside className={`w-[5rem] group hover:w-[16em] h-screen bg-gray-800 flex flex-col px-2 fixed z-60 ease-in-out duration-300 
+            <aside className={`w-[5rem] group hover:w-[16em] h-screen min-h-screen bg-gray-800 flex flex-col px-2 fixed z-60 ease-in-out duration-300 
         ${menu ? "w-[16em] left-0" : "w-[5rem] left-0 md:group hover:w-[16em]"} 
           ${menu ? "" : "md:hover:left-0"} 
           ${!menu ? "hidden md:flex" : "flex"}`}
@@ -35,7 +35,6 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                     <div className="bg-gradient-to-r from-green-500 to-primaryhover bg-clip-text text-transparent font-semibold text-2xl text-center">
                         facec
                     </div>
-                    {/* <h3 className="rounded hover:bg-primaryhover p-2 text-white">FAC<span className="font-semibold">EC</span></h3> */}
                 </header>
                 <nav className="p-2">
                     <ul className={`${menu ? "transition-all duration-300 [&>li>a>h3]:block" : "[&>li>a>h3]:hidden group-hover:[&>li>a>h3]:block"} [&>li>a>h3]:text-white [&>li>a>svg]:stroke-white`}>

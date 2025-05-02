@@ -26,6 +26,6 @@ interface Product {
     unity_id?: number,
     iva: number,
     ice?: string,
-    stock: number,
+    stock?: number,
     price1: string | number,
 }

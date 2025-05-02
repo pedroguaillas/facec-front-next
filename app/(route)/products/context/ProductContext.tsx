@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { getProducts } from "../services/ordersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
@@ -32,7 +32,7 @@ export const ProductsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchProducts = async (pageUrl = `productlist?page=${page}`) => {
+    const fetchProducts = useCallback(async (pageUrl = `productlist?page=${page}`) => {
         if (status !== "authenticated") return;
 
         try {
@@ -41,13 +41,13 @@ export const ProductsProvider = ({ children }: Props) => {
             setMeta(data.meta);
             setLinks(data.links);
         } catch (error) {
-            console.error("Error al obtener facturas:", error);
+            console.error("Error al obtener productos:", error);
         }
-    };
+    }, [status, axiosAuth, search, page]); // Dependencias correctas
 
     useEffect(() => {
         fetchProducts();
-    }, [status, search, page]);
+    }, [fetchProducts]);
 
     return (
         <ProductsContext.Provider value={{

@@ -1,11 +1,11 @@
 "use client";
 
-import { useProductCreateContext } from '../../context/ProductCreateContext';
+import { useProductCreateContext } from '../context/ProductFormContext';
 import { productSchema } from '@/schemas/product.schema';
+import { useRouter, useParams } from 'next/navigation';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { PrimaryButton } from '@/components';
+import { useState } from 'react';
 
 export const ButtonSubmit = () => {
 
@@ -13,6 +13,7 @@ export const ButtonSubmit = () => {
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
+    const params = useParams();
 
     const handleSubmit = async () => {
         // 1. Crear el formulario
@@ -35,7 +36,11 @@ export const ButtonSubmit = () => {
         // 3. Enviar el formulario
         try {
             setIsPending(true);
-            await axiosAuth.post('product', form);
+            if (params?.id) {
+                await axiosAuth.put(`product/${params.id}`, form);
+            } else {
+                await axiosAuth.post('product', form);
+            }
             router.push('/products');
         } catch (error) {
             setIsPending(false);

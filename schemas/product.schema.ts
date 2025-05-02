@@ -3,12 +3,12 @@ import { z } from 'zod';
 export const productSchema = z.object({
   id: z.string(), // o number si usas timestamp
   code: z.string().min(1, "Codigo requerido").max(25, "Máximo 25 caracteres"),
-  aux_cod: z.string().optional(),
+  aux_cod: z.string().nullable().optional(),
   type_product: z.number(),
   name: z.string().min(3, "Nombre del producto requerido").max(300, "Máximo 300 caracteres"),
   iva: z.number(),
-  ice: z.string().optional(),
-  stock: z.number().optional(),
+  ice: z.string().nullable().optional(),
+  stock: z.number().nullable().optional(),
   price1: z
     .union([
       z.string().refine(val => val.trim() !== "", { message: "Precio requerido" }),

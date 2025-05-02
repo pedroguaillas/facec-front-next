@@ -1,11 +1,10 @@
-import { ProductCreateProvider } from '../context/ProductCreateContext';
+import { ProductFormProvider } from '../context/ProductFormContext';
+import { ProductForm, ButtonSubmit } from '../shared';
 import { Separate, Title } from '@/components';
-import { ProductForm } from './components/ProductForm';
-import { ButtonSubmit } from './components/ButtonSubmit';
 
 const pageCreateProduct = () => {
     return (
-        <ProductCreateProvider>
+        <ProductFormProvider>
             <div className="dark:text-gray-300">
                 <Title
                     title="Producto"
@@ -25,7 +24,7 @@ const pageCreateProduct = () => {
                     </div>
                 </div>
             </div>
-        </ProductCreateProvider>
+        </ProductFormProvider>
     )
 }
 

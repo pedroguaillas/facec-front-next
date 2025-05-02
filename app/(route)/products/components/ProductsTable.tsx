@@ -1,8 +1,7 @@
 "use client";
 
-import { FaPen } from 'react-icons/fa';
 import { useProducts } from '../context/ProductContext';
-import { TableResponsive } from '@/components'
+import { PrimaryButton, TableResponsive } from '@/components'
 
 export const ProductsTable = () => {
 
@@ -29,9 +28,7 @@ export const ProductsTable = () => {
                         <td className="text-right">${product.atts.price1.toFixed(2)}</td>
                         <td className="text-right">{product.atts.iva}%</td>
                         <td>
-                            <button className="bg-blue-700 p-2 rounded text-white">
-                                <FaPen />
-                            </button>
+                            <PrimaryButton type='link' label='' action='edit' url={`products/${product.id.toString()}`} />
                         </td>
                     </tr>
                 ))}

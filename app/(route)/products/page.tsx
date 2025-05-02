@@ -1,9 +1,8 @@
 "use client";
 
 import { ProductsProvider, useProducts } from './context/ProductContext';
-import { ProductsTable } from './components/ProductsTable';
+import { ProductsFilter, ProductsTable } from './components';
 import { Paginate, Title } from '@/components';
-import { ProductsFilter } from './components/ProductsFilter';
 
 const ProductsPagination = () => {
     const { meta, links, fetchProducts } = useProducts();

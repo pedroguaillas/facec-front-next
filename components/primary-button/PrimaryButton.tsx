@@ -1,6 +1,6 @@
 import { ActionsTitle } from "@/types";
 import Link from "next/link";
-import { FaPencilAlt, FaPlus, FaPlusCircle, FaSave, FaSpinner, FaUpload } from "react-icons/fa";
+import { FaPen, FaPencilAlt, FaPlus, FaPlusCircle, FaSave, FaSpinner, FaUpload } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
@@ -24,11 +24,14 @@ export const PrimaryButton = ({
     if (type === 'link')
         return (
             <Link
-                className={`w-full rounded p-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
+                className={`w-full rounded p-2 inline-flex justify-center items-center gap-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
                 href={url}
             >
                 {!isLoading && action === 'add' && (
                     <FaPlus />
+                )}
+                {!isLoading && action === 'edit' && (
+                    <FaPen />
                 )}
                 {label}
             </Link>
