@@ -35,7 +35,7 @@ export default function Main({ children }: MainProps) {
             <Sidebar menu={menu} setMenu={setMenu} />
             <Header menu={menu} setMenu={setMenu} />
             {/* h-[calc(100vh-4em)] */}
-            <div className="md:ml-[5rem] flex flex-col flex-1 min-h-screen overflow-auto dark:bg-gray-900">
+            <div className="md:ml-[5rem] flex flex-col flex-1 min-h-[calc(h-screen - 4em)] overflow-auto dark:bg-gray-900">
                 {children}
             </div>
         </div>

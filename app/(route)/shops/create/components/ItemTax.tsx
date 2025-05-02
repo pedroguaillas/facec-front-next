@@ -19,11 +19,11 @@ export const ItemTax = ({ index, tax, error }: Props) => {
                 <select
                     value={tax.code}
                     onChange={(e) => updateItem(index, 'code', e.target.value)}
-                    className={`w-full border rounded p-1 
+                    className={`w-full border rounded p-1 dark:bg-slate-800 
                     ${error?.code ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`} >
-                    <option value="">Seleccione</option>
-                    <option value={2}>IVA</option>
-                    <option value={1}>Imp. Renta</option>
+                    <option className="dark:bg-slate-800" value="">Seleccione</option>
+                    <option className="dark:bg-slate-800" value={2}>IVA</option>
+                    <option className="dark:bg-slate-800" value={1}>Imp. Renta</option>
                 </select>
             </td>
             <td className="p-1">

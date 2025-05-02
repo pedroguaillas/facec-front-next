@@ -67,7 +67,7 @@ const InvoicesTable = () => {
                             )}
                         </td>
                         <td className="w-4">
-                            <Dropdown isOpen={dropdown[index]} index={index} order={order} only={invoices.length === 1} setIsOpen={handleDrops} />
+                            <Dropdown isOpen={dropdown[index]} index={index} order={order} only={invoices.length === 1 || index > invoices.length - 5} setIsOpen={handleDrops} />
                         </td>
                     </tr>
                 ))}

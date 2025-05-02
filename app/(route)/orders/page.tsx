@@ -5,17 +5,20 @@ import InvoicesTable from "./components/InvoicesTable";
 import InvoiceFilters from "./components/InvoiceFilters";
 import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
+import { useImportExcel } from "./hooks/useImportExcel";
 
 const InvoicesPage = () => {
 
+    const { handleLote } = useImportExcel();
+    // Define esta función antes de usarla
+    const importOrders = () => {
+        document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
+    };
+
     const multipleActions: ActionsTitle[] = [
-        { label: "Importar", type: "button", action: 'import', onClick: () => importOrders() },
+        { label: "Importar", type: "button", action: 'import', onClick: importOrders },
         { label: "", type: "link", url: 'orders/create', action: 'add' },
     ];
-
-    const importOrders = () => {
-
-    }
 
     const ProductsPagination = () => {
         const { meta, links, fetchInvoices } = useInvoices();
@@ -41,6 +44,7 @@ const InvoicesPage = () => {
                     <InvoiceFilters />
                     <InvoicesTable />
                     <ProductsPagination />
+                    <input type="file" onChange={handleLote} className="hidden" accept=".xlsx" />
                 </div>
             </div>
         </InvoicesProvider>
