@@ -66,7 +66,7 @@ export const Totals = () => {
                                         name={name}
                                         onChange={handleChange}
                                         min={0}
-                                        className={`w-16 border rounded px-1 ${error ? 'border-red-500' : 'border-gray-300'}`}
+                                        className={`w-full border rounded px-1 ${error ? 'border-red-500' : 'border-gray-300'}`}
                                     />
                                 </td>
                             </tr>
@@ -86,7 +86,7 @@ export const Totals = () => {
                                     name="no_iva"
                                     onChange={handleChange}
                                     min={0}
-                                    className={`w-16 border rounded px-1 ${errorShop.no_iva ? 'border-red-500' : 'border-gray-300'}`}
+                                    className={`w-full border rounded px-1 ${errorShop.no_iva ? 'border-red-500' : 'border-gray-300'}`}
                                 />
                             </td>
                         </tr>

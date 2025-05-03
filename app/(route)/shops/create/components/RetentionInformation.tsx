@@ -1,8 +1,9 @@
 "use client";
 
 import { useCreateShop } from '../context/ShopCreateContext'
-import { SelectOption, TextInput } from '@/components';
+import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
+import { SelectOption, TextInput } from '@/components';
 
 export const RetentionInformation = () => {
 
@@ -54,7 +55,7 @@ export const RetentionInformation = () => {
                 {/* Col 3 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3 mx-auto'>
-                        <TextInput type='date' label='Fecha emisión' value={shop.date_retention} error={errorShop.date_retention} onChange={handleChange} name='date_retention' />
+                        <TextInput type='date' label='Fecha emisión' value={shop.date_retention} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={getMinDate()} max={getDate()} />
                     </div>
                 </div>
             </div>

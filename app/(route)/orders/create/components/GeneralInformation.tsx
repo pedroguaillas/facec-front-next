@@ -2,6 +2,7 @@
 
 import { SelectCustomer, SelectOption, TextInput } from '@/components';
 import { useCreateInvoice } from '../../context/InvoiceCreateContext';
+import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
 import React from 'react';
 
@@ -33,7 +34,7 @@ export const GeneralInformation = () => {
         setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
         setFormErrors(prev => ({ ...prev, serie: '' }));
     }
-    
+
     const handleSelectCustomer = (customer: CustomerProps) => {
         setInvoice((prevState) => ({ ...prevState, customer_id: customer.id }))
         setSelectCustom(customer);
@@ -50,7 +51,7 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' />
+                        <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
                     </div>
                     {points.length > 1 && (
                         <div className="flex flex-col lg:w-2/3">
@@ -79,7 +80,7 @@ export const GeneralInformation = () => {
                     {Number(invoice.voucher_type) === 4 && (
                         <>
                             <div className='lg:w-2/3'>
-                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' />
+                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' max={getDate()} />
                             </div>
                             <div className='lg:w-2/3'>
                                 <TextInput label='Serie factura *' value={invoice.serie_order ?? ''} error={formErrors.serie_order} onChange={handleChange} name='serie_order' maxLength={17} />

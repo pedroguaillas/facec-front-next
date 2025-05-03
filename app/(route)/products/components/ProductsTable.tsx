@@ -27,7 +27,7 @@ export const ProductsTable = () => {
                         <td className='text-left'>{product.atts.name}</td>
                         <td className="text-right">${product.atts.price1.toFixed(2)}</td>
                         <td className="text-right">{product.atts.iva}%</td>
-                        <td>
+                        <td className='w-1'>
                             <PrimaryButton type='link' label='' action='edit' url={`products/${product.id.toString()}`} />
                         </td>
                     </tr>

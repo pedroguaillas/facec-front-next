@@ -12,6 +12,8 @@ interface Props {
     disabled?: boolean;   // Opcional para deshabilitar el input
     className?: string;   // Opcional para clases personalizadas
     error?: string; // 👉 Nuevo campo para mostrar errores
+    min?: string;
+    max?: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; // Tipado correcto para onChange
 }
 
@@ -27,6 +29,8 @@ export const TextInput = ({
     className,
     error, // 👉 Nuevo campo para mostrar errores
     onChange,
+    min,
+    max,
 }: Props) => {
     return (
         <div className="flex flex-col gap-1 my-2">
@@ -48,6 +52,8 @@ export const TextInput = ({
                 onChange={onChange}
                 placeholder={placeholder}
                 disabled={disabled}
+                min={min}
+                max={max}
                 aria-required={required ? 'true' : 'false'} // Mejora de accesibilidad
                 aria-disabled={disabled ? 'true' : 'false'} // Mejora de accesibilidad
             />

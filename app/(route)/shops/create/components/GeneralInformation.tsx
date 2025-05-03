@@ -2,6 +2,7 @@
 
 import { SelectOption, SelectProvider, TextInput } from "@/components"
 import { useCreateShop } from "../context/ShopCreateContext"
+import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { SupplierProps } from "@/types";
 import { ImportXml } from "./ImportXml";
 
@@ -37,7 +38,7 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' />
+                        <TextInput type='date' label='Fecha emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} />
