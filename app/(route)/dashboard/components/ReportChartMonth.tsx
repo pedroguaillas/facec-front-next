@@ -1,5 +1,6 @@
+"use client";
+
 import { ItemEgressChart, ItemIngressChart } from '@/types';
-import React from 'react';
 import {
   BarChart,
   Bar,
