@@ -6,6 +6,7 @@ import { SelectOption } from '@/components/select-option/SelectOption';
 import { TextInput } from '@/components/text-input/TextInput';
 import { FaPlusCircle } from 'react-icons/fa';
 import { useModalForm } from './hooks/useModalForm';
+import { CustomerProps } from '@/types';
 
 interface Props {
     handleSelect: (custom: CustomerProps) => void;

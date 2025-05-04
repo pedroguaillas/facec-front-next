@@ -5,6 +5,7 @@ import { getCreateProduct, getProduct } from "../services/ordersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
+import { Product } from "@/types";
 
 interface ProductCreateContextType {
     product: Product;

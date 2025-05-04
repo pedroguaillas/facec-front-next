@@ -1,9 +1,10 @@
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { initialCustomer } from "@/constants/initialValues";
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { customerSchema } from "@/schemas/customer.schema";
-import { getCustomer } from "@/services/getCustomer";
 import { storeCustomer } from "@/services/storeCustomer";
-import { ChangeEvent, useEffect, useState } from "react";
+import { getCustomer } from "@/services/getCustomer";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { Customer, CustomerProps } from "@/types";
 
 export const useModalForm = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -27,7 +28,7 @@ export const useModalForm = () => {
         setErrors(prev => ({ ...prev, [name]: '' }));
     }
 
-    const getCustom = async () => {
+    const getCustom = useCallback(async () => {
         const res = await getCustomer(axiosAuth, customer.identication);
         if (res !== null) {
             if (res.branch_id !== 0) {
@@ -46,7 +47,7 @@ export const useModalForm = () => {
                 ...updatedCustomer,
             }));
         }
-    }
+    }, [customer.identication, axiosAuth]);
 
     const saveCustomer = async (handleSelect: (custom: CustomerProps) => void) => {
         const parsed = customerSchema.safeParse(customer);
@@ -72,11 +73,11 @@ export const useModalForm = () => {
     useEffect(() => {
         const identication = customer.identication.trim()
         if ((customer.type_identification === 'cédula' && identication.length === 10) || (customer.type_identification === 'ruc' && identication.length === 13)) {
-            // VALIDADO: que no entre blucle
+            // VALIDADO: que no entre en bucle
             // console.log(identication);
             getCustom()
         }
-    }, [customer.identication])
+    }, [customer.identication, customer.type_identification, getCustom])
 
     return { isOpen, customer, errors, optionType, isSaving, toogle, handleChange, saveCustomer }
 }

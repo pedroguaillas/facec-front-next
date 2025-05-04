@@ -1,4 +1,4 @@
-import { LinkMeta, Links, Meta, Tax } from "@/types";
+import { Customer, LinkMeta, Links, Meta, Tax } from "@/types";
 import { ProductOutput } from "@/types/order";
 import { nanoid } from "nanoid";
 

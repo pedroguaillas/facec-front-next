@@ -1,7 +1,8 @@
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
-import { SelectProduct } from "@/components";
 import { fields, ProductOutput } from "@/types/order";
+import { SelectProduct } from "@/components";
 import { FaTrash } from "react-icons/fa";
+import { ProductProps } from "@/types";
 
 interface Props {
     index: number;

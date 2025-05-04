@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LiLink } from "./LiLink";
 
 interface Props {
     menu: boolean;
@@ -51,15 +52,6 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                 <h3>Inicio</h3>
                             </Link>
                         </li>
-                        {/* <li>
-                            <Link onClick={handleCloseSidebar}
-                                className="rounded hover:bg-primaryhover flex flex-row items-center gap-2 px-2 py-2" href='business'>
-                                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
-                                </svg>
-                                <h3>Empresa</h3>
-                            </Link>
-                        </li> */}
                         <li>
                             <Link
                                 onClick={handleCloseSidebar}
@@ -111,15 +103,11 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                 <h3>Clientes</h3>
                             </Link>
                         </li>
-                        {/* <li>
-                            <Link onClick={handleCloseSidebar}
-                                className="rounded hover:bg-primaryhover flex gap-2 px-2 py-2" href='/business'>
-                                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
-                                </svg>
-                                <h3>Guias de remisión</h3>
-                            </Link>
-                        </li> */}
+                        <LiLink label="Transportistas" link="/carriers" handleCloseSidebar={handleCloseSidebar}>
+                            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                            </svg>
+                        </LiLink>
                         <li>
                             <Link
                                 onClick={handleCloseSidebar}

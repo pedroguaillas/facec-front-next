@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { getCustomers } from "../services/customersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
-import { Links, Meta } from "@/types";
+import { CustomerProps, Links, Meta } from "@/types";
 
 interface CustomersContextType {
     customers: CustomerProps[];
@@ -32,8 +32,10 @@ export const CustomersProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchCustomers = async (pageUrl = `customerlist?page=${page}`) => {
+    // Ejecuta al inicio y cuando cambie el search, page
+    const fetchCustomers = useCallback(async (pageUrl = `customerlist?page=${page}`) => {
         if (status !== "authenticated") return;
+        console.log('useCallback, fetchCustomers')
 
         try {
             const data = await getCustomers(axiosAuth, pageUrl, search, page);
@@ -43,11 +45,14 @@ export const CustomersProvider = ({ children }: Props) => {
         } catch (error) {
             console.error("Error al obtener clientes:", error);
         }
-    };
+    }, [status, axiosAuth, search, page]);
 
     useEffect(() => {
+        // Validado: se ejecuta solo al inicio
         fetchCustomers();
-    }, [status, search, page]);
+        console.log('useEffect, fetchCustomers')
+    }, [fetchCustomers]);
+
     return (
         <CustomersContext.Provider value={{
             customers, search, page, meta, links,

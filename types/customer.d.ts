@@ -1,4 +1,4 @@
-interface CustomerProps {
+export interface CustomerProps {
     id: number,
     atts: {
         identication: string;

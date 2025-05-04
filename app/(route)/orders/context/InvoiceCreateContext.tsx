@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, useState, useContext, useEffect, ReactNode, SetStateAction, Dispatch } from "react";
+import { AditionalInformation, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
 import { getCreateInvoice } from "../services/invoicesServices";
 import { initialProductItem } from "@/constants/initialValues";
+import { CustomerProps, EmisionPoint } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { AditionalInformation, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
-import { EmisionPoint } from "@/types";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;
@@ -95,24 +95,23 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-  const fetchCreateInvoice = async () => {
-    if (status !== "authenticated") return;
-
-    try {
-      const data = await getCreateInvoice(axiosAuth);
-      const { points, methodOfPayments, pay_method, tourism } = data;
-      setInvoice((prev) => ({ ...prev, pay_method }));
-      setPoints(points);
-      setPayMethods(methodOfPayments);
-      setTourism(tourism);
-    } catch (error) {
-      console.error("Error al cargar: ", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchCreateInvoice = async () => {
+      if (status !== "authenticated") return;
+
+      try {
+        const data = await getCreateInvoice(axiosAuth);
+        const { points, methodOfPayments, pay_method, tourism } = data;
+        setInvoice((prev) => ({ ...prev, pay_method }));
+        setPoints(points);
+        setPayMethods(methodOfPayments);
+        setTourism(tourism);
+      } catch (error) {
+        console.error("Error al cargar: ", error);
+      }
+    };
     fetchCreateInvoice();
-  }, [status]);
+  }, [status, axiosAuth]);
 
   return (
     <InvoiceCreateContext.Provider value={{

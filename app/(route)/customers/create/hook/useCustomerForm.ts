@@ -2,6 +2,7 @@ import { initialCustomer } from "@/constants/initialValues";
 import { ChangeEvent, useEffect, useState } from "react";
 import { getCustomer } from "../../../../../services/getCustomer";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { Customer } from "@/types";
 
 export const useCustomerForm = () => {
 

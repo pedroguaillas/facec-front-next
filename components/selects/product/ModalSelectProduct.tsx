@@ -1,40 +1,15 @@
+import { useModalSelectProduct } from "./hooks/useModalSelectProduct";
 import { Modal, TableResponsive, Paginate } from "@/components";
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { useEffect, useState } from "react";
-import { GeneralPaginate, Links, Meta } from "@/types";
-import { initialLinks, initialMeta } from "@/constants/initialValues";
+import { FaSearch } from "react-icons/fa";
+import { ProductProps } from "@/types";
 
 interface Props {
-    show: boolean;
     handleSelect: (product: ProductProps) => void;
-    onClose: () => void; // Nuevo
 }
 
-const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
+const ModalSelectProduct = ({ handleSelect }: Props) => {
 
-    const [search, setSearch] = useState("");
-    const [meta, setMeta] = useState<Meta>({ ...initialMeta });
-    const [links, setLinks] = useState<Links>({ ...initialLinks });
-    const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
-    const axiosAuth = useAxiosAuth();
-
-    const fetchProduct = async (page: string = 'page=1') => {
-        if (!page) return;
-
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
-                search,
-                paginate: 10,
-            });
-            const { data, meta, links } = res.data;
-            setSuggestions(data);
-            setMeta(meta);
-            setLinks(links);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal } = useModalSelectProduct(handleSelect);
 
     const ProductsPagination = () => {
 
@@ -46,61 +21,55 @@ const ModalSelectProduct = ({ show, handleSelect, onClose }: Props) => {
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
     };
 
-    useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            fetchProduct();
-        }, 300); // 300ms delay
-
-        return () => clearTimeout(delayDebounce);
-    }, [search]);
-
-    useEffect(() => {
-        if (show) fetchProduct();
-    }, [show]);
-
     return (
-        <Modal
-            isOpen={show}
-            onClose={onClose}
-            title="Seleccionar producto"
-            modalSize="lg"
-        >
-            <input
-                type="search"
-                placeholder="Buscar producto..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full mb-2 border border-gray-300 dark:border-slate-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+        <>
+            <button onClick={toggle} aria-label="Seleccionar producto" className='rounded-r p-2 bg-primary text-white cursor-pointer'>
+                <FaSearch />
+            </button>
 
-            <TableResponsive>
-                <thead>
-                    <tr>
-                        <th className="hidden sm:block">#</th>
-                        <th>Código</th>
-                        <th className="text-left">Producto/Servicio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {suggestions.map((product, indexItem) => (
-                        <tr
-                            key={product.id}
-                            onClick={() => handleSelect(product)}
-                            className={`hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer
-                                ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}`}
-                        >
-                            <td className="hidden sm:block">{indexItem + 1}</td>
-                            <td>{product.atts.code}</td>
-                            <td className="text-left">{product.atts.name}</td>
+            <Modal
+                isOpen={isOpen}
+                onClose={toggle}
+                title="Seleccionar producto"
+                modalSize="lg"
+            >
+                <input
+                    type="search"
+                    placeholder="Buscar producto..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full mb-2 border border-gray-300 dark:border-slate-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+
+                <TableResponsive>
+                    <thead>
+                        <tr>
+                            <th className="hidden sm:block">#</th>
+                            <th>Código</th>
+                            <th className="text-left">Producto/Servicio</th>
                         </tr>
-                    ))}
-                </tbody>
-            </TableResponsive>
+                    </thead>
+                    <tbody>
+                        {suggestions.map((product, indexItem) => (
+                            <tr
+                                key={product.id}
+                                onClick={() => handleSelectLocal(product)}
+                                className={`hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer
+                                ${indexItem % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}`}
+                            >
+                                <td className="hidden sm:block">{indexItem + 1}</td>
+                                <td>{product.atts.code}</td>
+                                <td className="text-left">{product.atts.name}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </TableResponsive>
 
-            <div className="flex justify-center">
-                <ProductsPagination />
-            </div>
-        </Modal>
+                <div className="flex justify-center">
+                    <ProductsPagination />
+                </div>
+            </Modal>
+        </>
     );
 }
 

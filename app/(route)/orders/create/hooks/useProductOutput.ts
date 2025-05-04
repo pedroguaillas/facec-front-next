@@ -1,6 +1,7 @@
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { initialProductItem } from "@/constants/initialValues";
 import { productOutputSchema } from "@/schemas/product-output.schema";
+import { ProductProps } from "@/types";
 import { fields, ProductOutput } from "@/types/order";
 import { nanoid } from "nanoid";
 

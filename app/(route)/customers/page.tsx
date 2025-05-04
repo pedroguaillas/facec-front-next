@@ -2,8 +2,7 @@
 
 import { Paginate, Title } from "@/components";
 import { CustomersProvider, useCustomers } from "./context/CustomersContext";
-import { CustomersTable } from "./components/CustomersTable";
-import { CustomersFilter } from "./components/CustomersFilter";
+import { CustomersFilter, CustomersTable } from "./components";
 
 const CustomersPagination = () => {
     const { meta, links, fetchCustomers } = useCustomers();

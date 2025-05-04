@@ -1,12 +1,18 @@
 import { TableResponsive } from "@/components/table-responsive/TableResponsive";
-import { useInvoices } from "../context/InvoicesContext";
-import { useEffect, useState } from "react";
-import { Dropdown } from "./Dropdown";
 import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
+import { useInvoices } from "../context/InvoicesContext";
+import { Dropdown } from "./Dropdown";
+import { useState } from "react";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
     const [dropdown, setDropdown] = useState<boolean[]>([]);
+
+    const calPrefix: Record<number, string> = {
+        1: 'FAC',
+        4: 'N/C',
+        5: 'N/D',
+    }
 
     // ✅ Cierra todos los dropdowns excepto el seleccionado
     const handleDrops = (index: number | null) => {
@@ -17,18 +23,6 @@ const InvoicesTable = () => {
             return newDropdown;
         });
     };
-
-    const calPrefix: Record<number, string> = {
-        1: 'FAC',
-        4: 'N/C',
-        5: 'N/D',
-    }
-
-    // Dentro de InvoicesTable
-    useEffect(() => {
-        console.log('useEffect para llenar el dropdown')
-        setDropdown(Array(invoices.length).fill(false));
-    }, [invoices]);
 
     return (
         <TableResponsive>

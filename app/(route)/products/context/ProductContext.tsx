@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback 
 import { getProducts } from "../services/ordersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
-import { Links, Meta } from "@/types";
+import { Links, Meta, ProductProps } from "@/types";
 
 interface ProductsContextType {
     products: ProductProps[];
@@ -34,6 +34,7 @@ export const ProductsProvider = ({ children }: Props) => {
 
     const fetchProducts = useCallback(async (pageUrl = `productlist?page=${page}`) => {
         if (status !== "authenticated") return;
+        console.log('useCallback, fetchProducts')
 
         try {
             const data = await getProducts(axiosAuth, pageUrl, search, page);
@@ -46,6 +47,7 @@ export const ProductsProvider = ({ children }: Props) => {
     }, [status, axiosAuth, search, page]); // Dependencias correctas
 
     useEffect(() => {
+        console.log('useEffect, start')
         fetchProducts();
     }, [fetchProducts]);
 

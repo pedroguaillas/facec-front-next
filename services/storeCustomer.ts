@@ -1,3 +1,4 @@
+import { Customer } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const storeCustomer = async (

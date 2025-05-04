@@ -1,9 +1,7 @@
 import { Modal, TableResponsive, Paginate } from "@/components";
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { useEffect, useState } from "react";
-import { GeneralPaginate, Links, Meta } from "@/types";
-import { initialLinks, initialMeta } from "@/constants/initialValues";
+import { CustomerProps } from "@/types";
 import { FaSearch } from "react-icons/fa";
+import { useModalSelectCustomer } from "./hooks/useModalSelectCustomer";
 
 interface Props {
     handleSelect: (custom: CustomerProps) => void;
@@ -11,39 +9,7 @@ interface Props {
 
 export const ModalSelectCustomer = ({ handleSelect }: Props) => {
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [search, setSearch] = useState("");
-    const [meta, setMeta] = useState<Meta>({ ...initialMeta });
-    const [links, setLinks] = useState<Links>({ ...initialLinks });
-    const [suggestions, setSuggestions] = useState<CustomerProps[]>([]);
-    const axiosAuth = useAxiosAuth();
-
-    const toggle = () => {
-        setIsOpen(!isOpen);
-    }
-
-    const fetchCustomer = async (page: string = 'page=1') => {
-        if (!page) return;
-
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<CustomerProps>>(`customerlist?page=${pageNumber}`, {
-                search,
-                paginate: 10,
-            });
-            const { data, meta, links } = res.data;
-            setSuggestions(data);
-            setMeta(meta);
-            setLinks(links);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleSelectLocal = (custom: CustomerProps) => {
-        handleSelect(custom);
-        toggle();
-    }
+    const { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCustomer, handleSelectLocal } = useModalSelectCustomer(handleSelect);
 
     const CustomPagination = () => {
 
@@ -54,21 +20,6 @@ export const ModalSelectCustomer = ({ handleSelect }: Props) => {
 
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
     };
-
-    useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            fetchCustomer();
-        }, 300); // 300ms delay
-
-        return () => clearTimeout(delayDebounce);
-    }, [search]);
-
-    useEffect(() => {
-        if (isOpen) {
-            // Verificado que no ejecuete en bucle
-            fetchCustomer()
-        }
-    }, [isOpen]);
 
     return (
         <>

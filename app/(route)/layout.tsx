@@ -31,7 +31,7 @@ export default function Main({ children }: MainProps) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-200 flex flex-col">
+        <div className="min-h-screen flex flex-col">
             <Sidebar menu={menu} setMenu={setMenu} />
             <Header menu={menu} setMenu={setMenu} />
             {/* h-[calc(100vh-4em)] */}

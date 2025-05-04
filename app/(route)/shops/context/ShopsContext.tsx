@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useState, useContext, useEffect, ReactNode } from "react";
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from "react";
 import { getShops } from "../services/shopsServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
@@ -32,7 +32,7 @@ export const ShopsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchShops = async (pageUrl = `shoplist?page=${page}`) => {
+    const fetchShops = useCallback(async (pageUrl = `shoplist?page=${page}`) => {
         if (status !== "authenticated") return;
 
         try {
@@ -43,11 +43,11 @@ export const ShopsProvider = ({ children }: Props) => {
         } catch (error) {
             console.error("Error al obtener facturas:", error);
         }
-    };
+    }, [status, axiosAuth, search, page]);
 
     useEffect(() => {
         fetchShops();
-    }, [status, search, page]);
+    }, [fetchShops]);
 
     return (
         <ShopsContext.Provider value={{

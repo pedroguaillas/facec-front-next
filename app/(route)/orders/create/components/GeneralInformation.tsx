@@ -4,6 +4,7 @@ import { SelectCustomer, SelectOption, TextInput } from '@/components';
 import { useCreateInvoice } from '../../context/InvoiceCreateContext';
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
+import { CustomerProps } from '@/types';
 import React from 'react';
 
 export const GeneralInformation = () => {

@@ -1,9 +1,9 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from "react";
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
+import { createContext, useState, useContext, useEffect, ReactNode, useCallback } from "react";
 import { getInvoices } from "../services/invoicesServices";
-import { Links, Meta } from "@/types";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { OrderProps } from "@/types/order";
+import { Links, Meta } from "@/types";
 
 interface InvoicesContextType {
   invoices: OrderProps[];
@@ -31,8 +31,9 @@ export const InvoicesProvider = ({ children }: Props) => {
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-  const fetchInvoices = async (pageUrl = `orderlist?page=${page}`) => {
+  const fetchInvoices = useCallback(async (pageUrl = `orderlist?page=${page}`) => {
     if (status !== "authenticated") return;
+    console.log('fetchInvoices, useCallback')
 
     try {
       const data = await getInvoices(axiosAuth, pageUrl, search, page);
@@ -42,11 +43,12 @@ export const InvoicesProvider = ({ children }: Props) => {
     } catch (error) {
       console.error("Error al obtener facturas:", error);
     }
-  };
+  }, [status, axiosAuth, search, page]);
 
   useEffect(() => {
+    console.log('useEffect, start')
     fetchInvoices();
-  }, [status, search, page]);
+  }, [fetchInvoices]);
 
   return (
     <InvoicesContext.Provider value={{
