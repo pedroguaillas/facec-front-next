@@ -17,27 +17,29 @@ export const useCustomerForm = () => {
         setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
-    const handleCustom = async () => {
-        const res = await getCustomer(axiosAuth, customer.identication);
-        if (res !== null) {
-            if (res.branch_id !== 0) {
-                setErrors({ identication: 'El cliente ya esta registrado' })
-                return;
-            }
-            const { name, address, email, phone } = res
-            setCustomer(prev => ({
-                ...prev,
-                name, address, email, phone
-            }));
-        }
-    }
-
     useEffect(() => {
+        const handleCustom = async () => {
+            const res = await getCustomer(axiosAuth, customer.identication);
+            if (res !== null) {
+                if (res.branch_id !== 0) {
+                    setErrors({ identication: 'El cliente ya esta registrado' })
+                    return;
+                }
+                const { name, address, email, phone } = res
+                setCustomer(prev => ({
+                    ...prev,
+                    name, address, email, phone
+                }));
+            }
+        }
+
         const identication = customer.identication.trim();
+
         if ((customer.type_identification === 'cédula' && identication.length === 10) || (customer.type_identification === 'ruc' && identication.length === 13)) {
             handleCustom();
         }
-    }, [customer.identication])
+
+    }, [customer.type_identification, customer.identication, axiosAuth])
 
     return { customer, errors, setErrors, handleChange };
 };

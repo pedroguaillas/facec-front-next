@@ -6,38 +6,39 @@ export const useSelectPoint = () => {
     const { invoice, points, selectPoint, setInvoice, setSelectPoint } = useCreateInvoice();
     const { voucher_type } = invoice;
 
-    const handleSelectPointHook = useCallback(() => {
+    // Se ejecuta en la primera petición de carga
+    const handlePoints = useCallback(() => {
+        if (points.length === 1) {
+            setSelectPoint(points[0]);
+        }
+    }, [points, setSelectPoint]);
 
-        if (selectPoint && invoice.voucher_type) {
+    useEffect(() => {
+        // Se ejecuta solo al inicio cuando carga el formulario
+        handlePoints();
+    }, [points, handlePoints]);
 
-            const nextNumber = Number(invoice.voucher_type) === 1 ? selectPoint.invoice : selectPoint.creditnote;
+    // Establece la serie en el invoice en dependecia del tipo de comprobante
+    const handleSelectPoint = useCallback(() => {
+
+        if (selectPoint && voucher_type) {
+
+            const nextNumber = Number(voucher_type) === 1 ? selectPoint.invoice : selectPoint.creditnote;
             const serie = `${selectPoint.store}-${selectPoint.point}-${String(nextNumber).padStart(9, '0')}`;
 
             setInvoice((prev) => ({ ...prev, serie }));
         }
-    }, [selectPoint, voucher_type]);
-
-    // Se ejecuta en la primera peteción de carga
-    const handleChangePoints = useCallback(() => {
-        if (points.length === 1) {
-            setSelectPoint(points[0]);
-        }
-    }, [points]);
+    }, [selectPoint, voucher_type, setInvoice]);
 
     useEffect(() => {
-        // se ejecuta en las acciones de selectPoint y handleSelectPointHook
-        handleSelectPointHook();
-    }, [selectPoint, handleSelectPointHook]);
+        // se ejecuta en las acciones de selectPoint
+        handleSelectPoint();
+    }, [selectPoint, handleSelectPoint]);
 
     useEffect(() => {
         // Se ejecuenta solo cuando cambia el tipo de comprobante
-        handleSelectPointHook();
-    }, [voucher_type]);
+        handleSelectPoint();
+    }, [voucher_type, handleSelectPoint]);
 
-    useEffect(() => {
-        // Se ejecuta solo al inicio cuando llega los datos
-        handleChangePoints();
-    }, [points]);
-
-    return { handleSelectPointHook, handleChangePoints };
+    return { handleSelectPoint, handlePoints };
 };
