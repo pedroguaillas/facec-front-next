@@ -1,5 +1,5 @@
+import { PrimaryButton, TableResponsive } from "@/components"
 import { useCarriers } from "../context/CarriersContext"
-import { TableResponsive } from "@/components"
 
 export const CarriersTable = () => {
 
@@ -13,6 +13,7 @@ export const CarriersTable = () => {
                     <th className="text-left">Nombre</th>
                     <th>Placa</th>
                     <th className="text-left">Correo</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -22,6 +23,9 @@ export const CarriersTable = () => {
                         <td className="text-left">{carrier.atts.name}</td>
                         <td>{carrier.atts.license_plate}</td>
                         <td className="text-left">{carrier.atts.email}</td>
+                        <td className="w-1">
+                            <PrimaryButton type="link" label="" url={`carriers/${carrier.id}`} action="edit" />
+                        </td>
                     </tr>
                 ))}
             </tbody>
