@@ -1,12 +1,12 @@
 "use client";
 
+import { storeCustomer, updateCustomer } from '../../../../services/storeCustomer';
 import { customerSchema } from '@/schemas/customer.schema';
-import { useCustomerForm } from '../hook/useCustomerForm';
+import { useCustomerForm } from '../hooks/useCustomerForm';
 import { SelectOption, TextInput } from '@/components';
+import { useParams, useRouter } from 'next/navigation';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { storeCustomer } from '../../../../../services/storeCustomer';
 import { ButtonSubmit } from './ButtonSubmit';
-import { useRouter } from 'next/navigation';
 import { useActionState } from 'react';
 
 export const CustomerForm = () => {
@@ -14,6 +14,7 @@ export const CustomerForm = () => {
     const router = useRouter();
     const axiosAuth = useAxiosAuth();
     const { customer, errors, handleChange, setErrors } = useCustomerForm();
+    const params = useParams();
 
     const [, formAction] = useActionState(
         async (prevState: unknown, queryData: FormData) => {
@@ -31,6 +32,13 @@ export const CustomerForm = () => {
                     formatted[err.path[0] as string] = err.message;
                 });
                 setErrors(formatted);
+                return;
+            }
+
+            // TODO: falta que regrese una respuesta un Customer o Error por no poder guardar.
+            if (params?.id !== undefined) {
+                await updateCustomer(params.id + '', axiosAuth, customer);
+                router.push('/customers');
                 return;
             }
 

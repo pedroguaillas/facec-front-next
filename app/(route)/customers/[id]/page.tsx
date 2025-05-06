@@ -1,12 +1,12 @@
-import { CustomerForm } from '../shared/CustomerForm';
-import { Separate, Title } from '@/components';
+import { Separate, Title } from "@/components"
+import { CustomerForm } from "../shared/CustomerForm"
 
-const PageCreateCustomer = () => {
+const PageEditCustomer = () => {
     return (
         <div className='dark:text-gray-300'>
             <Title
                 title="Cliente"
-                subTitle="Registrar un nuevo cliente"
+                subTitle="Editar un cliente"
             />
             <div className='md:mx-8 py-4'>
                 {/* Card */}
@@ -22,5 +22,4 @@ const PageCreateCustomer = () => {
         </div>
     )
 }
-
-export default PageCreateCustomer;
+export default PageEditCustomer;

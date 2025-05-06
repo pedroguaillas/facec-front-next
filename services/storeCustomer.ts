@@ -15,3 +15,19 @@ export const storeCustomer = async (
         return null;
     }
 }
+
+export const updateCustomer = async (
+    id:string,
+    axiosAuth: AxiosInstance,
+    data: unknown
+): Promise<Customer | null> => {
+
+    try {
+        const response = await axiosAuth.put('customers/'+id, data);
+        return response.data.customer as Customer;
+    }
+    catch (error) {
+        console.error('Error creating customer:', error);
+        return null;
+    }
+}

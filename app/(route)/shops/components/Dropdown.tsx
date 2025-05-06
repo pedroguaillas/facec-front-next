@@ -72,7 +72,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
 
         if (shop.atts.state_retencion !== "ANULADO") {
             options.splice(1, 0, {
-                label: renderSwitch[shop.atts.state_retencion],
+                label: renderSwitch[shop.atts.state_retencion.replace(' ', '_')],
                 onClick: () => renderProcess[shop.atts.state_retencion](shop.id, axiosAuth, fetchShops),
             });
         }

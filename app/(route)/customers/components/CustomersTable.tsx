@@ -1,4 +1,4 @@
-import { TableResponsive } from "@/components";
+import { PrimaryButton, TableResponsive } from "@/components";
 import { useCustomers } from "../context/CustomersContext";
 
 export const CustomersTable = () => {
@@ -12,6 +12,7 @@ export const CustomersTable = () => {
           <th className="text-left">Identificación</th>
           <th className="text-left">Nombre</th>
           <th className="text-left">Dirección</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -22,6 +23,9 @@ export const CustomersTable = () => {
             <td className="text-left">{customer.atts.identication}</td>
             <td className="text-left">{customer.atts.name}</td>
             <td className="text-left">{customer.atts.address}</td>
+            <td className="w-1">
+              <PrimaryButton type="link" label="" action="edit" url={`customers/${customer.id}`} />
+            </td>
           </tr>
         ))}
       </tbody>

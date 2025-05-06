@@ -1,5 +1,5 @@
 import { TableResponsive } from "@/components/table-responsive/TableResponsive";
-import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
 import { useInvoices } from "../context/InvoicesContext";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
@@ -47,11 +47,30 @@ const InvoicesTable = () => {
                         <td>{order.atts.date}</td>
                         <td>{`${calPrefix[order.atts.voucher_type]} ${order.atts.serie}`}</td>
                         <td className="text-left uppercase">{order.customer?.name || "Desconocido"}</td>
-                        <td>
-                            <span className={order.atts?.state === 'AUTORIZADO' ? 'bg-green-700 px-2 py-1 text-gray-100 rounded-2xl' : ''}>
-                                {order.atts?.state || "CREADO"}
-                            </span>
+                        <td className="text-center">
+                            <div className="inline-flex relative justify-center items-center">
+                                <span
+                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block
+                                            ${order.atts?.state === 'AUTORIZADO' ? 'bg-green-700 text-white' : ''}
+                                            ${["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state)
+                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900'
+                                            : ''}
+                                        `}
+                                >
+                                    {order.atts?.state || "CREADO"}
+
+                                    {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state) && (
+                                        <div className="absolute -top-1 -right-1 group">
+                                            <FaInfoCircle className="text-gray-400 cursor-pointer" />
+                                            <div className="absolute -top-6 right-0 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+                                                {order.atts.extra_detail}
+                                            </div>
+                                        </div>
+                                    )}
+                                </span>
+                            </div>
                         </td>
+
                         <td className="text-right">${order.atts.total}</td>
                         <td>
                             {Number(order.atts.send_mail) === 1 && (

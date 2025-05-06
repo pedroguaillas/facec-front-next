@@ -4,7 +4,7 @@ import { TableResponsive } from "@/components"
 import { useShops } from "../context/ShopsContext"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
-import { FaCheckCircle, FaMailBulk } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
 
 export const ShopsTable = () => {
 
@@ -53,10 +53,28 @@ export const ShopsTable = () => {
                         <td>{shop.atts.date}</td>
                         <td>{`${calPrefix[shop.atts.voucher_type]} ${shop.atts.serie}`}</td>
                         <td className="text-left">{shop.provider.name}</td>
-                        <td>
-                            <span className={shop.atts?.state_retencion === 'AUTORIZADO' ? 'bg-green-700 px-2 py-1 text-gray-100 rounded-2xl' : ''}>
-                                {shop.atts.state_retencion || "CREADO"}
-                            </span>
+                        <td className="text-center">
+                            <div className="inline-flex relative justify-center items-center">
+                                <span
+                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block
+                                            ${shop.atts?.state_retencion === 'AUTORIZADO' ? 'bg-green-700 text-white' : ''}
+                                            ${["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion)
+                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900'
+                                            : ''}
+                                        `}
+                                >
+                                    {shop.atts?.state_retencion || "CREADO"}
+
+                                    {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion) && (
+                                        <div className="absolute -top-1 -right-1 group">
+                                            <FaInfoCircle className="text-gray-400 cursor-pointer" />
+                                            <div className="absolute -top-6 right-0 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+                                                {shop.atts.extra_detail_retention}
+                                            </div>
+                                        </div>
+                                    )}
+                                </span>
+                            </div>
                         </td>
                         <td className="text-right">{parseFloat(shop.atts.total.toString()).toFixed(2)}</td>
                         <td className="text-right">{shop.atts.retention ?? '0.00'}</td>

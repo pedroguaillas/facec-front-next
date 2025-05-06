@@ -73,7 +73,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {
-                label: renderSwitch[order.atts.state],
+                label: renderSwitch[order.atts.state.replace(' ', '_')],
                 onClick: () => renderProcess[order.atts.state](order.id, axiosAuth, fetchInvoices),
             });
         }
