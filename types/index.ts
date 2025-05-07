@@ -8,5 +8,6 @@ export * from './next-auth.d';
 export * from './order.d';
 export * from './paginate.d';
 export * from './product.d';
+export * from './referral-guide.d';
 export * from './shop.d';
 export * from './supplier.d';

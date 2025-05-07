@@ -47,8 +47,8 @@ export default function LoginPage() {
       <div className="bg-gradient-to-r from-sky-300 to-sky-900 bg-clip-text text-transparent font-semibold text-4xl text-center">
         facec
       </div>
-      <p className="text-slate-500 my-4">Ingresa a tu cuenta</p>
-      <form onSubmit={handleSubmit} className="[&>div>label]:text-slate-400 [&>div>label]:dark:text-slate-600 [&>div>input]:text-slate-400 [&>div>input]:dark:text-slate-600">
+      <p className="text-slate-700 my-4">Ingresa a tu cuenta</p>
+      <form onSubmit={handleSubmit} className="[&>div>label]:text-slate-500 [&>div>label]:dark:text-slate-600 [&>div>input]:text-slate-500 [&>div>input]:dark:text-slate-600">
         <TextInput
           value={user}
           onChange={handleChange}

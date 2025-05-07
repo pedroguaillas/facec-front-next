@@ -17,8 +17,10 @@ export const CarriersTable = () => {
                 </tr>
             </thead>
             <tbody>
-                {carriers.map((carrier) => (
-                    <tr key={carrier.id}>
+                {carriers.map((carrier, index) => (
+                    <tr key={carrier.id}
+                        className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
+                    >
                         <td>{carrier.atts.identication}</td>
                         <td className="text-left">{carrier.atts.name}</td>
                         <td>{carrier.atts.license_plate}</td>
