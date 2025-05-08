@@ -22,13 +22,13 @@ export const GeneralInformation = () => {
                     <div className='w-full'>
                         {points.length > 1 && (
                             <div className="flex flex-col lg:w-2/3">
-                                <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errors.serie} handleSelect={handleSelectPoint} />
+                                <SelectOption label="Punto Emisión" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errors.serie} handleSelect={handleSelectPoint} />
                             </div>
                         )}
                         <div className='py-2'><span>N° de serie </span>{referralGuide.serie}</div>
                         {/* TODO: agregar transportista */}
                         <div className='flex flex-col lg:w-2/3'>
-                            <span>Cliente</span>
+                            <span>Destinatario/Cliente</span>
                             <SelectCustomer selectCustomer={handleSelectCustomer} error={errors.customer_id} />
                         </div>
                         <div className='lg:w-2/3'>
@@ -51,7 +51,7 @@ export const GeneralInformation = () => {
                             <TextInput type='text' label='Motivo translado *' value={referralGuide.reason_transfer} error={errors.reason_transfer} onChange={handleChange} name='reason_transfer' maxLength={300} />
                         </div>
                         <div className='lg:w-2/3'>
-                            <TextInput type='text' label='Cod estable destino' value={referralGuide.branch_destiny ?? ''} error={errors.branch_destiny} onChange={handleChange} name='branch_destiny' maxLength={300} />
+                            <TextInput type='text' label='Cod estable destino' value={referralGuide.branch_destiny ?? ''} error={errors.branch_destiny} onChange={handleChange} name='branch_destiny' maxLength={3} />
                         </div>
                         <div className='lg:w-2/3'>
                             <TextInput type='text' label='Documento aduanero' value={referralGuide.customs_doc ?? ''} error={errors.customs_doc} onChange={handleChange} name='customs_doc' maxLength={17} />
@@ -66,7 +66,7 @@ export const GeneralInformation = () => {
             <Separate />
 
             <div className='py-2'>
-                <strong className='font-bold'>Factura</strong>
+                <strong className='font-bold'>Comprobante sustento</strong>
 
                 {/* Row */}
                 <div className='sm:flex gap-4'>

@@ -1,6 +1,7 @@
 import { Separate, Title } from "@/components";
 import { ReferralGuideCreateProvider } from "./context/ReferralGuideCreateContext";
 import { GeneralInformation } from "./components/GeneralInformation";
+import { ButtonSubmit } from "./components/ButtonSubmit";
 
 const PageCreateReferralGuide = () => {
     return (
@@ -23,6 +24,7 @@ const PageCreateReferralGuide = () => {
                         <Separate />
                         <GeneralInformation />
                         <Separate />
+                        <ButtonSubmit />
                     </div>
                 </div>
             </div>
