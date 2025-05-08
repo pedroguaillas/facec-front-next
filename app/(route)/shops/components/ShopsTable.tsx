@@ -32,13 +32,13 @@ export const ShopsTable = () => {
         <TableResponsive>
             <thead>
                 <tr>
-                    <th>Emisión</th>
-                    <th>Documento</th>
-                    <th className="text-left">Razon social</th>
-                    <th>Estado Ret</th>
-                    <th className="text-right">Total</th>
-                    <th className="text-right">Ret</th>
-                    <th className="text-right">Pagar</th>
+                    <th>EMISION</th>
+                    <th>DOCUMENTO</th>
+                    <th className="text-left">RAZON SOCIAL</th>
+                    <th>ESTADO RET</th>
+                    <th className="text-right">TOTAL</th>
+                    <th className="text-right">RET</th>
+                    <th className="text-right">PAGAR</th>
                     <th>
                         <div className="flex justify-center">
                             <FaMailBulk />

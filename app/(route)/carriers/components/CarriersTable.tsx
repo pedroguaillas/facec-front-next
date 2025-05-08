@@ -9,10 +9,10 @@ export const CarriersTable = () => {
         <TableResponsive>
             <thead>
                 <tr>
-                    <th>Identificación</th>
-                    <th className="text-left">Nombre</th>
-                    <th>Placa</th>
-                    <th className="text-left">Correo</th>
+                    <th>IDENTIFICACION</th>
+                    <th className="text-left">NOMBRE</th>
+                    <th>PLACA</th>
+                    <th className="text-left">CORREO</th>
                     <th></th>
                 </tr>
             </thead>

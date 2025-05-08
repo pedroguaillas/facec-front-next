@@ -9,9 +9,9 @@ export const CustomersTable = () => {
     <TableResponsive>
       <thead>
         <tr>
-          <th className="text-left">Identificación</th>
-          <th className="text-left">Nombre</th>
-          <th className="text-left">Dirección</th>
+          <th className="text-left">IDENTIFICACION</th>
+          <th className="text-left">NOMBRE</th>
+          <th className="text-left">DIRECCION</th>
           <th></th>
         </tr>
       </thead>

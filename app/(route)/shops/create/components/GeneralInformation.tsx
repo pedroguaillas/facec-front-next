@@ -20,12 +20,18 @@ export const GeneralInformation = () => {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = event.target;
         setShop((prevState) => ({ ...prevState, [name]: value }))
-        setErrorShop((prevState) => ({ ...prevState, [name]: '' }))
+
+        if (name in errorShop) {
+            setErrorShop((prevState) => ({ ...prevState, [name]: '' }))
+        }
     }
 
     const handleSelectProvider = (provider: SupplierProps) => {
         setShop((prevState) => ({ ...prevState, provider_id: provider.id }))
-        setErrorShop((prevState) => ({ ...prevState, provider_id: '' }))
+
+        if ('provider_id' in errorShop) {
+            setErrorShop((prevState) => ({ ...prevState, provider_id: '' }))
+        }
     }
 
     return (

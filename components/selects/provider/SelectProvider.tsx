@@ -35,13 +35,13 @@ export const SelectProvider = ({ label, error, selectProvider }: Props) => {
                     className="border border-gray-300 shadow-md w-full rounded-b max-h-60 overflow-y-auto"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {suggestions.map((customer) => (
+                    {suggestions.map((provider) => (
                         <div
-                            key={customer.id}
+                            key={provider.id}
                             className="px-4 py-2 hover:bg-gray-100 hover:dark:bg-primary rounded cursor-pointer text-sm text-left"
-                            onClick={() => handleSelect(customer)}
+                            onClick={() => handleSelect(provider)}
                         >
-                            {customer.atts.identication} - {customer.atts.name}
+                            {provider.atts.identication} - {provider.atts.name}
                         </div>
                     ))}
                 </div>

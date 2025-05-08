@@ -8,7 +8,7 @@ import { ActionsTitle } from "@/types";
 const PageReferralGuides = () => {
 
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: '#', action: 'add' },
+        { label: "", type: "link", url: '/referralguides/create', action: 'add' },
     ];
 
     const ReferralGuidesPagination = () => {

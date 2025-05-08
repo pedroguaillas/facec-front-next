@@ -8,6 +8,7 @@ import { CustomerProps, EmisionPoint } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
+import { getDate } from "@/helpers/dateHelper";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;
@@ -42,13 +43,10 @@ const InvoiceCreateContext = createContext<InvoicesContextType | undefined>(unde
 interface Props {
   children: ReactNode;
 }
-const dateType = new Date();
-dateType.setHours(dateType.getHours() - 5);
-const date = dateType.toISOString().substring(0, 10);
 
 const initialInvoice: OrderCreateProps = {
   serie: 'Cree un punto de emisión',
-  date,
+  date: getDate(),
   expiration_days: 0,
   no_iva: 0,
   base0: 0,

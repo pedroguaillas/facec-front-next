@@ -16,6 +16,7 @@ export const useSelectProvider = (label: string = "", selectProvider: (provider:
 
     const handleSelect = (provider: SupplierProps) => {
         setSearch(provider.atts.name);
+        setSuggestions([]);
         setSkipFetch(true); // 👈 evita la búsqueda
         selectProvider(provider);
     }
@@ -36,6 +37,13 @@ export const useSelectProvider = (label: string = "", selectProvider: (provider:
         }
     }, [search, axiosAuth]);
 
+    // 🔁 Escuchar cambios externos en label
+    useEffect(() => {
+        setSearch(label);
+        setSkipFetch(true); // evitar búsqueda inmediata tras actualizar externamente
+    }, [label]);
+
+    // 🔁 Buscar proveedores al escribir
     useEffect(() => {
         if (search.length > 1 && !skipFetch) {
             fetchProvider();

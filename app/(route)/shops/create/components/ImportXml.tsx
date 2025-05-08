@@ -1,10 +1,10 @@
-import { PrimaryButton } from '@/components'
-import React, { ChangeEvent } from 'react'
-import { useFile } from '../hooks/useFile';
+import { useCreateShop } from '../context/ShopCreateContext';
 import { storeProvider } from '../services/storeProvider';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import { PrimaryButton } from '@/components';
+import { useFile } from '../hooks/useFile';
+import { ChangeEvent } from 'react';
 import { Supplier } from '@/types';
-import { useCreateShop } from '../context/ShopCreateContext';
 
 export const ImportXml = () => {
 
@@ -63,6 +63,7 @@ export const ImportXml = () => {
         };
 
         const supplier = await storeProvider(axiosAuth, provider);
+
         if (supplier) {
             setShop((prevState) => ({ ...prevState, provider_id: supplier.id }))
             setSelectProvider(supplier);
