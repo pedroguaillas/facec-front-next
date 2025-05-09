@@ -56,6 +56,7 @@ export const TextInput = ({
                 max={max}
                 aria-required={required ? 'true' : 'false'} // Mejora de accesibilidad
                 aria-disabled={disabled ? 'true' : 'false'} // Mejora de accesibilidad
+                autoComplete='off'
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { productOutputSchema } from "./product-output.schema";
 
 export const referralGuideSchema = z
     .object({
@@ -18,4 +19,5 @@ export const referralGuideSchema = z
         serie_invoice: z.string().optional(),
         date_invoice: z.string().optional(),
         authorization_invoice: z.string().optional(),
+        products:z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
     });

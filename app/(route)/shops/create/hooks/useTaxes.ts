@@ -13,6 +13,8 @@ export const useTaxes = () => {
     };
 
     const updateItem = (index: number, field: keyof Tax, val: string | number | boolean) => {
+        if ((field === 'porcentage' || field === 'base') && val && Number(val) < 0) return
+        
         const newTaxes = [...taxes]; // Copiamos el array
 
         // Actualizamos el campo cambiado
