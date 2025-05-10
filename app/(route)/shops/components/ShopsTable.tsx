@@ -63,7 +63,7 @@ export const ShopsTable = () => {
                                             : ''}
                                         `}
                                 >
-                                    {shop.atts?.state_retencion || "CREADO"}
+                                    {shop.atts?.state_retencion}
 
                                     {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion) && (
                                         <div className="absolute -top-1 -right-1 group">
