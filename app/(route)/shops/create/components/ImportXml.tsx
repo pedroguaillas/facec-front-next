@@ -1,5 +1,5 @@
 import { useCreateShop } from '../context/ShopCreateContext';
-import { storeProvider } from '../services/storeProvider';
+import { storeSupplier } from '@/services/supplierServices';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { PrimaryButton } from '@/components';
 import { useFile } from '../hooks/useFile';
@@ -62,7 +62,7 @@ export const ImportXml = () => {
             address: getTag(xmlDoc, "dirMatriz"),
         };
 
-        const supplier = await storeProvider(axiosAuth, provider);
+        const supplier = await storeSupplier(axiosAuth, provider);
 
         if (supplier) {
             setShop((prevState) => ({ ...prevState, provider_id: supplier.id }))
@@ -76,9 +76,10 @@ export const ImportXml = () => {
     };
 
     return (
-        <div className='mb-0'>
+        <div className='mb-3'>
             <PrimaryButton type='button' onClick={handleButton} label='Cargar XML' action='import' />
             <input type='file' id='file_invoice' onChange={handleSelectFile} className='hidden' accept='.xml' />
         </div>
     )
 }
+

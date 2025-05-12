@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react'
 import { FaSave, FaSpinner } from 'react-icons/fa';
 import { useCreateShop } from '../context/ShopCreateContext';

@@ -1,21 +1,18 @@
 import { useCreateInvoice } from "../../context/InvoiceCreateContext";
-import { initialProductItem } from "@/constants/initialValues";
 import { productOutputSchema } from "@/schemas/product-output.schema";
-import { ProductProps } from "@/types";
-import { fields, ProductOutput } from "@/types/order";
+import { initialProductItem } from "@/constants/initialValues";
+import { fields, ProductOutput, ProductProps } from "@/types";
 import { nanoid } from "nanoid";
 
-// hooks/useProductOutput.ts
 export const useProductOutput = () => {
 
     const { productOutputs, setInvoice, setProductOutputs, setErrorProductOutputs } = useCreateInvoice();
 
-    // Agregar producto a la lista
     const addItem = () => {
         setProductOutputs((prev) => ([...prev, { ...initialProductItem, id: nanoid(), }]));
     };
 
-    // Modificar cantidad o precio de un producto
+    // Modificar campos del Item Product
     const updateItem = (index: number, field: fields, value: string | number) => {
         if (value && Number(value) < 0) return
         const prods = productOutputs;

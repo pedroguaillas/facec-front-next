@@ -1,4 +1,4 @@
-import { getCustomer as GlobalGetCustomer } from "@/services/getCustomer";
+import { findCustomerByIdentification } from "@/services/customerServices";
 import { initialCustomer } from "@/constants/initialValues";
 import { getCustomer } from "../services/customersServices";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -37,7 +37,7 @@ export const useCustomerForm = () => {
 
     useEffect(() => {
         const handleCustom = async () => {
-            const res = await GlobalGetCustomer(axiosAuth, customer.identication);
+            const res = await findCustomerByIdentification(axiosAuth, customer.identication);
             if (res !== null) {
                 if (res.branch_id !== 0) {
                     setErrors({ identication: 'El cliente ya esta registrado' })

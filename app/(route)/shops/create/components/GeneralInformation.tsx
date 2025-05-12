@@ -1,38 +1,15 @@
 "use client";
 
+import { useGeneralInformation } from "../hooks/useGeneralInformation";
 import { SelectOption, SelectProvider, TextInput } from "@/components"
-import { useCreateShop } from "../context/ShopCreateContext"
+import { useCreateShop } from "../context/ShopCreateContext";
 import { getDate, getMinDate } from "@/helpers/dateHelper";
-import { SupplierProps } from "@/types";
 import { ImportXml } from "./ImportXml";
 
 export const GeneralInformation = () => {
 
-    const { shop, errorShop, selectProvider, setShop, setErrorShop } = useCreateShop();
-
-    const invoiceTypes = [
-        { value: 1, label: 'Factura' },
-        { value: 2, label: 'Nota Venta' },
-        { value: 3, label: 'Liquidación en Compra' },
-        { value: 5, label: 'Nota Débito' }
-    ];
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-        const { name, value } = event.target;
-        setShop((prevState) => ({ ...prevState, [name]: value }))
-
-        if (name in errorShop) {
-            setErrorShop((prevState) => ({ ...prevState, [name]: '' }))
-        }
-    }
-
-    const handleSelectProvider = (provider: SupplierProps) => {
-        setShop((prevState) => ({ ...prevState, provider_id: provider.id }))
-
-        if ('provider_id' in errorShop) {
-            setErrorShop((prevState) => ({ ...prevState, provider_id: '' }))
-        }
-    }
+    const { invoiceTypes, handleChange, handleSelectProvider } = useGeneralInformation();
+    const { shop, errorShop, selectProvider } = useCreateShop();
 
     return (
         <div className='py-2'>
@@ -60,9 +37,9 @@ export const GeneralInformation = () => {
 
                 {/* Col 2 */}
                 <div className='w-full'>
-                    <div className='flex gap-2 items-center'>
+                    <div className='flex gap-2 items-end'>
                         <SelectOption label="Tipo de comprobante" options={invoiceTypes} select={true} selectedValue={shop.voucher_type} error={errorShop.voucher_type} handleSelect={handleChange} name='voucher_type' />
-                        <ImportXml />
+                        {Number(shop.voucher_type) === 1 && <ImportXml />}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,5 @@
-import { Customer, LinkMeta, Links, Meta, Tax } from "@/types";
+import { Customer, LinkMeta, Links, Meta, Supplier, Tax } from "@/types";
 import { ProductOutput } from "@/types/order";
-import { nanoid } from "nanoid";
 
 export const initialMeta: Meta = {
   current_page: 1,
@@ -22,10 +21,8 @@ export const initialLinkMeta: LinkMeta = {
   active: false,
 };
 
-const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
-
 export const initialProductItem: ProductOutput = {
-  id,
+  id: '',
   product_id: 0,
   price: 0,
   quantity: 1,
@@ -38,14 +35,21 @@ export const initialProductItem: ProductOutput = {
 };
 
 export const initialCustomer: Customer = {
-  id,
+  id: '',
   type_identification: 'cédula',
   identication: '',
   name: '',
 };
 
+export const initialSupplier: Supplier = {
+  id: '',
+  type_identification: 'ruc',
+  identication: '',
+  name: '',
+}
+
 export const initialTax: Tax = {
-  id,
+  id: '',
   code: '',
   tax_code: '',
   base: '',

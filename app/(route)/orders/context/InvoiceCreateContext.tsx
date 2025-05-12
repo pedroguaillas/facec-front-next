@@ -6,9 +6,9 @@ import { getCreateInvoice } from "../services/invoicesServices";
 import { initialProductItem } from "@/constants/initialValues";
 import { CustomerProps, EmisionPoint } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
+import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { getDate } from "@/helpers/dateHelper";
 
 interface InvoicesContextType {
   invoice: OrderCreateProps;
@@ -70,17 +70,12 @@ const initialInvoice: OrderCreateProps = {
   pay_method: 20,
 };
 
-const createNewProductItem = (): ProductOutput => ({
-  ...initialProductItem,
-  id: nanoid(),
-});
-
 export const InvoiceCreateProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
   const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
   const [selectCustom, setSelectCustom] = useState<CustomerProps | null>(null);
   const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
-  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([createNewProductItem()]);
+  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([{ ...initialProductItem, id: nanoid() }]);
   const [errorProductOutputs, setErrorProductOutputs] = useState<Record<string, Partial<Record<keyof ProductOutput, string>>>>({});
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);

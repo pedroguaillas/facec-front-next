@@ -1,6 +1,6 @@
 "use client";
 
-import { storeCustomer, updateCustomer } from '../../../../services/storeCustomer';
+import { storeCustomer, updateCustomer } from '@/services/customerServices';
 import { customerSchema } from '@/schemas/customer.schema';
 import { useCustomerForm } from '../hooks/useCustomerForm';
 import { SelectOption, TextInput } from '@/components';

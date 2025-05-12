@@ -1,8 +1,7 @@
+import { findCustomerByIdentification, storeCustomer } from "@/services/customerServices";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { initialCustomer } from "@/constants/initialValues";
 import { customerSchema } from "@/schemas/customer.schema";
-import { storeCustomer } from "@/services/storeCustomer";
-import { getCustomer } from "@/services/getCustomer";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { Customer, CustomerProps } from "@/types";
 
@@ -29,7 +28,7 @@ export const useModalForm = () => {
     }
 
     const getCustom = useCallback(async () => {
-        const res = await getCustomer(axiosAuth, customer.identication);
+        const res = await findCustomerByIdentification(axiosAuth, customer.identication);
         if (res !== null) {
             if (res.branch_id !== 0) {
                 setErrors({ identication: 'El cliente ya esta registrado' })

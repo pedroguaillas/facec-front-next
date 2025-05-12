@@ -1,12 +1,13 @@
 "use client";
 
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { EmisionPoint, ShopCreateProps, SupplierProps, Tax, TaxInput } from "@/types";
+import { EmisionPoint, ProductOutput, ShopCreateProps, SupplierProps, Tax, TaxInput } from "@/types";
 import { getCreateShop } from "../services/getCreateShop";
 import { initialTax } from "@/constants/initialValues";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
+import { nanoid } from "nanoid";
 
 interface ShopContextType {
     shop: ShopCreateProps;
@@ -17,12 +18,14 @@ interface ShopContextType {
     taxInputs: TaxInput[];
     taxes: Tax[];
     errorTaxes: Record<string, Partial<Record<keyof Tax, string>>>;
+    productOutputs: ProductOutput[];
     setShop: Dispatch<SetStateAction<ShopCreateProps>>;
     setSelectProvider: Dispatch<SetStateAction<SupplierProps | null>>;
     setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
     setErrorShop: Dispatch<SetStateAction<Partial<Record<keyof ShopCreateProps, string>>>>;
     setTaxes: Dispatch<SetStateAction<Tax[]>>;
     setErrorTaxes: Dispatch<SetStateAction<Record<string, Partial<Record<keyof Tax, string>>>>>;
+    setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
 }
 
 const ShopCreateContext = createContext<ShopContextType | undefined>(undefined);
@@ -57,10 +60,6 @@ const initialShop: ShopCreateProps = {
     date_retention: getDate(),
 }
 
-const createNewTaxItem = (): Tax => ({
-    ...initialTax,
-});
-
 export const ShopCreateProvider = ({ children }: Props) => {
     const [shop, setShop] = useState<ShopCreateProps>(initialShop);
     const [selectProvider, setSelectProvider] = useState<SupplierProps | null>(null);
@@ -69,7 +68,8 @@ export const ShopCreateProvider = ({ children }: Props) => {
     const [errorShop, setErrorShop] = useState<Partial<Record<keyof ShopCreateProps, string>>>({});
     const [taxInputs, setTaxInputs] = useState<TaxInput[]>([]);
     const [errorTaxes, setErrorTaxes] = useState<Record<string, Partial<Record<keyof Tax, string>>>>({});
-    const [taxes, setTaxes] = useState<Tax[]>([createNewTaxItem()]);
+    const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([]);
+    const [taxes, setTaxes] = useState<Tax[]>([{ ...initialTax, id: nanoid() }]);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth();
 
@@ -90,8 +90,8 @@ export const ShopCreateProvider = ({ children }: Props) => {
 
     return (
         <ShopCreateContext.Provider value={{
-            shop, errorShop, selectProvider, points, selectPoint, taxInputs, taxes, errorTaxes,
-            setShop, setErrorShop, setSelectProvider, setSelectPoint, setTaxes, setErrorTaxes,
+            shop, errorShop, selectProvider, points, selectPoint, taxInputs, taxes, errorTaxes, productOutputs,
+            setShop, setErrorShop, setSelectProvider, setSelectPoint, setTaxes, setErrorTaxes, setProductOutputs,
         }}>
             {children}
         </ShopCreateContext.Provider>

@@ -33,7 +33,6 @@ export const InvoicesProvider = ({ children }: Props) => {
 
   const fetchInvoices = useCallback(async (pageUrl = `orderlist?page=${page}`) => {
     if (status !== "authenticated") return;
-    console.log('fetchInvoices, useCallback')
 
     try {
       const data = await getInvoices(axiosAuth, pageUrl, search, page);
@@ -46,7 +45,6 @@ export const InvoicesProvider = ({ children }: Props) => {
   }, [status, axiosAuth, search, page]);
 
   useEffect(() => {
-    console.log('useEffect, start')
     fetchInvoices();
   }, [fetchInvoices]);
 

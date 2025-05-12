@@ -19,7 +19,7 @@ export const ListProducts = () => {
     return (
         <>
             <div className="flex gap-16 my-4">
-                <span className="font-bold">Productos</span>
+                <span className="font-bold">Productos/Servicios</span>
                 <label className=" inline-flex gap-2">
                     <input type="checkbox" checked={isTaxBreakdown} onChange={handleChange} />
                     Desglose

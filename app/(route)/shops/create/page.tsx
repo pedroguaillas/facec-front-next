@@ -1,9 +1,6 @@
-import { Separate, Title } from "@/components";
+import { GeneralInformation, ListProducts, RetentionInformation, ListTaxes, Totals } from "./components";
 import { ShopCreateProvider } from "./context/ShopCreateContext";
-import { GeneralInformation } from "./components/GeneralInformation";
-import { RetentionInformation } from "./components/RetentionInformation";
-import { ListTaxes } from "./components/ListTaxes";
-import { Totals } from "./components/Totals";
+import { Separate, Title } from "@/components";
 
 const PageCreateShop = () => {
     return (
@@ -25,8 +22,10 @@ const PageCreateShop = () => {
                         </h2>
                         <Separate />
                         <GeneralInformation />
+                        <ListProducts />
                         <Separate />
                         <RetentionInformation />
+                        <Separate />
                         <ListTaxes />
                         <Separate />
                         <Totals />
