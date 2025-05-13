@@ -25,7 +25,6 @@ const PageCreateShop = () => {
                         <ListProducts />
                         <Separate />
                         <RetentionInformation />
-                        <Separate />
                         <ListTaxes />
                         <Separate />
                         <Totals />

@@ -7,8 +7,10 @@ import { useTaxes } from '../hooks/useTaxes';
 
 export const ListTaxes = () => {
 
-    const { taxes, errorTaxes } = useCreateShop();
+    const { applieWithholding, taxes, errorTaxes } = useCreateShop();
     const { addItem } = useTaxes();
+
+    if (!applieWithholding) return null;
 
     return (
         <>

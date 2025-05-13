@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from 'react'
 import { FaSave, FaSpinner } from 'react-icons/fa';
 import { useCreateShop } from '../context/ShopCreateContext';
@@ -9,24 +10,28 @@ import { Tax } from '@/types';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
-    const { shop, taxes, selectPoint, setErrorShop, setErrorTaxes } = useCreateShop();
+    const { applieWithholding, shop, productOutputs, taxes, selectPoint, setErrorShop, setErrorTaxes } = useCreateShop();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        console.log(selectPoint);
         // 1. Creación del formulario
         const form = {
             ...shop,
-            products: [],
+            products: productOutputs,
             taxes,
             state_retencion: 'CREADO',
-            app_retention: true,
+            app_retention: applieWithholding,
             send: true,
             point_id: selectPoint?.id,
         };
+
+        if (!applieWithholding) {
+            delete form.serie_retencion;
+            form.taxes = [];
+        }
 
         // 2. Validar el formulario
         console.log(form)

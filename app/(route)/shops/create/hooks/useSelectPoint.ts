@@ -1,24 +1,30 @@
 import { useCallback, useEffect } from "react";
 import { useCreateShop } from "../context/ShopCreateContext";
+import { VoucherType } from "@/constants";
 
 export const useSelectPoint = () => {
-    const { shop, points, selectPoint, setShop, setSelectPoint } = useCreateShop();
+    const { shop, points, applieWithholding, selectPoint, setShop, setSelectPoint, setProductOutputs } = useCreateShop();
 
+    // 4to Selección manual del Punto del Emisión
     const handleSelectPoint = useCallback(() => {
+        if (!selectPoint || !shop.voucher_type) return;
 
-        if (selectPoint && shop.voucher_type) {
-            console.log('useCallback de selectPoint para las liquidaciones en compra')
-            // if (Number(shop.voucher_type) === 3) {
-            //     // TODO: Cambiar retention por liqidacion en compra al final
-            //     const serie = `${selectPoint.store}-${selectPoint.point}-${String(selectPoint.retention).padStart(9, '0')}`;
-            //     setShop((prev) => ({ ...prev, serie }));
-            // }
-            setShop((prevState) => ({
-                ...prevState,
-                serie_retencion: `${selectPoint.store}-${selectPoint.point}-${(selectPoint.retention + '').padStart(9, '0')}`
-            }))
+        const baseSerie = `${selectPoint.store}-${selectPoint.point}-`;
+
+        const updates: Partial<typeof shop> = {};
+
+        if (Number(shop.voucher_type) === VoucherType.LIQUIDATION) {
+            updates.serie = `${baseSerie}${String(selectPoint.settlementonpurchase).padStart(9, '0')}`;
+        } else {
+            setProductOutputs([])
         }
-    }, [selectPoint, shop.voucher_type, setShop]);
+
+        if (applieWithholding) {
+            updates.serie_retencion = `${baseSerie}${String(selectPoint.retention).padStart(9, '0')}`;
+        }
+
+        setShop((prev) => ({ ...prev, ...updates }));
+    }, [selectPoint, shop.voucher_type, setShop, applieWithholding, setProductOutputs]);
 
     useEffect(() => {
         // 3ro en ejecutar
@@ -31,7 +37,7 @@ export const useSelectPoint = () => {
 
     // Se ejecuta en la primera petición de carga
     const handlePoints = useCallback(() => {
-        // 2do en ejecutar
+        // 2do en ejecutar solo cuando hay un solo punto de emisión
         if (points.length === 1) {
             // console.log('useCallback de: points')
             const selectedPoint = points[0];
@@ -51,13 +57,6 @@ export const useSelectPoint = () => {
             handlePoints();
         }
     }, [points, handlePoints]);
-
-    // TODO: cuando se cambia a Liquidación en compra
-    // useEffect(() => {
-    //     // Se ejecuenta solo cuando cambia el tipo de comprobante
-    //     handleSelectPoint();
-    //     console.log('useEffect de: voucher_type')
-    // }, [voucher_type]);
 
     return { handleSelectPoint, handlePoints };
 }

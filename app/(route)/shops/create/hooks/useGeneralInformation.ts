@@ -1,4 +1,4 @@
-import { initialProductItem } from "@/constants/initialValues";
+import { initialProductItem, VoucherType } from "@/constants";
 import { useCreateShop } from "../context/ShopCreateContext";
 import { SupplierProps } from "@/types";
 import { useEffect } from "react";
@@ -33,7 +33,7 @@ export const useGeneralInformation = () => {
     }
 
     useEffect(() => {
-        if (Number(shop.voucher_type) === 3) {
+        if (Number(shop.voucher_type) === VoucherType.LIQUIDATION) {
             setProductOutputs((prevState) => {
                 if (prevState.length === 0) {
                     return [{ ...initialProductItem, id: nanoid() }];

@@ -7,6 +7,7 @@ interface EmisionPoint {
     invoice?: number;
     store?: string;
     retention?: number;
+    settlementonpurchase?: number;
     point: string;
     recognition: string | null;
 }

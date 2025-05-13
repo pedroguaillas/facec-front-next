@@ -4,13 +4,14 @@ import { useCreateShop } from "../context/ShopCreateContext";
 import { useListProducts } from "../hooks/useListProducts";
 import { PrimaryButton, Separate } from "@/components";
 import { ItemProduct } from "./ItemProduct";
+import { VoucherType } from "@/constants";
 
 export const ListProducts = () => {
 
     const { addItem, updateItem, selectProduct, deleteItem } = useListProducts();
     const { shop, productOutputs } = useCreateShop();
 
-    if (Number(shop.voucher_type) !== 3) {
+    if (Number(shop.voucher_type) !== VoucherType.LIQUIDATION) {
         return null;
     }
 

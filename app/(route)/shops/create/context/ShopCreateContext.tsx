@@ -15,6 +15,7 @@ interface ShopContextType {
     errorShop: Partial<Record<keyof ShopCreateProps, string>>;
     points: EmisionPoint[];
     selectPoint: EmisionPoint | null;
+    applieWithholding: boolean;
     taxInputs: TaxInput[];
     taxes: Tax[];
     errorTaxes: Record<string, Partial<Record<keyof Tax, string>>>;
@@ -26,6 +27,7 @@ interface ShopContextType {
     setTaxes: Dispatch<SetStateAction<Tax[]>>;
     setErrorTaxes: Dispatch<SetStateAction<Record<string, Partial<Record<keyof Tax, string>>>>>;
     setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
+    setApplieWithholding: Dispatch<SetStateAction<boolean>>;
 }
 
 const ShopCreateContext = createContext<ShopContextType | undefined>(undefined);
@@ -66,6 +68,7 @@ export const ShopCreateProvider = ({ children }: Props) => {
     const [points, setPoints] = useState<EmisionPoint[]>([]);
     const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
     const [errorShop, setErrorShop] = useState<Partial<Record<keyof ShopCreateProps, string>>>({});
+    const [applieWithholding, setApplieWithholding] = useState<boolean>(false);
     const [taxInputs, setTaxInputs] = useState<TaxInput[]>([]);
     const [errorTaxes, setErrorTaxes] = useState<Record<string, Partial<Record<keyof Tax, string>>>>({});
     const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([]);
@@ -90,8 +93,8 @@ export const ShopCreateProvider = ({ children }: Props) => {
 
     return (
         <ShopCreateContext.Provider value={{
-            shop, errorShop, selectProvider, points, selectPoint, taxInputs, taxes, errorTaxes, productOutputs,
-            setShop, setErrorShop, setSelectProvider, setSelectPoint, setTaxes, setErrorTaxes, setProductOutputs,
+            shop, errorShop, selectProvider, points, selectPoint, applieWithholding, taxInputs, taxes, errorTaxes, productOutputs,
+            setShop, setErrorShop, setSelectProvider, setSelectPoint, setApplieWithholding, setTaxes, setErrorTaxes, setProductOutputs,
         }}>
             {children}
         </ShopCreateContext.Provider>

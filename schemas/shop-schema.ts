@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { taxSchema } from './tax.schema';
+import { productOutputSchema } from './product-output.schema';
+import { VoucherType } from '@/constants';
 
 export const shopSchema = z
   .object({
@@ -9,7 +11,7 @@ export const shopSchema = z
       message: 'Corrija a este formato: 001-001-000000001',
     }),
     voucher_type: z.coerce.number(), // 1 = Factura, 4 = Nota de crédito
-    authorization: z.string().min(10, { message: 'Minimo 10 dígitos' }),
+    authorization: z.string().optional(),
     serie_retencion: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
       message: 'Seleccione un punto de emisión',
     }),
@@ -21,5 +23,26 @@ export const shopSchema = z
     base15: z.number(),
     total: z.number(),
     discount: z.number(),
-    taxes: z.array(taxSchema).min(1, { message: 'Debe agregar al menos una retención' }),
+    products: z.array(productOutputSchema).optional(),
+    taxes: z.array(taxSchema).optional(),
+  })
+  .refine((data) => {
+    // ✅ Solo requerido si es LIQUIDATION
+    if (data.voucher_type === VoucherType.LIQUIDATION) {
+      return data.products && data.products.length > 0;
+    }
+    return true;
+  }, {
+    message: 'Agregue al menos un producto',
+    path: ['products'],
+  })
+  .refine((data) => {
+    // Si NO es liquidación, authorization es requerida y mínima de 10 caracteres
+    if (data.voucher_type !== VoucherType.LIQUIDATION) {
+      return data.authorization && data.authorization.length >= 10;
+    }
+    return true;
+  }, {
+    message: 'Ingrese un número de autorización válido',
+    path: ['authorization'],
   });

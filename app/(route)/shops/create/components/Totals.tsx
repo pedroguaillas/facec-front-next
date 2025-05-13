@@ -4,6 +4,7 @@ import { TableResponsive } from "@/components"
 import { useCreateShop } from "../context/ShopCreateContext";
 import { ChangeEvent } from "react";
 import { SubmitButton } from "./SubmitButton";
+import { VoucherType } from "@/constants";
 
 export const Totals = () => {
 
@@ -59,16 +60,20 @@ export const Totals = () => {
                         {subtotalRows.map(({ name, label, value, error }) => (
                             <tr key={label}>
                                 <td className="border border-gray-300 text-left">{label}</td>
-                                <td className="text-right border border-gray-300">
-                                    <input
-                                        type="number"
-                                        value={value}
-                                        name={name}
-                                        onChange={handleChange}
-                                        min={0}
-                                        className={`w-full border rounded px-1 ${error ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
-                                </td>
+                                {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
+                                    <td className="text-right border border-gray-300">{value.toFixed(2)}</td>}
+                                {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
+                                    <td className="text-right border border-gray-300">
+                                        <input
+                                            type="number"
+                                            value={value}
+                                            name={name}
+                                            onChange={handleChange}
+                                            min={0}
+                                            className={`w-full border rounded px-1 ${error ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                    </td>
+                                )}
                             </tr>
                         ))}
                         {ivaRows.map(({ label, value }) => (
@@ -79,18 +84,21 @@ export const Totals = () => {
                         ))}
                         <tr>
                             <td className="border border-gray-300 text-left">No objeto de IVA ($)</td>
-                            <td className="text-right border border-gray-300">
-                                <input
-                                    type="number"
-                                    value={shop.no_iva}
-                                    name="no_iva"
-                                    onChange={handleChange}
-                                    min={0}
-                                    className={`w-full border rounded px-1 ${errorShop.no_iva ? 'border-red-500' : 'border-gray-300'}`}
-                                />
-                            </td>
+                            {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
+                                <td className="text-right border border-gray-300">{shop.no_iva.toFixed(2)}</td>}
+                            {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
+                                <td className="text-right border border-gray-300">
+                                    <input
+                                        type="number"
+                                        value={shop.no_iva}
+                                        name="no_iva"
+                                        onChange={handleChange}
+                                        min={0}
+                                        className={`w-full border rounded px-1 ${errorShop.no_iva ? 'border-red-500' : 'border-gray-300'}`}
+                                    />
+                                </td>
+                            )}
                         </tr>
-
                         <tr>
                             <td className="border border-gray-300 text-left">Monto ICE</td>
                             <td className="text-right border border-gray-300">{shop.ice.toFixed(2)}</td>

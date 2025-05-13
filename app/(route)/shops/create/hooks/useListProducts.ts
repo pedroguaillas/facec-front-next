@@ -1,11 +1,12 @@
 import { initialProductItem } from "@/constants/initialValues";
 import { useCreateShop } from "../context/ShopCreateContext";
-import { fields, ProductProps } from "@/types";
+import { fields, ProductOutput, ProductProps } from "@/types";
 import { nanoid } from "nanoid";
+import { useCallback } from "react";
 
 export const useListProducts = () => {
 
-    const { setProductOutputs } = useCreateShop();
+    const { setShop, setProductOutputs } = useCreateShop();
 
     const addItem = () => {
         setProductOutputs((prevState) => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -21,6 +22,7 @@ export const useListProducts = () => {
             };
             const { price, quantity } = newState[index];
             newState[index].total_iva = (Number(price) * Number(quantity)).toFixed(2);
+            calculateTotals(newState);
             return newState;
         });
     }
@@ -36,12 +38,44 @@ export const useListProducts = () => {
                 iva: product.iva.code,
                 percentage: product.iva.percentage
             };
+            calculateTotals(newState);
             return newState;
         });
     }
 
+    const calculateTotals = useCallback((products: ProductOutput[]) => {
+        let base0 = 0;
+        let base15 = 0;
+
+        products.forEach(({ iva, total_iva }) => {
+            if (iva === 0) {
+                base0 += Number(total_iva);
+            }
+            if (iva === 4) {
+                base15 += Number(total_iva);
+            }
+        });
+
+        const subTotal = base0 + base15;
+        const totalIva = Number((base15 * 0.15).toFixed(2));
+        const total = Number((subTotal + totalIva).toFixed(2));
+
+        setShop(prevState => ({
+            ...prevState,
+            base0,
+            base15,
+            sub_total: subTotal,
+            iva: totalIva,
+            total: total
+        }));
+    }, [setShop]);
+
     const deleteItem = (index: number) => {
-        setProductOutputs((prevState) => prevState.filter((_, i) => i !== index));
+        setProductOutputs((prevState) => {
+            const newState = prevState.filter((_, i) => i !== index);
+            calculateTotals(newState);
+            return newState;
+        });
     }
 
     return { addItem, updateItem, selectProduct, deleteItem }

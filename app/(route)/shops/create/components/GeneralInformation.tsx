@@ -5,11 +5,22 @@ import { SelectOption, SelectProvider, TextInput } from "@/components"
 import { useCreateShop } from "../context/ShopCreateContext";
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { ImportXml } from "./ImportXml";
-
+import { VoucherType } from "@/constants";
 export const GeneralInformation = () => {
 
     const { invoiceTypes, handleChange, handleSelectProvider } = useGeneralInformation();
-    const { shop, errorShop, selectProvider } = useCreateShop();
+    const { shop, errorShop, selectProvider, points, selectPoint, setSelectPoint, setErrorShop } = useCreateShop();
+
+    const optionPoints = points.map((point) => ({
+        value: point.id,
+        label: `${point.store} - ${point.point} - ${point.recognition}`
+    }));
+
+    const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedPoint = points.find(point => point.id === Number(event.target.value));
+        setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
+        setErrorShop(prev => ({ ...prev, serie: '' }));
+    }
 
     return (
         <div className='py-2'>
@@ -21,13 +32,23 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión *' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
                     </div>
-                    <div className='lg:w-2/3'>
+                    {Number(shop.voucher_type) === VoucherType.LIQUIDATION && points.length > 1 && (
+                        <>
+                            <div className="flex flex-col lg:w-2/3">
+                                <SelectOption label="Punto Emi *" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errorShop.serie} handleSelect={handleSelectPoint} />
+                            </div>
+                        </>
+                    )}
+
+                    {Number(shop.voucher_type) === VoucherType.LIQUIDATION && <div className='py-2'><span>N° de serie: </span>{shop.serie}</div>}
+                    
+                    {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (<div className='lg:w-2/3'>
                         <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} />
-                    </div>
+                    </div>)}
                     <div className='flex flex-col lg:w-2/3'>
-                        <span>Proveedor</span>
+                        <span>Proveedor *</span>
                         <SelectProvider selectProvider={handleSelectProvider} label={selectProvider?.atts.name} error={errorShop.provider_id} />
                     </div>
                     <div className='lg:w-2/3'>
@@ -38,8 +59,8 @@ export const GeneralInformation = () => {
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className='flex gap-2 items-end'>
-                        <SelectOption label="Tipo de comprobante" options={invoiceTypes} select={true} selectedValue={shop.voucher_type} error={errorShop.voucher_type} handleSelect={handleChange} name='voucher_type' />
-                        {Number(shop.voucher_type) === 1 && <ImportXml />}
+                        <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={shop.voucher_type} error={errorShop.voucher_type} handleSelect={handleChange} name='voucher_type' />
+                        {Number(shop.voucher_type) === VoucherType.INVOICE && <ImportXml />}
                     </div>
                 </div>
             </div>

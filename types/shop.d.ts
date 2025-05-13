@@ -45,7 +45,7 @@ interface ShopCreateProps {
     provider_id: number,
 
     // Retencion
-    serie_retencion: string,
+    serie_retencion?: string,
     date_retention: string,
 }
 

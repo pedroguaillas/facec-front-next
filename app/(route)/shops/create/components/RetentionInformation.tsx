@@ -7,7 +7,7 @@ import { SelectOption, TextInput } from '@/components';
 
 export const RetentionInformation = () => {
 
-    const { shop, errorShop, points, selectPoint, setShop, setSelectPoint, setErrorShop } = useCreateShop();
+    const { shop, errorShop, points, selectPoint, applieWithholding, setShop, setSelectPoint, setErrorShop, setApplieWithholding } = useCreateShop();
 
     const optionPoints = points.map((point) => ({
         value: point.id,
@@ -31,16 +31,20 @@ export const RetentionInformation = () => {
 
     return (
         <div className='py-2'>
-            <strong className='font-bold'>Datos de la retención</strong>
+            <div className='font-bold'>
+                <label className='flex items-center gap-2' htmlFor="applieWithholding">
+                    <input type="checkbox" name='applieWithholding' checked={applieWithholding} onChange={() => setApplieWithholding(!applieWithholding)} />
+                    Aplicar Retención
+                </label>
+            </div>
 
-            {/* Row */}
-            <div className='sm:flex gap-4'>
+            {applieWithholding && <div className='sm:flex gap-4'>
 
                 {/* Col 1 */}
                 {points.length > 1 && (
                     <div className='w-full'>
                         <div className="lg:w-2/3">
-                            <SelectOption label="Punto Emi" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} />
+                            <SelectOption label="Punto Emi *" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} />
                         </div>
                     </div>
                 )}
@@ -55,10 +59,10 @@ export const RetentionInformation = () => {
                 {/* Col 3 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3 mx-auto'>
-                        <TextInput type='date' label='Fecha emisión' value={shop.date_retention} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión *' value={shop.date_retention} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={getMinDate()} max={getDate()} />
                     </div>
                 </div>
-            </div>
+            </div>}
         </div>
     )
 }
