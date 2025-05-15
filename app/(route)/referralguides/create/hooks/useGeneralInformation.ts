@@ -1,9 +1,9 @@
-import { CustomerProps } from '@/types';
 import { useReferralGuide } from '../context/ReferralGuideCreateContext';
+import { CarrierProps, CustomerProps } from '@/types';
 
 export const useGeneralInformation = () => {
 
-    const { points, setReferralGuide, setSelectPoint, setSelectCustom, setErrors, errors } = useReferralGuide();
+    const { points, setReferralGuide, setSelectPoint, setSelectCarrier, setSelectCustom, setErrors, errors } = useReferralGuide();
 
     const optionPoints = points.map((point) => ({
         value: point.id,
@@ -37,5 +37,14 @@ export const useGeneralInformation = () => {
         }
     }
 
-    return { optionPoints, handleChange, handleSelectPoint, handleSelectCustomer };
+    const handleSelectCarrier = (carrier: CarrierProps) => {
+        setReferralGuide((prevState) => ({ ...prevState, carrier_id: carrier.id }));
+        setSelectCarrier(carrier);
+
+        if ('customer_id' in errors) {
+            setErrors(prev => ({ ...prev, carrier_id: '' }));
+        }
+    }
+
+    return { optionPoints, handleChange, handleSelectPoint, handleSelectCustomer, handleSelectCarrier };
 }

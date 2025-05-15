@@ -1,15 +1,14 @@
 "use client";
 
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { useProductOutput } from "../hooks/useProductOutput";
+import { useFormInvoice } from "../context/FormInvoiceContext";
 import { PrimaryButton } from "@/components";
 import { ItemProduct } from "./ItemProduct";
 
 export const ListProducts = () => {
 
     const { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem } = useProductOutput();
-    const isEnabledIce = productOutputs.filter(p => p.ice !== undefined).length > 0;
-    const { errorProductOutputs, isTaxBreakdown, setIsTaxBreakdown } = useCreateInvoice();
+    const { errorProductOutputs, isTaxBreakdown, isActiveIce, setIsTaxBreakdown } = useFormInvoice();
 
     const handleChange = () => {
         setIsTaxBreakdown(!isTaxBreakdown);
@@ -37,7 +36,7 @@ export const ListProducts = () => {
                             <th className="w-20 sm:w-24">Descuento</th>
                             {isTaxBreakdown ? <th className="w-24">IVA</th> : null}
                             <th className="w-20 sm:w-24">Subtotal</th>
-                            {isEnabledIce ? <th className="w-20 sm:w-24">ICE</th> : null}
+                            {isActiveIce ? <th className="w-20 sm:w-24">ICE</th> : null}
                             <th></th>
                         </tr>
                     </thead>

@@ -1,14 +1,14 @@
 "use client";
 
-import { PrimaryButton, TableResponsive } from '@/components';
-import { useCreateInvoice } from '../../context/InvoiceCreateContext';
-import { ItemAditionalInformation } from './ItemAditionalInformation';
-import { nanoid } from 'nanoid';
 import { AditionalInformation as AditionalInformationType } from '@/types/order';
+import { ItemAditionalInformation } from './ItemAditionalInformation';
+import { PrimaryButton, TableResponsive } from '@/components';
+import { useFormInvoice } from '../context/FormInvoiceContext';
+import { nanoid } from 'nanoid';
 
 export const AditionalInformation = () => {
 
-  const { aditionalInformation, setAditionalInformation, errorAditionalInformation } = useCreateInvoice();
+  const { aditionalInformation, setAditionalInformation, errorAditionalInformation } = useFormInvoice();
   const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
 
   const addItem = () => {

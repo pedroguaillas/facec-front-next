@@ -1,5 +1,5 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { storeLotServices } from "../services/storeLotServices";
+import { storeLotServices } from "../services/invoicesServices";
 
 export const useImportExcel = () => {
     const axiosAuth = useAxiosAuth();

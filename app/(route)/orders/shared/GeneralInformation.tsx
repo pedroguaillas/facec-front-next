@@ -1,15 +1,17 @@
 "use client";
 
 import { SelectCustomer, SelectOption, TextInput } from '@/components';
-import { useCreateInvoice } from '../../context/InvoiceCreateContext';
+import { useFormInvoice } from '../context/FormInvoiceContext';
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
+import { useParams } from "next/navigation";
 import { CustomerProps } from '@/types';
 import React from 'react';
 
 export const GeneralInformation = () => {
 
-    const { invoice, formErrors, points, selectPoint, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useCreateInvoice();
+    const { invoice, formErrors, points, selectPoint, selectCustom, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useFormInvoice();
+    const params = useParams();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -54,15 +56,15 @@ export const GeneralInformation = () => {
                     <div className='lg:w-2/3'>
                         <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
                     </div>
-                    {points.length > 1 && (
+                    {points.length > 1 && !params.id && (
                         <div className="flex flex-col lg:w-2/3">
                             <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} />
                         </div>
                     )}
-                    <div className='py-2'><span>N° de serie </span>{invoice.serie}</div>
+                    <div className='py-2'><span className='font-bold'>N° de serie: </span>{invoice.serie}</div>
                     <div className='flex flex-col lg:w-2/3'>
                         <span>Cliente</span>
-                        <SelectCustomer selectCustomer={handleSelectCustomer} error={formErrors.customer_id} />
+                        <SelectCustomer label={selectCustom?.atts.name ?? ''} error={formErrors.customer_id} selectCustomer={handleSelectCustomer} />
                     </div>
                 </div>
 

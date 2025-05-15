@@ -3,6 +3,7 @@ import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
 import { useInvoices } from "../context/InvoicesContext";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
+import Link from "next/link";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
@@ -45,8 +46,12 @@ const InvoicesTable = () => {
                 {invoices.map((order, index) => (
                     <tr key={order.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
                         <td>{order.atts.date}</td>
-                        <td>{`${calPrefix[order.atts.voucher_type]} ${order.atts.serie}`}</td>
-                        <td className="text-left uppercase">{order.customer?.name || "Desconocido"}</td>
+                        <td>
+                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/orders/${order.id}`}>
+                                {`${calPrefix[order.atts.voucher_type]} ${order.atts.serie}`}
+                            </Link>
+                        </td>
+                        <td className="text-left uppercase">{order.customer?.name}</td>
                         <td className="text-center">
                             <div className="inline-flex relative justify-center items-center">
                                 <span
@@ -71,7 +76,7 @@ const InvoicesTable = () => {
                             </div>
                         </td>
 
-                        <td className="text-right">${order.atts.total}</td>
+                        <td className="text-right">${order.atts.total.toFixed(2)}</td>
                         <td>
                             {Number(order.atts.send_mail) === 1 && (
                                 <div className="flex justify-center text-green-600/90">

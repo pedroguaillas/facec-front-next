@@ -1,46 +1,30 @@
 'use client';
 
-import {
-	CustomerProps,
-	EmisionPoint,
-	ProductInput,
-	ProductOutput,
-	ReferralGuideCreateProps,
-} from '@/types';
-import {
-	createContext,
-	Dispatch,
-	ReactNode,
-	SetStateAction,
-	useContext,
-	useEffect,
-	useState,
-} from 'react';
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState, } from 'react';
+import { CarrierProps, CustomerProps, EmisionPoint, ProductOutput, ReferralGuideCreateProps, } from '@/types';
+import { getCreateReferralGuide } from '../services/createReferralGuideServices';
+import { initialProductItem } from '@/constants/initialValues';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { getDate } from '@/helpers/dateHelper';
 import { useSession } from 'next-auth/react';
-import { getCreateReferralGuide } from '../services/createReferralGuideServices';
-import { initialProductItem } from '@/constants/initialValues';
 import { nanoid } from 'nanoid';
 
 interface ReferralGuideContextType {
 	referralGuide: ReferralGuideCreateProps;
 	points: EmisionPoint[];
 	selectPoint: EmisionPoint | null;
+	selectCarrier: CarrierProps | null;
 	selectCustom: CustomerProps | null;
-	productInputs: ProductInput[];
 	productOutputs: ProductOutput[];
 	errors: Partial<Record<keyof ReferralGuideCreateProps, string>> & { products?: string };
 	setReferralGuide: Dispatch<SetStateAction<ReferralGuideCreateProps>>;
 	errorProductOutputs: Record<string, Partial<Record<keyof ProductOutput, string>>>;
 	setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
+	setSelectCarrier: Dispatch<SetStateAction<CarrierProps | null>>;
 	setSelectCustom: Dispatch<SetStateAction<CustomerProps | null>>;
-	setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
 	setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
 	setErrors: Dispatch<SetStateAction<Partial<Record<keyof ReferralGuideCreateProps, string>>>>;
-	setErrorProductOutputs: Dispatch<
-		SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>
-	>;
+	setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
 }
 
 const ReferralGuideCreateContext = createContext<ReferralGuideContextType | undefined>(undefined);
@@ -66,13 +50,8 @@ export const ReferralGuideCreateProvider = ({ children }: Props) => {
 	const [points, setPoints] = useState<EmisionPoint[]>([]);
 	const [selectCustom, setSelectCustom] = useState<CustomerProps | null>(null);
 	const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
-	const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
-	const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([
-		{
-			...initialProductItem,
-			id: nanoid(),
-		},
-	]);
+	const [selectCarrier, setSelectCarrier] = useState<CarrierProps | null>(null);
+	const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([]);
 	const [errors, setErrors] = useState<Partial<Record<keyof ReferralGuideCreateProps, string>>>({});
 	const [errorProductOutputs, setErrorProductOutputs] = useState<
 		Record<string, Partial<Record<keyof ProductOutput, string>>>
@@ -86,7 +65,7 @@ export const ReferralGuideCreateProvider = ({ children }: Props) => {
 
 			try {
 				const data = await getCreateReferralGuide(axiosAuth);
-
+				setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
 				const { points } = data;
 				setPoints(points);
 			} catch (error) {
@@ -100,21 +79,8 @@ export const ReferralGuideCreateProvider = ({ children }: Props) => {
 	return (
 		<ReferralGuideCreateContext.Provider
 			value={{
-				referralGuide,
-				points,
-				selectCustom,
-				selectPoint,
-				productInputs,
-				productOutputs,
-				errors,
-				errorProductOutputs,
-				setReferralGuide,
-				setSelectPoint,
-				setSelectCustom,
-				setProductInputs,
-				setProductOutputs,
-				setErrors,
-				setErrorProductOutputs,
+				referralGuide, points, selectCustom, selectPoint, selectCarrier, productOutputs, errors, errorProductOutputs,
+				setReferralGuide, setSelectPoint, setSelectCustom, setSelectCarrier, setProductOutputs, setErrors, setErrorProductOutputs,
 			}}
 		>
 			{children}

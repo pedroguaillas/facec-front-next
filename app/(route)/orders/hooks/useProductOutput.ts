@@ -1,4 +1,4 @@
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { useFormInvoice } from "../context/FormInvoiceContext";
 import { productOutputSchema } from "@/schemas/product-output.schema";
 import { initialProductItem } from "@/constants/initialValues";
 import { fields, ProductOutput, ProductProps } from "@/types";
@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 
 export const useProductOutput = () => {
 
-    const { productOutputs, setInvoice, setProductOutputs, setErrorProductOutputs } = useCreateInvoice();
+    const { productOutputs, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
 
     const addItem = () => {
         setProductOutputs((prev) => ([...prev, { ...initialProductItem, id: nanoid(), }]));
@@ -65,6 +65,7 @@ export const useProductOutput = () => {
         prods[index].total_iva = product.atts.price1.toFixed(2);
         if (product.atts.ice !== null) {
             prods[index].ice = '';
+            setIsActiveIce(true);
         }
         //   TODO Agregar Si es turismo
         prods[index].iva = product.iva.code;

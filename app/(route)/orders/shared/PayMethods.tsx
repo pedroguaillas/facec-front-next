@@ -1,11 +1,11 @@
 "use client";
 
 import { SelectOption } from "@/components"
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { useFormInvoice } from "../context/FormInvoiceContext";
 
 export const PayMethods = () => {
 
-    const { invoice, formErrors, payMethods, setInvoice } = useCreateInvoice();
+    const { invoice, formErrors, payMethods, setInvoice } = useFormInvoice();
 
     // Si es Nota de Crédito no mostrar la fora de pago
     if (Number(invoice.voucher_type) === 4) return null;

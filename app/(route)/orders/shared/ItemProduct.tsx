@@ -1,8 +1,8 @@
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { fields, ProductOutput } from "@/types/order";
 import { SelectProduct } from "@/components";
 import { FaTrash } from "react-icons/fa";
 import { ProductProps } from "@/types";
+import { useFormInvoice } from "../context/FormInvoiceContext";
 
 interface Props {
     index: number;
@@ -15,7 +15,7 @@ interface Props {
 
 export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
-    const { isTaxBreakdown, isActiveIce } = useCreateInvoice();
+    const { isTaxBreakdown, isActiveIce } = useFormInvoice();
 
     const ivaCalculation = () => {
         let { quantity, price, discount } = productOutput;
@@ -41,7 +41,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 />
             </td>
             <td>
-                <SelectProduct index={index} selectProduct={selectProduct} error={error?.product_id} />
+                <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
             </td>
             <td className={isTaxBreakdown ? 'text-right' : ''}>
                 {/* TODO: agregar la cantidad de decimales correspondientes */}

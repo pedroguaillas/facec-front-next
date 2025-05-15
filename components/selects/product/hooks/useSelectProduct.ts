@@ -6,7 +6,7 @@ export const useSelectProduct = (label: string = "", index: number, selectProduc
 
     const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
-    const [skipFetch, setSkipFetch] = useState(false); // 👈 Para evitar fetch al seleccionar
+    const [skipFetch, setSkipFetch] = useState<boolean>(label ? true : false); // 👈 Para evitar fetch al seleccionar
     const axiosAuth = useAxiosAuth();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,8 +38,8 @@ export const useSelectProduct = (label: string = "", index: number, selectProduc
     }, [search, axiosAuth]);
 
     useEffect(() => {
+        // VALIDADO: solo para mostrar sugerencias desde dos caracteres
         if (search.length > 1 && !skipFetch) {
-            // VALIDADO: solo para buscar
             fetchProduct();
         }
     }, [search, skipFetch, fetchProduct]);

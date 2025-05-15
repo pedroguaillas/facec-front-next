@@ -1,28 +1,29 @@
 "use client";
 
-import { useCreateInvoice } from '../../context/InvoiceCreateContext';
+import { AditionalInformation, ProductOutput } from '@/types/order';
+import { useFormInvoice } from '../context/FormInvoiceContext';
 import { invoiceSchema } from '@/schemas/invoice.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
-import { AditionalInformation, ProductOutput } from '@/types/order';
 
 export const ButtonSubmit = () => {
 
-    const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors, setErrorProductOutputs, setErrorAditionalInformation } = useCreateInvoice();
+    const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors, setErrorProductOutputs, setErrorAditionalInformation } = useFormInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
+    const params = useParams();
 
-    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
 
         // 1. Creación del formulario
         const form = {
             ...invoice,
             products: productOutputs,
-            send: true,
+            send: send,
             aditionals: aditionalInformation.map(aditional => ({
                 id: aditional.id,
                 name: aditional.name.trim(),
@@ -87,7 +88,11 @@ export const ButtonSubmit = () => {
         // 3. Enviar el formulario
         try {
             setIsPending(true);
-            await axiosAuth.post('orders', form);
+            if (params.id) {
+                await axiosAuth.put(`orders/${params.id}`, form);
+            } else {
+                await axiosAuth.post('orders', form);
+            }
             router.push('/orders');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);
@@ -96,9 +101,21 @@ export const ButtonSubmit = () => {
     };
 
     return (
-        <div className='flex justify-end mt-4'>
+        <div className='flex justify-end mt-4 gap-2'>
             <button
-                onClick={handleSubmit}
+                onClick={(e) => handleSubmit(e, false)}
+                disabled={isPending}
+                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
+                {isPending && (
+                    <FaSpinner className='animate-spin' />
+                )}
+                {!isPending && (
+                    <FaSave />
+                )}
+                Guardar
+            </button>
+            <button
+                onClick={(e) => handleSubmit(e, true)}
                 disabled={isPending}
                 className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
                 {isPending && (

@@ -1,10 +1,10 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, TitleForm, Totals } from './components';
-import { InvoiceCreateProvider } from '../context/InvoiceCreateContext';
+import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, TitleForm, Totals } from '../shared';
+import { FormInvoiceProvider } from '../context/FormInvoiceContext';
 import { Separate, Title } from '@/components';
 
 const CreateOrderPage = () => {
   return (
-    <InvoiceCreateProvider>
+    <FormInvoiceProvider>
       <div className="dark:text-gray-300">
 
         <Title
@@ -33,7 +33,7 @@ const CreateOrderPage = () => {
         </div>
 
       </div>
-    </InvoiceCreateProvider>
+    </FormInvoiceProvider>
   )
 };
 

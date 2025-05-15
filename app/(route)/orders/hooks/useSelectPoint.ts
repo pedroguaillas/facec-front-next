@@ -1,9 +1,9 @@
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
+import { useFormInvoice } from "../context/FormInvoiceContext";
 import { useCallback, useEffect } from "react";
 
 export const useSelectPoint = () => {
 
-    const { invoice, points, selectPoint, setInvoice, setSelectPoint } = useCreateInvoice();
+    const { invoice, points, selectPoint, setInvoice, setSelectPoint } = useFormInvoice();
     const { voucher_type } = invoice;
 
     // Se ejecuta en la primera petición de carga

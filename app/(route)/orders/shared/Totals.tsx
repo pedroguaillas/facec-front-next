@@ -1,11 +1,10 @@
 "use client";
 
-import { useCreateInvoice } from "../../context/InvoiceCreateContext";
 import { TableResponsive } from "@/components";
 import { ButtonSubmit } from "./ButtonSubmit";
-
+import { useFormInvoice } from "../context/FormInvoiceContext";
 export const Totals = () => {
-    const { invoice, selectCustom, setInvoice, formErrors } = useCreateInvoice();
+    const { invoice, selectCustom, setInvoice, formErrors } = useFormInvoice();
 
     const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -68,7 +67,6 @@ export const Totals = () => {
                             <td className="text-right border border-gray-300">{value.toFixed(2)}</td>
                         </tr>
                     ))}
-
                     <tr>
                         <td className="border border-gray-300">Descuento</td>
                         <td className="text-right border border-gray-300">
@@ -82,14 +80,18 @@ export const Totals = () => {
                             />
                         </td>
                     </tr>
-
+                    {invoice.ice > 0 && (
+                        <tr>
+                            <td className="border border-gray-300">Monto de ICE</td>
+                            <td className="text-right border border-gray-300">{invoice.ice.toFixed(2)}</td>
+                        </tr>
+                    )}
                     {ivaRows.map(({ label, value }) => (
                         <tr key={label}>
                             <td className="border border-gray-300">{label}</td>
                             <td className="text-right border border-gray-300">{value.toFixed(2)}</td>
                         </tr>
                     ))}
-
                     {invoice.no_iva > 0 && (
                         <tr>
                             <td className="border border-gray-300">No objeto de IVA</td>

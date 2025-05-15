@@ -20,3 +20,4 @@ export * from './modal/Modal';
 export * from './selects/product/SelectProduct';
 export * from './selects/customer/SelectCustomer';
 export * from './selects/provider/SelectProvider';
+export * from './selects/carrier/SelectCarrier';

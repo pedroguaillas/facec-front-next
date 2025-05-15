@@ -1,13 +1,14 @@
 "use client";
 
 import { createContext, useState, useContext, useEffect, ReactNode, SetStateAction, Dispatch } from "react";
-import { AditionalInformation, OrderCreateProps, PayMethod, ProductInput, ProductOutput } from "@/types/order";
-import { getCreateInvoice } from "../services/invoicesServices";
+import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput } from "@/types/order";
+import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
 import { CustomerProps, EmisionPoint } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import { nanoid } from "nanoid";
 
 interface InvoicesContextType {
@@ -17,7 +18,6 @@ interface InvoicesContextType {
   selectPoint: EmisionPoint | null;
   selectCustom: CustomerProps | null;
   tourism: boolean;
-  productInputs: ProductInput[];
   productOutputs: ProductOutput[];
   errorProductOutputs: Record<string, Partial<Record<keyof ProductOutput, string>>>;
   aditionalInformation: AditionalInformation[];
@@ -28,7 +28,6 @@ interface InvoicesContextType {
   setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
   setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
   setSelectCustom: Dispatch<SetStateAction<CustomerProps | null>>;
-  setProductInputs: Dispatch<SetStateAction<ProductInput[]>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
   setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
@@ -38,7 +37,7 @@ interface InvoicesContextType {
   setIsActiveIce: Dispatch<SetStateAction<boolean>>;
 }
 
-const InvoiceCreateContext = createContext<InvoicesContextType | undefined>(undefined);
+const FormInvoiceContext = createContext<InvoicesContextType | undefined>(undefined);
 
 interface Props {
   children: ReactNode;
@@ -70,12 +69,11 @@ const initialInvoice: OrderCreateProps = {
   pay_method: 20,
 };
 
-export const InvoiceCreateProvider = ({ children }: Props) => {
+export const FormInvoiceProvider = ({ children }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
   const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
   const [selectCustom, setSelectCustom] = useState<CustomerProps | null>(null);
-  const [productInputs, setProductInputs] = useState<ProductInput[]>([]);
-  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([{ ...initialProductItem, id: nanoid() }]);
+  const [productOutputs, setProductOutputs] = useState<ProductOutput[]>([]);
   const [errorProductOutputs, setErrorProductOutputs] = useState<Record<string, Partial<Record<keyof ProductOutput, string>>>>({});
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
@@ -87,39 +85,53 @@ export const InvoiceCreateProvider = ({ children }: Props) => {
   const [isActiveIce, setIsActiveIce] = useState(false);
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
+  const params = useParams();
 
   useEffect(() => {
-    const fetchCreateInvoice = async () => {
+    const fetchEditInvoice = async () => {
       if (status !== "authenticated") return;
 
       try {
-        const data = await getCreateInvoice(axiosAuth);
-        const { points, methodOfPayments, pay_method, tourism } = data;
-        setInvoice((prev) => ({ ...prev, pay_method }));
-        setPoints(points);
-        setPayMethods(methodOfPayments);
-        setTourism(tourism);
+        if (typeof params?.id === 'string') {
+          const data = await getInvoice(axiosAuth, params.id as string);
+          const { customers, methodOfPayments, order, order_aditionals, order_items, points } = data;
+          setInvoice({ ...order, id: order.id + '' });
+          setPoints(points);
+          setPayMethods(methodOfPayments);
+          setSelectCustom(customers[0]);
+          setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
+          setProductOutputs(order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' })));
+          setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
+        } else {
+          const data = await getCreateInvoice(axiosAuth);
+          const { points, methodOfPayments, pay_method, tourism } = data;
+          setInvoice((prev) => ({ ...prev, pay_method }));
+          setPoints(points);
+          setPayMethods(methodOfPayments);
+          setTourism(tourism);
+          setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
+        }
       } catch (error) {
         console.error("Error al cargar: ", error);
       }
-    };
-    fetchCreateInvoice();
-  }, [status, axiosAuth]);
+    }
+    fetchEditInvoice();
+  }, [status, axiosAuth, params?.id]);
 
   return (
-    <InvoiceCreateContext.Provider value={{
-      invoice, selectPoint, selectCustom, payMethods, points, tourism, productInputs, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setSelectCustom, setProductInputs, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
+    <FormInvoiceContext.Provider value={{
+      invoice, selectPoint, selectCustom, payMethods, points, tourism, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
-    </InvoiceCreateContext.Provider>
+    </FormInvoiceContext.Provider>
   );
 };
 
-export const useCreateInvoice = () => {
-  const context = useContext(InvoiceCreateContext);
+export const useFormInvoice = () => {
+  const context = useContext(FormInvoiceContext);
   if (!context) {
-    throw new Error("Invoices must be used within an InvoiceCreateProvider");
+    throw new Error("FormInvoice must be used within an FormInvoiceProvider");
   }
   return context;
 };

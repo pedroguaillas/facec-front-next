@@ -38,5 +38,12 @@ export const useSelectPoint = () => {
 		}
 	}, [points, handlePoints]);
 
+	// Efecto para ejecutar handleSelectPoint cuando cambia selectPoint manualmente
+	useEffect(() => {
+		if (selectPoint) {
+			handleSelectPoint();
+		}
+	}, [selectPoint, handleSelectPoint]);
+
 	return { handleSelectPoint };
 };

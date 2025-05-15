@@ -42,10 +42,18 @@ export const useSelectCustomer = (label: string = "", selectCustomer: (customer:
     useEffect(() => {
         if (search.length > 1 && !skipFetch) {
             // VALIDADO: Solo para mostrar sugerencias
-            // console.log('Empieza la sugerencia')
             fetchCustomer();
         }
     }, [search, skipFetch, fetchCustomer]);
+
+    // Update search when label changes
+    // Used for load edit invoice
+    useEffect(() => {
+        if (label) {
+            setSearch(label);
+            setSkipFetch(true); // Prevent immediate fetch when label changes
+        }
+    }, [label]);
 
     return { search, suggestions, handleChange, handleSelect }
 }

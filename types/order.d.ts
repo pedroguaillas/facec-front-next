@@ -70,12 +70,7 @@ interface ProductOutput {
     total_iva: number | string;
     ice: undefined | number | string;
     percentage: number;
-}
-
-interface ProductInput {
-    id: number;
-    code: number | null;
-    name: string;
+    name?: string;
 }
 
 type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';
