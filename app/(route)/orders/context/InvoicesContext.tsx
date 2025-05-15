@@ -31,11 +31,15 @@ export const InvoicesProvider = ({ children }: Props) => {
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-  const fetchInvoices = useCallback(async (pageUrl = `orderlist?page=${page}`) => {
+  const fetchInvoices = useCallback(async (pageUrl?: string) => {
     if (status !== "authenticated") return;
 
     try {
-      const data = await getInvoices(axiosAuth, pageUrl, search, page);
+      // pageUrl trae de Paginación
+      // Y en la 1ra carga o al recargar la pagina requiere valor por defecto orderlist?page=${page}
+      const url = pageUrl || `orderlist?page=${page}`;
+
+      const data = await getInvoices(axiosAuth, url, search);
       setInvoices(data.data);
       setMeta(data.meta);
       setLinks(data.links);

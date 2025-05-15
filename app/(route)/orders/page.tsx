@@ -21,11 +21,12 @@ const InvoicesPage = () => {
     ];
 
     const ProductsPagination = () => {
-        const { meta, links, fetchInvoices } = useInvoices();
+        const { meta, links, fetchInvoices, setPage } = useInvoices();
 
         const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
             e.preventDefault();
             fetchInvoices(pageUrl);
+            setPage(parseInt(pageUrl?.match(/page=(\d+)/)?.[1] || '1'));
         };
 
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
