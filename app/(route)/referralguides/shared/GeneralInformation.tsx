@@ -1,13 +1,13 @@
 'use client';
 
 import { SelectCarrier, SelectCustomer, SelectOption, Separate, TextInput } from '@/components';
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { useGeneralInformation } from '../hooks/useGeneralInformation';
 import { useSelectPoint } from '../hooks/useSelectPoint';
 import { getMinDate } from '@/helpers/dateHelper';
 
 export const GeneralInformation = () => {
-	const { points, referralGuide, selectPoint, errors } = useReferralGuide();
+	const { points, referralGuide, selectPoint, errors } = useFormReferralGuide();
 	const { optionPoints, handleChange, handleSelectPoint, handleSelectCustomer, handleSelectCarrier } = useGeneralInformation();
 
 	useSelectPoint();

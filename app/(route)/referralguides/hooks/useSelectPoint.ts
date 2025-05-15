@@ -1,8 +1,8 @@
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { useCallback, useEffect } from 'react';
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
 
 export const useSelectPoint = () => {
-	const { points, selectPoint, setSelectPoint, setReferralGuide } = useReferralGuide();
+	const { points, selectPoint, setSelectPoint, setReferralGuide } = useFormReferralGuide();
 
 	const handleSelectPoint = useCallback(() => {
 		if (!selectPoint) return;

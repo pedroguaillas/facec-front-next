@@ -1,12 +1,12 @@
 'use client';
 
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
+import { useListProducts } from '../hooks/useListProducts';
 import { PrimaryButton } from '@/components';
 import { ItemProduct } from './ItemProduct';
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
-import { useListProducts } from '../hooks/useListProducts';
 
 export const ListProducts = () => {
-	const { productOutputs, errorProductOutputs, errors } = useReferralGuide();
+	const { productOutputs, errorProductOutputs, errors } = useFormReferralGuide();
 	const { addItem, updateItem, selectProduct, removeItem } = useListProducts();
 
 	return (

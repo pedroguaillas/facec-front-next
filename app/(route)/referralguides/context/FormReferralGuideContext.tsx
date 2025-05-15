@@ -27,7 +27,7 @@ interface ReferralGuideContextType {
 	setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
 }
 
-const ReferralGuideCreateContext = createContext<ReferralGuideContextType | undefined>(undefined);
+const FormReferralGuideContext = createContext<ReferralGuideContextType | undefined>(undefined);
 
 interface Props {
 	children: ReactNode;
@@ -44,7 +44,7 @@ const initialReferralGuide: ReferralGuideCreateProps = {
 	reason_transfer: '',
 };
 
-export const ReferralGuideCreateProvider = ({ children }: Props) => {
+export const FormReferralGuideProvider = ({ children }: Props) => {
 	const [referralGuide, setReferralGuide] =
 		useState<ReferralGuideCreateProps>(initialReferralGuide);
 	const [points, setPoints] = useState<EmisionPoint[]>([]);
@@ -77,21 +77,21 @@ export const ReferralGuideCreateProvider = ({ children }: Props) => {
 	}, [status, axiosAuth]);
 
 	return (
-		<ReferralGuideCreateContext.Provider
+		<FormReferralGuideContext.Provider
 			value={{
 				referralGuide, points, selectCustom, selectPoint, selectCarrier, productOutputs, errors, errorProductOutputs,
 				setReferralGuide, setSelectPoint, setSelectCustom, setSelectCarrier, setProductOutputs, setErrors, setErrorProductOutputs,
 			}}
 		>
 			{children}
-		</ReferralGuideCreateContext.Provider>
+		</FormReferralGuideContext.Provider>
 	);
 };
 
-export const useReferralGuide = () => {
-	const context = useContext(ReferralGuideCreateContext);
+export const useFormReferralGuide = () => {
+	const context = useContext(FormReferralGuideContext);
 	if (!context) {
-		throw new Error('useReferralGuide must be used within an useReferralProvider');
+		throw new Error('useFormReferralGuide must be used within an useFormReferralGuideProvider');
 	}
 	return context;
 };

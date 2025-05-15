@@ -1,11 +1,11 @@
-import { nanoid } from 'nanoid';
-import { ProductProps } from '@/types';
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
-import { initialProductItem } from '@/constants/initialValues';
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { productOutputSchema } from '@/schemas/referral-guide.schema';
+import { initialProductItem } from '@/constants/initialValues';
+import { ProductProps } from '@/types';
+import { nanoid } from 'nanoid';
 
 export const useListProducts = () => {
-	const { setProductOutputs, setErrorProductOutputs } = useReferralGuide();
+	const { setProductOutputs, setErrorProductOutputs } = useFormReferralGuide();
 
 	const addItem = () => {
 		setProductOutputs(prevState => [...prevState, { ...initialProductItem, id: nanoid() }]);

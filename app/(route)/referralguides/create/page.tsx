@@ -1,12 +1,10 @@
+import { FormReferralGuideProvider } from '../context/FormReferralGuideContext';
+import { GeneralInformation, ListProducts, ButtonSubmit } from '../shared';
 import { Separate, Title } from '@/components';
-import { ReferralGuideCreateProvider } from './context/ReferralGuideCreateContext';
-import { GeneralInformation } from './components/GeneralInformation';
-import { ButtonSubmit } from './components/ButtonSubmit';
-import { ListProducts } from './components/ListProducts';
 
 const PageCreateReferralGuide = () => {
 	return (
-		<ReferralGuideCreateProvider>
+		<FormReferralGuideProvider>
 			<div className='dark:text-gray-300'>
 				<Title title='Guia de remisión' subTitle='Registrar un nuevo guia de remisión' />
 
@@ -26,7 +24,7 @@ const PageCreateReferralGuide = () => {
 					</div>
 				</div>
 			</div>
-		</ReferralGuideCreateProvider>
+		</FormReferralGuideProvider>
 	);
 };
 

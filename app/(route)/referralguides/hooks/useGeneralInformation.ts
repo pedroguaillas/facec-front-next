@@ -1,9 +1,9 @@
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { CarrierProps, CustomerProps } from '@/types';
 
 export const useGeneralInformation = () => {
 
-    const { points, setReferralGuide, setSelectPoint, setSelectCarrier, setSelectCustom, setErrors, errors } = useReferralGuide();
+    const { points, setReferralGuide, setSelectPoint, setSelectCarrier, setSelectCustom, setErrors, errors } = useFormReferralGuide();
 
     const optionPoints = points.map((point) => ({
         value: point.id,

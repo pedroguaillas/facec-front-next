@@ -1,12 +1,12 @@
 'use client';
 
-import { PrimaryButton } from '@/components';
-import { useReferralGuide } from '../context/ReferralGuideCreateContext';
+import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { referralGuideSchema } from '@/schemas/referral-guide.schema';
+import { PrimaryButton } from '@/components';
 import { ProductOutput } from '@/types';
 
 export const ButtonSubmit = () => {
-	const { referralGuide, productOutputs, setErrors, setErrorProductOutputs } = useReferralGuide();
+	const { referralGuide, productOutputs, setErrors, setErrorProductOutputs } = useFormReferralGuide();
 
 	const handleSubmit = () => {
 		// 1. Creación del formulario
