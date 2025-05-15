@@ -7,8 +7,8 @@ import { useSelectPoint } from '../hooks/useSelectPoint';
 import { getMinDate } from '@/helpers/dateHelper';
 
 export const GeneralInformation = () => {
-	const { points, referralGuide, selectPoint, errors } = useFormReferralGuide();
 	const { optionPoints, handleChange, handleSelectPoint, handleSelectCustomer, handleSelectCarrier } = useGeneralInformation();
+	const { points, referralGuide, selectPoint, selectCarrier, selectCustom, errors } = useFormReferralGuide();
 
 	useSelectPoint();
 
@@ -33,11 +33,11 @@ export const GeneralInformation = () => {
 						</div>
 						<div className='flex flex-col lg:w-2/3'>
 							<span>Transportista</span>
-							<SelectCarrier error={errors.carrier_id} selectCarrier={handleSelectCarrier} />
+							<SelectCarrier label={selectCarrier?.atts.name} error={errors.carrier_id} selectCarrier={handleSelectCarrier} />
 						</div>
 						<div className='flex flex-col lg:w-2/3 pt-2'>
 							<span>Destinatario/Cliente</span>
-							<SelectCustomer error={errors.customer_id} optionCreate={false} selectCustomer={handleSelectCustomer} />
+							<SelectCustomer label={selectCustom?.atts.name} error={errors.customer_id} optionCreate={false} selectCustomer={handleSelectCustomer} />
 						</div>
 						<div className='lg:w-2/3'>
 							<TextInput type='text' label='Dirección partida *' value={referralGuide.address_from} error={errors.address_from} onChange={handleChange} name='address_from' maxLength={300} />

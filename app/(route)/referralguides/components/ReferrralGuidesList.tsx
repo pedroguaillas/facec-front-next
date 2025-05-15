@@ -3,6 +3,7 @@ import { useReferralGuides } from "../context/ReferralGuidesContext"
 import { FaInfoCircle } from "react-icons/fa";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
+import Link from "next/link";
 
 const ReferrralGuidesList = () => {
     const { referralGuides } = useReferralGuides();
@@ -33,7 +34,11 @@ const ReferrralGuidesList = () => {
                 {referralGuides.map((referralGuide, index) => (
                     <tr key={referralGuide.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
                         <td className="text-left">{`${referralGuide.atts.date_start} - ${referralGuide.atts.date_end}`}</td>
-                        <td>{referralGuide.atts.serie}</td>
+                        <td>
+                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/referralguides/${referralGuide.id}`}>
+                                {referralGuide.atts.serie}
+                            </Link>
+                        </td>
                         <td className="text-left">{referralGuide.customer.name}</td>
                         <td>
                             <span

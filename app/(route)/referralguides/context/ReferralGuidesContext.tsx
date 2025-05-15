@@ -30,7 +30,6 @@ export const ReferralGuidesProvider = ({ children }: Props) => {
 
     const fetchReferralGuides = useCallback(async (pageUrl = `referralguides?page=${page}`) => {
         if (status !== "authenticated") return;
-        console.log('useCallback, fetchReferralGuides')
 
         try {
             const data = await getReferralGuides(axiosAuth, pageUrl, page);
@@ -43,7 +42,6 @@ export const ReferralGuidesProvider = ({ children }: Props) => {
     }, [status, axiosAuth, page]); // Dependencias correctas
 
     useEffect(() => {
-        console.log('useEffect, start')
         fetchReferralGuides();
     }, [fetchReferralGuides]);
 
