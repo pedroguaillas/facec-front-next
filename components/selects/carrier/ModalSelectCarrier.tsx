@@ -21,7 +21,7 @@ export const ModalSelectCarrier = ({ handleSelect }: Props) => {
 
     return (
         <>
-            <span onClick={toggle} className='p-2 bg-primary text-white cursor-pointer'>
+            <span onClick={toggle} className='p-2 bg-primary text-white cursor-pointer rounded-r'>
                 <FaSearch />
             </span>
 

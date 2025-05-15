@@ -4,10 +4,11 @@ import { FaSearch } from "react-icons/fa";
 import { useModalSelectCustomer } from "./hooks/useModalSelectCustomer";
 
 interface Props {
+    optionCreate: boolean;
     handleSelect: (custom: CustomerProps) => void;
 }
 
-export const ModalSelectCustomer = ({ handleSelect }: Props) => {
+export const ModalSelectCustomer = ({ optionCreate, handleSelect }: Props) => {
 
     const { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCustomer, handleSelectLocal } = useModalSelectCustomer(handleSelect);
 
@@ -23,7 +24,7 @@ export const ModalSelectCustomer = ({ handleSelect }: Props) => {
 
     return (
         <>
-            <span onClick={toggle} className='p-2 bg-primary text-white cursor-pointer'>
+            <span onClick={toggle} className={`p-2 bg-primary text-white cursor-pointer ${!optionCreate ? 'rounded-r' : ''}`}>
                 <FaSearch />
             </span>
 

@@ -8,10 +8,11 @@ import { useSelectCustomer } from './hooks/useSelectCustomer';
 interface Props {
     label?: string;
     error?: string;
+    optionCreate?: boolean;
     selectCustomer: (customer: CustomerProps) => void;
 }
 
-export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
+export const SelectCustomer = ({ label, error, optionCreate = true, selectCustomer }: Props) => {
 
     const { search, suggestions, handleChange, handleSelect } = useSelectCustomer(label, selectCustomer);
 
@@ -26,8 +27,8 @@ export const SelectCustomer = ({ label, error, selectCustomer }: Props) => {
                             ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
                     type='text'
                 />
-                <ModalSelectCustomer handleSelect={handleSelect} />
-                <ModalCreateCustomer handleSelect={handleSelect} />
+                <ModalSelectCustomer optionCreate={optionCreate} handleSelect={handleSelect} />
+                {optionCreate && <ModalCreateCustomer handleSelect={handleSelect} />}
             </div>
 
             {error && <p className="text-sm text-red-500">{error}</p>}

@@ -25,7 +25,7 @@ export const SelectCarrier = ({ label, error, selectCarrier }: Props) => {
                     type='text'
                 />
 
-                <ModalSelectCarrier handleSelect={selectCarrier} />
+                <ModalSelectCarrier handleSelect={handleSelect} />
             </div>
 
             {suggestions.length > 0 && (

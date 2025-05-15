@@ -33,11 +33,11 @@ export const GeneralInformation = () => {
 						</div>
 						<div className='flex flex-col lg:w-2/3'>
 							<span>Transportista</span>
-							<SelectCarrier selectCarrier={handleSelectCarrier} error={errors.carrier_id} />
+							<SelectCarrier error={errors.carrier_id} selectCarrier={handleSelectCarrier} />
 						</div>
-						<div className='flex flex-col lg:w-2/3'>
+						<div className='flex flex-col lg:w-2/3 pt-2'>
 							<span>Destinatario/Cliente</span>
-							<SelectCustomer selectCustomer={handleSelectCustomer} error={errors.customer_id} />
+							<SelectCustomer error={errors.customer_id} optionCreate={false} selectCustomer={handleSelectCustomer} />
 						</div>
 						<div className='lg:w-2/3'>
 							<TextInput type='text' label='Dirección partida *' value={referralGuide.address_from} error={errors.address_from} onChange={handleChange} name='address_from' maxLength={300} />
