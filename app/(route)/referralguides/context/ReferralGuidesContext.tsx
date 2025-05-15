@@ -28,11 +28,12 @@ export const ReferralGuidesProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchReferralGuides = useCallback(async (pageUrl = `referralguides?page=${page}`) => {
+    const fetchReferralGuides = useCallback(async (pageUrl?: string) => {
         if (status !== "authenticated") return;
 
         try {
-            const data = await getReferralGuides(axiosAuth, pageUrl, page);
+            const url = pageUrl || `referralguides?page=${page}`;
+            const data = await getReferralGuides(axiosAuth, url);
             setReferralGuides(data.data);
             setMeta(data.meta);
             setLinks(data.links);

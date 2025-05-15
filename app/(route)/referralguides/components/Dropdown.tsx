@@ -1,8 +1,8 @@
+import { useReferralGuides } from "../context/ReferralGuidesContext";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
+import { ReferralGuideProps } from "@/types";
 import { useEffect, useRef } from "react";
 import { AxiosInstance } from "axios";
-import { useReferralGuides } from "../context/ReferralGuidesContext";
-import { ReferralGuideProps } from "@/types";
 
 interface Props {
     isOpen: boolean;
@@ -65,10 +65,9 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [
-            { label: "Ver Pdf", onClick: showreferralGuidePdf },
+            { label: "Ver Pdf", onClick: viewReferralGuidePdf },
             { label: "Descargar Xml", onClick: downloadXml },
             { label: "Enviar correo", onClick: sendMail },
-            { label: "Imprimir", onClick: printfPdf },
         ];
 
         if (referralGuide.atts.state !== "ANULADO") {
@@ -81,7 +80,7 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
         return options;
     };
 
-    const showreferralGuidePdf = async () => {
+    const viewReferralGuidePdf = async () => {
         try {
             const response = await axiosAuth.get(`referralguides/${referralGuide.id}/pdf`, { responseType: 'blob' });
 
@@ -140,22 +139,6 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
                 a.href = 'data:text/xml;base64,' + response.data.xml //Image Base64 Goes here
                 a.download = 'Factura.xml' //File name Here
                 a.click() //Downloaded file
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const printfPdf = async () => {
-        try {
-            const response = await axiosAuth
-                .get(`referralguides/${referralGuide.id}/printf`, { responseType: 'blob' })
-            if (response.status >= 200) {//Create a Blob from the PDF Stream
-                const file = new Blob([response.data], { type: 'application/pdf' })
-                //Build a URL from the file
-                const fileURL = URL.createObjectURL(file)
-                //Open the URL on new Window
-                window.open(fileURL)
             }
         } catch (error) {
             console.log(error)

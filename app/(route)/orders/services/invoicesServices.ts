@@ -5,10 +5,8 @@ export const getInvoices = async (
     pageUrl: string,
     search?: string,
 ) => {
-    // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
-    const url = pageUrl;
     try {
-        const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
+        const fullUrl = new URL(pageUrl, process.env.NEXT_PUBLIC_API_URL).href;
         const response = await axiosAuth.post(fullUrl, { search });
         return response.data;
     } catch (error) {

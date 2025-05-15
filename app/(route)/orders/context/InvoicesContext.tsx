@@ -8,11 +8,11 @@ import { Links, Meta } from "@/types";
 interface InvoicesContextType {
   invoices: OrderProps[];
   search: string;
-  setSearch: (value: string) => void;
   page: number;
-  setPage: (value: number) => void;
   meta: Meta | null;
   links: Links | null;
+  setSearch: (value: string) => void;
+  setPage: (value: number) => void;
   fetchInvoices: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
 }
 
@@ -54,8 +54,8 @@ export const InvoicesProvider = ({ children }: Props) => {
 
   return (
     <InvoicesContext.Provider value={{
-      invoices, search, setSearch, page, setPage, meta, links,
-      fetchInvoices
+      invoices, search, page, meta, links,
+      fetchInvoices, setSearch, setPage,
     }}>
       {children}
     </InvoicesContext.Provider>

@@ -12,11 +12,12 @@ const PageReferralGuides = () => {
     ];
 
     const ReferralGuidesPagination = () => {
-        const { meta, links, fetchReferralGuides } = useReferralGuides();
+        const { meta, links, fetchReferralGuides, setPage } = useReferralGuides();
 
         const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
             e.preventDefault();
             fetchReferralGuides(pageUrl);
+            setPage(parseInt(pageUrl?.match(/page=(\d+)/)?.[1] || '1'));
         };
 
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
