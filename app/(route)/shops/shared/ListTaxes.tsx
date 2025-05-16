@@ -1,13 +1,13 @@
 "use client";
 
+import { useFormShop } from '../context/FormShopContext';
 import { PrimaryButton } from '@/components';
-import { useCreateShop } from '../context/ShopCreateContext'
-import { ItemTax } from './ItemTax';
 import { useTaxes } from '../hooks/useTaxes';
+import { ItemTax } from './ItemTax';
 
 export const ListTaxes = () => {
 
-    const { applieWithholding, taxes, errorTaxes } = useCreateShop();
+    const { applieWithholding, taxes, errorTaxes } = useFormShop();
     const { addItem } = useTaxes();
 
     if (!applieWithholding) return null;

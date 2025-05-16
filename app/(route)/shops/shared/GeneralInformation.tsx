@@ -2,14 +2,14 @@
 
 import { useGeneralInformation } from "../hooks/useGeneralInformation";
 import { SelectOption, SelectProvider, TextInput } from "@/components"
-import { useCreateShop } from "../context/ShopCreateContext";
 import { getDate, getMinDate } from "@/helpers/dateHelper";
-import { ImportXml } from "./ImportXml";
+import { useFormShop } from "../context/FormShopContext";
 import { VoucherType } from "@/constants";
+import { ImportXml } from "./ImportXml";
 export const GeneralInformation = () => {
 
     const { invoiceTypes, handleChange, handleSelectProvider } = useGeneralInformation();
-    const { shop, errorShop, selectProvider, points, selectPoint, setSelectPoint, setErrorShop } = useCreateShop();
+    const { shop, errorShop, selectProvider, points, selectPoint, setSelectPoint, setErrorShop } = useFormShop();
 
     const optionPoints = points.map((point) => ({
         value: point.id,
@@ -43,7 +43,7 @@ export const GeneralInformation = () => {
                     )}
 
                     {Number(shop.voucher_type) === VoucherType.LIQUIDATION && <div className='py-2'><span>N° de serie: </span>{shop.serie}</div>}
-                    
+
                     {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (<div className='lg:w-2/3'>
                         <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} />
                     </div>)}

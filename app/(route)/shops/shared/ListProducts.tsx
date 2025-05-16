@@ -1,7 +1,7 @@
 "use client";
 
-import { useCreateShop } from "../context/ShopCreateContext";
 import { useListProducts } from "../hooks/useListProducts";
+import { useFormShop } from "../context/FormShopContext";
 import { PrimaryButton, Separate } from "@/components";
 import { ItemProduct } from "./ItemProduct";
 import { VoucherType } from "@/constants";
@@ -9,7 +9,7 @@ import { VoucherType } from "@/constants";
 export const ListProducts = () => {
 
     const { addItem, updateItem, selectProduct, deleteItem } = useListProducts();
-    const { shop, productOutputs } = useCreateShop();
+    const { shop, productOutputs } = useFormShop();
 
     if (Number(shop.voucher_type) !== VoucherType.LIQUIDATION) {
         return null;

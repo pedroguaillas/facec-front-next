@@ -1,14 +1,14 @@
 "use client";
 
+import { useFormShop } from "../context/FormShopContext";
 import { TableResponsive } from "@/components"
-import { useCreateShop } from "../context/ShopCreateContext";
-import { ChangeEvent } from "react";
 import { SubmitButton } from "./SubmitButton";
 import { VoucherType } from "@/constants";
+import { ChangeEvent } from "react";
 
 export const Totals = () => {
 
-    const { shop, setShop, errorShop, setErrorShop } = useCreateShop();
+    const { shop, setShop, errorShop, setErrorShop } = useFormShop();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -25,8 +25,7 @@ export const Totals = () => {
         form.iva = Number((Number(form.base12) * 0.12).toFixed(2));
         form.iva5 = Number((Number(form.base5) * 0.05).toFixed(2));
         form.iva15 = Number((Number(form.base15) * 0.15).toFixed(2));
-        form.sub_total =
-            Number(form.no_iva) + Number(form.base0) + Number(form.base5) + Number(form.base12) + Number(form.base15);
+        form.sub_total = Number(form.no_iva) + Number(form.base0) + Number(form.base5) + Number(form.base12) + Number(form.base15);
         form.total = Number(form.base0) + Number(form.base5) + Number(form.base12) + Number(form.base15) + Number(form.iva) + Number(form.iva5) + Number(form.iva15);
 
         setShop(form);
@@ -99,19 +98,22 @@ export const Totals = () => {
                                 </td>
                             )}
                         </tr>
-                        <tr>
-                            <td className="border border-gray-300 text-left">Monto ICE</td>
-                            <td className="text-right border border-gray-300">{shop.ice.toFixed(2)}</td>
-                        </tr>
+                        {shop.ice > 0 && (
+                            <tr>
+                                <td className="border border-gray-300 text-left">Monto ICE</td>
+                                <td className="text-right border border-gray-300">{shop.ice}</td>
+                            </tr>
+                        )}
+                        {/* TODO: Verficar to.Fixed(2) en descuento y total */}
                         <tr>
                             <td className="border border-gray-300 text-left">Descuento</td>
-                            <td className="text-right border border-gray-300">{shop.discount.toFixed(2)}</td>
+                            <td className="text-right border border-gray-300">{shop.discount}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th className="border border-gray-300">TOTAL</th>
-                            <th className="text-right p-2 border border-gray-300">{shop.total.toFixed(2)}</th>
+                            <th className="text-right p-2 border border-gray-300">{shop.total}</th>
                         </tr>
                     </tfoot>
                 </TableResponsive>

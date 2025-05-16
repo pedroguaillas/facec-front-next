@@ -1,24 +1,23 @@
-import { GeneralInformation, ListProducts, RetentionInformation, ListTaxes, Totals } from "../shared";
-import { FormShopProvider } from "../context/FormShopContext";
 import { Separate, Title } from "@/components";
+import { FormShopProvider } from "../context/FormShopContext";
+import { GeneralInformation, ListProducts, ListTaxes, RetentionInformation, Totals } from "../shared";
 
-const PageCreateShop = () => {
+const PageShopEdit = () => {
     return (
         <FormShopProvider>
             <div className="dark:text-gray-300">
 
                 <Title
                     title="Documento"
-                    subTitle="Registrar un nuevo documento"
+                    subTitle="Editar un documento"
                 />
 
-                <div className='md:mx-8 py-4'>
+                <div className="md:mx-8 py-4">
 
                     {/* Card */}
                     <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
                         <h2>
                             <span className="font-bold">Nota: </span>
-                            Los campos marcados con * son obligatorios
                         </h2>
                         <Separate />
                         <GeneralInformation />
@@ -30,9 +29,9 @@ const PageCreateShop = () => {
                         <Totals />
                     </div>
                 </div>
-
             </div>
         </FormShopProvider>
     )
 }
-export default PageCreateShop;
+
+export default PageShopEdit;

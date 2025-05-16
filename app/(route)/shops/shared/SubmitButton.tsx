@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState } from 'react'
-import { FaSave, FaSpinner } from 'react-icons/fa';
-import { useCreateShop } from '../context/ShopCreateContext';
-import { shopSchema } from '@/schemas/shop-schema';
+import { useFormShop } from '../context/FormShopContext';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
+import { shopSchema } from '@/schemas/shop-schema';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react'
 import { Tax } from '@/types';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
-    const { applieWithholding, shop, productOutputs, taxes, selectPoint, setErrorShop, setErrorTaxes } = useCreateShop();
+    const { applieWithholding, shop, productOutputs, taxes, selectPoint, setErrorShop, setErrorTaxes } = useFormShop();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
 
-    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
 
         // 1. Creación del formulario
@@ -24,7 +24,7 @@ export const SubmitButton = () => {
             taxes,
             state_retencion: 'CREADO',
             app_retention: applieWithholding,
-            send: true,
+            send: send,
             point_id: selectPoint?.id,
         };
 
@@ -77,17 +77,26 @@ export const SubmitButton = () => {
     };
 
     return (
-        <button
-            onClick={handleSubmit}
-            disabled={isPending}
-            className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-            {isPending && (
-                <FaSpinner className='animate-spin' />
-            )}
-            {!isPending && (
-                <FaSave />
-            )}
-            Guardar y procesar
-        </button>
+        <div className='flex justify-end mt-4 gap-2'>
+            <button
+                onClick={(e) => handleSubmit(e, false)}
+                disabled={isPending}
+                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
+                <FaRegSave />
+                Guardar
+            </button>
+            <button
+                onClick={(e) => handleSubmit(e, true)}
+                disabled={isPending}
+                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
+                {isPending && (
+                    <FaSpinner className='animate-spin' />
+                )}
+                {!isPending && (
+                    <FaSave />
+                )}
+                Guardar y procesar
+            </button>
+        </div>
     )
 }

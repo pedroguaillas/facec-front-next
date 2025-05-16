@@ -64,4 +64,5 @@ interface Tax {
     porcentage: '' | number | null,
     value: number,
     editable_porcentage: boolean,
+    tax_name?: string,
 }

@@ -1,11 +1,11 @@
 import { Tax, TaxInput } from "@/types";
-import { useCreateShop } from "../context/ShopCreateContext";
+import { useFormShop } from "../context/FormShopContext";
 import { initialTax } from "@/constants/initialValues";
 import { nanoid } from "nanoid";
 
 export const useTaxes = () => {
 
-    const { taxes, setTaxes, setErrorTaxes } = useCreateShop();
+    const { taxes, setTaxes, setErrorTaxes } = useFormShop();
 
     // Agregar producto a la lista
     const addItem = () => {
@@ -14,7 +14,7 @@ export const useTaxes = () => {
 
     const updateItem = (index: number, field: keyof Tax, val: string | number | boolean) => {
         if ((field === 'porcentage' || field === 'base') && val && Number(val) < 0) return
-        
+
         const newTaxes = [...taxes]; // Copiamos el array
 
         // Actualizamos el campo cambiado

@@ -5,7 +5,7 @@ import { useFormInvoice } from '../context/FormInvoiceContext';
 import { invoiceSchema } from '@/schemas/invoice.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter, useParams } from 'next/navigation';
-import { FaSave, FaSpinner } from 'react-icons/fa';
+import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
 
 export const ButtonSubmit = () => {
@@ -106,12 +106,7 @@ export const ButtonSubmit = () => {
                 onClick={(e) => handleSubmit(e, false)}
                 disabled={isPending}
                 className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                {isPending && (
-                    <FaSpinner className='animate-spin' />
-                )}
-                {!isPending && (
-                    <FaSave />
-                )}
+                <FaRegSave />
                 Guardar
             </button>
             <button

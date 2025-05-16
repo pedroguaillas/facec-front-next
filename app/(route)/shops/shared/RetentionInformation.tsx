@@ -1,13 +1,13 @@
 "use client";
 
-import { useCreateShop } from '../context/ShopCreateContext'
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
+import { useFormShop } from "../context/FormShopContext";
 import { SelectOption, TextInput } from '@/components';
 
 export const RetentionInformation = () => {
 
-    const { shop, errorShop, points, selectPoint, applieWithholding, setShop, setSelectPoint, setErrorShop, setApplieWithholding } = useCreateShop();
+    const { shop, errorShop, points, selectPoint, applieWithholding, setShop, setSelectPoint, setErrorShop, setApplieWithholding } = useFormShop();
 
     const optionPoints = points.map((point) => ({
         value: point.id,

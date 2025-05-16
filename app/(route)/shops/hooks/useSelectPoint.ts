@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
-import { useCreateShop } from "../context/ShopCreateContext";
+import { useFormShop } from "../context/FormShopContext";
 import { VoucherType } from "@/constants";
 
 export const useSelectPoint = () => {
-    const { shop, points, applieWithholding, selectPoint, setShop, setSelectPoint, setProductOutputs } = useCreateShop();
+    const { shop, points, applieWithholding, selectPoint, setShop, setSelectPoint, setProductOutputs } = useFormShop();
 
     // 4to Selección manual del Punto del Emisión
     const handleSelectPoint = useCallback(() => {

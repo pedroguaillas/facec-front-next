@@ -1,8 +1,8 @@
-import { useCreateShop } from "../context/ShopCreateContext";
+import { useFormShop } from "../context/FormShopContext";
 
 export const useFile = () => {
 
-    const { setShop } = useCreateShop();
+    const { setShop } = useFormShop();
 
     const selectDocXml = (xmlDoc: Document, authorization: string) => {
 

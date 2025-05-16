@@ -7,11 +7,12 @@ import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
 
 const ShopsPagination = () => {
-    const { meta, links, fetchShops } = useShops();
+    const { meta, links, fetchShops, setPage } = useShops();
 
     const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
         e.preventDefault();
         fetchShops(pageUrl);
+        setPage(parseInt(pageUrl?.match(/page=(\d+)/)?.[1] || '1'));
     };
 
     return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;

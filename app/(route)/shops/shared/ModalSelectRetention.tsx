@@ -1,9 +1,9 @@
 "use client";
 
+import { useFormShop } from '../context/FormShopContext';
 import { Modal } from '@/components/modal/Modal'
 import { TableResponsive } from '@/components';
 import React, { useState } from 'react'
-import { useCreateShop } from '../context/ShopCreateContext';
 import { TaxInput } from '@/types';
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 const ModalSelectRetention = ({ show, code, onClose, selectRetetion }: Props) => {
 
   const [search, setSearch] = useState('');
-  const { taxInputs } = useCreateShop();
+  const { taxInputs } = useFormShop();
 
   const filterTaxInputs = taxInputs.filter(retention => {
     const matchesType = code === 2 ? retention.type === 'iva' : retention.type === 'renta';

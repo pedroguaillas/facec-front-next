@@ -1,12 +1,12 @@
 import { initialProductItem, VoucherType } from "@/constants";
-import { useCreateShop } from "../context/ShopCreateContext";
+import { useFormShop } from "../context/FormShopContext";
 import { SupplierProps } from "@/types";
 import { useEffect } from "react";
 import { nanoid } from "nanoid";
 
 export const useGeneralInformation = () => {
 
-    const { shop, errorShop, setShop, setErrorShop, setProductOutputs } = useCreateShop();
+    const { shop, errorShop, setShop, setErrorShop, setProductOutputs } = useFormShop();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },

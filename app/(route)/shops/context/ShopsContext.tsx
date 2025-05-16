@@ -32,11 +32,12 @@ export const ShopsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchShops = useCallback(async (pageUrl = `shoplist?page=${page}`) => {
+    const fetchShops = useCallback(async (pageUrl?: string) => {
         if (status !== "authenticated") return;
 
         try {
-            const data = await getShops(axiosAuth, pageUrl, search, page);
+            const url = pageUrl ? pageUrl : `shoplist?page=${page}`;
+            const data = await getShops(axiosAuth, url, search);
             setShops(data.data);
             setMeta(data.meta);
             setLinks(data.links);

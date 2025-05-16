@@ -1,10 +1,11 @@
 "use client";
 
-import { TableResponsive } from "@/components"
+import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
 import { useShops } from "../context/ShopsContext"
+import { TableResponsive } from "@/components"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
-import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
+import Link from "next/link";
 
 export const ShopsTable = () => {
 
@@ -51,7 +52,11 @@ export const ShopsTable = () => {
                 {shops.map((shop, index) => (
                     <tr key={shop.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
                         <td>{shop.atts.date}</td>
-                        <td>{`${calPrefix[shop.atts.voucher_type]} ${shop.atts.serie}`}</td>
+                        <td>
+                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/shops/${shop.id}`}>
+                                {`${calPrefix[shop.atts.voucher_type]} ${shop.atts.serie}`}
+                            </Link>
+                        </td>
                         <td className="text-left">{shop.provider.name}</td>
                         <td className="text-center">
                             <div className="inline-flex relative justify-center items-center">

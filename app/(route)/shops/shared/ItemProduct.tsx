@@ -22,7 +22,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, d
                 />
             </td>
             <td>
-                <SelectProduct index={index} selectProduct={selectProduct} />
+                <SelectProduct index={index} label={productOutput.name} selectProduct={selectProduct} />
             </td>
             <td>
                 <input

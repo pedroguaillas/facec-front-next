@@ -14,7 +14,7 @@ interface Props {
 
 export const SelectRetention = ({ index, tax, error }: Props) => {
 
-    const [label, setlabel] = useState('');
+    const [label, setlabel] = useState(tax.tax_name || '');
     const [modal, setModal] = useState<boolean>(false);
     const { selectRetention } = useTaxes();
 

@@ -1,16 +1,15 @@
-import { useCreateShop } from '../context/ShopCreateContext';
 import { storeSupplier } from '@/services/supplierServices';
+import { useFormShop } from '../context/FormShopContext';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { PrimaryButton } from '@/components';
 import { useFile } from '../hooks/useFile';
 import { ChangeEvent } from 'react';
 import { Supplier } from '@/types';
-
 export const ImportXml = () => {
 
     const { selectDocXml } = useFile();
     const axiosAuth = useAxiosAuth();
-    const { setSelectProvider, setShop } = useCreateShop();
+    const { setSelectProvider, setShop } = useFormShop();
 
     const handleSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
         const input = e.target;

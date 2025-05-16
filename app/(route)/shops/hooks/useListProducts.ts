@@ -1,12 +1,12 @@
 import { initialProductItem } from "@/constants/initialValues";
-import { useCreateShop } from "../context/ShopCreateContext";
+import { useFormShop } from "../context/FormShopContext";
 import { fields, ProductOutput, ProductProps } from "@/types";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
 
 export const useListProducts = () => {
 
-    const { setShop, setProductOutputs } = useCreateShop();
+    const { setShop, setProductOutputs } = useFormShop();
 
     const addItem = () => {
         setProductOutputs((prevState) => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -33,6 +33,7 @@ export const useListProducts = () => {
             newState[index] = {
                 ...newState[index],
                 product_id: product.id,
+                quantity: 1,
                 price: product.atts.price1,
                 total_iva: product.atts.price1.toFixed(2),
                 iva: product.iva.code,
