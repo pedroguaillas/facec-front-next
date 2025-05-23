@@ -68,7 +68,7 @@ export default function LoginPage() {
             label="Ingresar"
             type="submit"
             isLoading={isLoading}
-            action="store"
+            action="login"
           />
         </div>
       </form>
