@@ -6,19 +6,24 @@ import InvoiceFilters from "./components/InvoiceFilters";
 import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
 import { useImportExcel } from "./hooks/useImportExcel";
+import { useSession } from "next-auth/react";
 
 const InvoicesPage = () => {
 
     const { handleLote } = useImportExcel();
+    const { data: session } = useSession();
     // Define esta función antes de usarla
     const importOrders = () => {
         document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
     };
 
     const multipleActions: ActionsTitle[] = [
-        { label: "Importar", type: "button", action: 'import', onClick: importOrders },
         { label: "", type: "link", url: 'orders/create', action: 'add' },
     ];
+
+    if (session?.user.permissions.import_in_invoices) {
+        multipleActions.unshift({ label: "Importar", type: "button", action: 'import', onClick: importOrders });
+    }
 
     const ProductsPagination = () => {
         const { meta, links, fetchInvoices, setPage } = useInvoices();

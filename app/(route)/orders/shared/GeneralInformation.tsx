@@ -7,11 +7,13 @@ import { useSelectPoint } from '../hooks/useSelectPoint';
 import { useParams } from "next/navigation";
 import { CustomerProps } from '@/types';
 import React from 'react';
+import { useSession } from 'next-auth/react';
 
 export const GeneralInformation = () => {
 
     const { invoice, formErrors, points, selectPoint, selectCustom, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useFormInvoice();
     const params = useParams();
+    const { data: session } = useSession();
 
     const invoiceTypes = [
         { value: 1, label: 'Factura' },
@@ -74,7 +76,7 @@ export const GeneralInformation = () => {
                         <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleChange} />
                     </div>
                     {/* Solo en el caso de facturas */}
-                    {Number(invoice.voucher_type) === 1 && (
+                    {Number(invoice.voucher_type) === 1 && session?.user.permissions.guia_in_invoice && (
                         <div className='lg:w-2/3'>
                             <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} maxLength={17} name='guia' />
                         </div>

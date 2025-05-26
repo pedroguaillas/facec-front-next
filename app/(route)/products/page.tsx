@@ -21,8 +21,8 @@ const OrdersPage = () => {
             <div className="dark:text-gray-300">
 
                 <Title
-                    title='Productos'
-                    subTitle='Lista de todos los productos'
+                    title='Productos o servicios'
+                    subTitle='Lista de todos los productos o servicios'
                     actions={[{ label: "", type: "link", url: "products/create", action: "add" }]}
                 />
                 <div className="md:mx-8 py-4">

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AxiosInstance, AxiosResponse } from "axios";
 import { OrderProps } from "@/types/order";
 import PDFViewer from "./PDFViewer";
+import { useSession } from "next-auth/react";
 
 interface Props {
     isOpen: boolean;
@@ -63,6 +64,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchInvoices } = useInvoices();
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const { data: session } = useSession();
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
@@ -70,8 +72,11 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
             { label: "Ver Pdf", onClick: showOrderPdf },
             { label: "Descargar Xml", onClick: downloadXml },
             { label: "Enviar correo", onClick: sendMail },
-            { label: "Imprimir", onClick: printfPdf },
         ];
+
+        if (session?.user.permissions.printf) {
+            options.push({ label: "Imprimir", onClick: printfPdf });
+        }
 
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {

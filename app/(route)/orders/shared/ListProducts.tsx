@@ -4,11 +4,14 @@ import { useProductOutput } from "../hooks/useProductOutput";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { PrimaryButton } from "@/components";
 import { ItemProduct } from "./ItemProduct";
+import { ImportItems } from "./ImportItems";
+import { useSession } from "next-auth/react";
 
 export const ListProducts = () => {
 
     const { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem } = useProductOutput();
     const { errorProductOutputs, isTaxBreakdown, isActiveIce, setIsTaxBreakdown } = useFormInvoice();
+    const { data: session } = useSession();
 
     const handleChange = () => {
         setIsTaxBreakdown(!isTaxBreakdown);
@@ -23,6 +26,10 @@ export const ListProducts = () => {
                     <input type="checkbox" checked={isTaxBreakdown} onChange={handleChange} />
                     Desglose
                 </label>
+
+                {session?.user.permissions.import_in_invoice && (
+                    <ImportItems />
+                )}
             </div>
 
             {/* Table responsive */}
