@@ -1,8 +1,9 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
 import { useInvoices } from "../context/InvoicesContext";
-import { useEffect, useRef } from "react";
-import { AxiosInstance } from "axios";
+import { useEffect, useRef, useState } from "react";
+import { AxiosInstance, AxiosResponse } from "axios";
 import { OrderProps } from "@/types/order";
+import PDFViewer from "./PDFViewer";
 
 interface Props {
     isOpen: boolean;
@@ -13,7 +14,7 @@ interface Props {
 }
 
 const renderSwitch: Record<string, string> = {
-    CREADO: "Firmar, enviar y procesar",
+    CREADO: "Procesar",
     FIRMADO: "Enviar y procesar",
     ENVIADO: "Autorizar",
     RECIBIDA: "Autorizar",
@@ -61,6 +62,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchInvoices } = useInvoices();
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
@@ -148,14 +150,14 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
     const printfPdf = async () => {
         try {
-            const response = await axiosAuth
-                .get(`orders/${order.id}/printf`, { responseType: 'blob' })
-            if (response.status >= 200) {//Create a Blob from the PDF Stream
-                const file = new Blob([response.data], { type: 'application/pdf' })
-                //Build a URL from the file
-                const fileURL = URL.createObjectURL(file)
-                //Open the URL on new Window
-                window.open(fileURL)
+            const response: AxiosResponse<Blob> = await axiosAuth.get(`orders/${order.id}/printf`, {
+                responseType: 'blob',
+            });
+
+            if (response.status >= 200) {
+                const blob = response.data; // ✅ Aquí
+                const url = URL.createObjectURL(blob);
+                setPdfUrl(url);
             }
         } catch (error) {
             console.log(error)
@@ -177,31 +179,34 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     }, [isOpen, setIsOpen]);
 
     return (
-        <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
+        <>
+            <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
 
-            {/* Dropdown Button */}
-            <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer">&#60;</button>
+                {/* Dropdown Button */}
+                <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer">&#60;</button>
 
-            {/* Dropdown Menu */}
-            {isOpen && (
-                <div className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700 
-                ${only ? '-mt-24' : '-mt-4'}`}>
-                    <div className="py-1">
-                        {getOptions().map((option, indexOption) => (
-                            <button
-                                key={indexOption}
-                                onClick={() => {
-                                    setIsOpen(index); // Close dropdown after selection
-                                    option.onClick();
-                                }}
-                                className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
-                            >
-                                {option.label}
-                            </button>
-                        ))}
+                {/* Dropdown Menu */}
+                {isOpen && (
+                    <div className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700 
+                ${only ? '-mt-20' : '-mt-4'}`}>
+                        <div className="py-1">
+                            {getOptions().map((option, indexOption) => (
+                                <button
+                                    key={indexOption}
+                                    onClick={() => {
+                                        setIsOpen(index); // Close dropdown after selection
+                                        option.onClick();
+                                    }}
+                                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                >
+                                    {option.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+            {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />}
+        </>
     );
 };
