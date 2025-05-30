@@ -1,6 +1,11 @@
 import { Modal } from '@/components';
 import { useEffect, useState } from 'react';
 
+// Extend the Navigator interface to include the 'standalone' property
+interface NavigatorExtended extends Navigator {
+    standalone?: boolean;
+}
+
 export default function PDFViewer({
     pdfUrl,
     base64Pdf,
@@ -23,7 +28,8 @@ export default function PDFViewer({
 
     const isStandalonePWA = () =>
         typeof window !== 'undefined' &&
-        ('standalone' in window.navigator && (window.navigator as any).standalone);
+        'standalone' in window.navigator &&
+        (window.navigator as NavigatorExtended).standalone;
 
     const toggle = () => setIsOpen(!isOpen);
 
