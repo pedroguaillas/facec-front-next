@@ -7,6 +7,7 @@ import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
 import { useImportExcel } from "./hooks/useImportExcel";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 const InvoicesPage = () => {
 
@@ -38,22 +39,27 @@ const InvoicesPage = () => {
     };
 
     return (
-        <InvoicesProvider>
-            <div className="dark:text-gray-300">
+        <>
+            <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+            </Head>
+            <InvoicesProvider>
+                <div className="dark:text-gray-300">
 
-                <Title
-                    title="Ventas"
-                    subTitle="Lista de todas las ventas"
-                    actions={multipleActions}
-                />
-                <div className="md:mx-8 py-4">
-                    <InvoiceFilters />
-                    <InvoicesTable />
-                    <ProductsPagination />
-                    <input type="file" onChange={handleLote} className="hidden" accept=".xlsx" />
+                    <Title
+                        title="Ventas"
+                        subTitle="Lista de todas las ventas"
+                        actions={multipleActions}
+                    />
+                    <div className="md:mx-8 py-4">
+                        <InvoiceFilters />
+                        <InvoicesTable />
+                        <ProductsPagination />
+                        <input type="file" onChange={handleLote} className="hidden" accept=".xlsx" />
+                    </div>
                 </div>
-            </div>
-        </InvoicesProvider>
+            </InvoicesProvider>
+        </>
     );
 };
 

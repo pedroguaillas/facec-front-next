@@ -90,35 +90,48 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
     const showOrderPdf = async () => {
         try {
-            const response = await axiosAuth.get(`orders/${order.id}/pdf`, { responseType: 'blob' });
+            const response: AxiosResponse<Blob> = await axiosAuth.get(`orders/${order.id}/pdf`, {
+                responseType: 'blob',
+            });
 
-            if (!response || !response.data) {
-                throw new Error("Respuesta vacía al intentar obtener el PDF.");
+            if (response.status >= 200) {
+                const blob = response.data; // ✅ Aquí
+                const url = URL.createObjectURL(blob);
+                setPdfUrl(url);
             }
-
-            const fileURL = createBlobUrl(response.data, 'application/pdf');
-
-            if (fileURL) {
-                window.open(fileURL, '_blank');
-            } else {
-                console.error("No se pudo generar la URL del archivo.");
-            }
-
         } catch (error) {
-            console.error("Error al descargar el PDF:", error);
+            console.log(error)
         }
+        // try {
+        //     const response = await axiosAuth.get(`orders/${order.id}/pdf`, { responseType: 'blob' });
+
+        //     if (!response || !response.data) {
+        //         throw new Error("Respuesta vacía al intentar obtener el PDF.");
+        //     }
+
+        //     const fileURL = createBlobUrl(response.data, 'application/pdf');
+
+        //     if (fileURL) {
+        //         window.open(fileURL, '_blank');
+        //     } else {
+        //         console.error("No se pudo generar la URL del archivo.");
+        //     }
+
+        // } catch (error) {
+        //     console.error("Error al descargar el PDF:", error);
+        // }
     };
 
     // 🔹 Función auxiliar para crear una URL a partir de un Blob
-    const createBlobUrl = (data: BlobPart, type: string): string | null => {
-        try {
-            const file = new Blob([data], { type });
-            return URL.createObjectURL(file);
-        } catch (error) {
-            console.error("Error al crear la URL del Blob:", error);
-            return null;
-        }
-    };
+    // const createBlobUrl = (data: BlobPart, type: string): string | null => {
+    //     try {
+    //         const file = new Blob([data], { type });
+    //         return URL.createObjectURL(file);
+    //     } catch (error) {
+    //         console.error("Error al crear la URL del Blob:", error);
+    //         return null;
+    //     }
+    // };
 
     const sendMail = async () => {
         if (order.atts.state !== 'AUTORIZADO') {
