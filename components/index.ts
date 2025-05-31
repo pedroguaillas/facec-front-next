@@ -8,6 +8,7 @@ export * from './separate/Separate';
 // Components
 export * from './table-responsive/TableResponsive';
 export * from './paginate/Paginate';
+export * from './pdf-viewer/PDFViewer';
 
 // IU
 export * from './ui/header/Header';

@@ -1,8 +1,10 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useShops } from "../context/ShopsContext";
 import { AxiosInstance } from "axios";
 import type { ShopProps } from "@/types/shop";
+import { PDFViewer } from "@/components";
+import { downloadXml } from "@/services/downloadXmlServices";
 
 interface Props {
     isOpen: boolean;
@@ -74,12 +76,13 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchShops } = useShops();
+    const [pdf, setPdf] = useState<{ route: string, name: string } | null>(null);
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [
-            { label: "Ver Pdf", onClick: () => viewPdf(`retentions/pdf/${shop.id}`) },
-            { label: "Descargar Xml", onClick: () => downloadXml('retentions/download/' + shop.id, 'Retención') },
+            { label: "Ver Pdf", onClick: () => setPdf({ route: `retentions/pdf/${shop.id}`, name: `Retención ${shop.atts.serie_retencion}` }) },
+            { label: "Descargar Xml", onClick: () => downloadXml(`retentions/download/${shop.id}`, axiosAuth, `Retención ${shop.atts.serie_retencion}`) },
             { label: "Enviar correo", onClick: sendMail },
         ];
 
@@ -96,8 +99,8 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     // 🔹 Función para obtener las opciones del menú liquidaciones en compra
     const getLCOptions = () => {
         const options = [
-            { label: "Ver Pdf", onClick: () => viewPdf(`shops/${shop.id}/pdf`) },
-            { label: "Descargar Xml", onClick: () => downloadXml(`shops/${shop.id}/download`, 'LC') },
+            { label: "Ver Pdf", onClick: () => setPdf({ route: `shops/${shop.id}/pdf`, name: `Liquidación en compra ${shop.atts.serie}` }) },
+            { label: "Descargar Xml", onClick: () => downloadXml(`shops/${shop.id}/download`, axiosAuth, `LC ${shop.atts.serie}`) },
         ];
 
         if (shop.atts.state && shop.atts.state !== "ANULADO") {
@@ -108,38 +111,6 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
         }
 
         return options;
-    };
-
-    const viewPdf = async (route: string) => {
-        try {
-            const response = await axiosAuth.get(route, { responseType: 'blob' });
-
-            if (!response || !response.data) {
-                throw new Error("Respuesta vacía al intentar obtener el PDF.");
-            }
-
-            const fileURL = createBlobUrl(response.data, 'application/pdf');
-
-            if (fileURL) {
-                window.open(fileURL, '_blank');
-            } else {
-                console.error("No se pudo generar la URL del archivo.");
-            }
-
-        } catch (error) {
-            console.error("Error al descargar el PDF:", error);
-        }
-    };
-
-    // 🔹 Función auxiliar para crear una URL a partir de un Blob
-    const createBlobUrl = (data: BlobPart, type: string): string | null => {
-        try {
-            const file = new Blob([data], { type });
-            return URL.createObjectURL(file);
-        } catch (error) {
-            console.error("Error al crear la URL del Blob:", error);
-            return null;
-        }
     };
 
     const sendMail = async () => {
@@ -160,20 +131,6 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             console.log(error)
         }
     };
-
-    const downloadXml = async (route: string, nameFile: string) => {
-        try {
-            const response = await axiosAuth.get(route);
-            if (response.status >= 200) {
-                const a = document.createElement('a') //Create <a>
-                a.href = 'data:text/xml;base64,' + response.data.xml //Image Base64 Goes here
-                a.download = `${nameFile} ${nameFile === 'LC' ? shop.atts.serie : shop.atts.serie_retencion}.xml` //File name Here
-                a.click() //Downloaded file
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -237,6 +194,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                     </div>
                 </div>
             )}
+            {pdf && <PDFViewer pdf={pdf} />}
         </div>
     )
 }

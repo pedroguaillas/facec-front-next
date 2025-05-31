@@ -1,10 +1,11 @@
-import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
+import { downloadXml } from "@/services/downloadXmlServices";
 import { useInvoices } from "../context/InvoicesContext";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
 import { useEffect, useRef, useState } from "react";
-import { AxiosInstance, AxiosResponse } from "axios";
-import { OrderProps } from "@/types/order";
-import PDFViewer from "./PDFViewer";
 import { useSession } from "next-auth/react";
+import { OrderProps } from "@/types/order";
+import { PDFViewer } from "@/components";
+import { AxiosInstance } from "axios";
 
 interface Props {
     isOpen: boolean;
@@ -63,14 +64,14 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchInvoices } = useInvoices();
-    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const { data: session } = useSession();
+    const [pdf, setPdf] = useState<{ route: string, name: string } | null>(null);
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [
             { label: "Ver Pdf", onClick: showOrderPdf },
-            { label: "Descargar Xml", onClick: downloadXml },
+            { label: "Descargar Xml", onClick: () => downloadXml(`orders/download/${order.id}`, axiosAuth, `Factura ${order.atts.serie}`) },
             { label: "Enviar correo", onClick: sendMail },
         ];
 
@@ -89,49 +90,8 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     };
 
     const showOrderPdf = async () => {
-        try {
-            const response: AxiosResponse<Blob> = await axiosAuth.get(`orders/${order.id}/pdf`, {
-                responseType: 'blob',
-            });
-
-            if (response.status >= 200) {
-                const blob = response.data; // ✅ Aquí
-                const url = URL.createObjectURL(blob);
-                setPdfUrl(url);
-            }
-        } catch (error) {
-            console.log(error)
-        }
-        // try {
-        //     const response = await axiosAuth.get(`orders/${order.id}/pdf`, { responseType: 'blob' });
-
-        //     if (!response || !response.data) {
-        //         throw new Error("Respuesta vacía al intentar obtener el PDF.");
-        //     }
-
-        //     const fileURL = createBlobUrl(response.data, 'application/pdf');
-
-        //     if (fileURL) {
-        //         window.open(fileURL, '_blank');
-        //     } else {
-        //         console.error("No se pudo generar la URL del archivo.");
-        //     }
-
-        // } catch (error) {
-        //     console.error("Error al descargar el PDF:", error);
-        // }
+        setPdf({ route: `orders/${order.id}/pdf`, name: `Factura ${order.atts.serie}` })
     };
-
-    // 🔹 Función auxiliar para crear una URL a partir de un Blob
-    // const createBlobUrl = (data: BlobPart, type: string): string | null => {
-    //     try {
-    //         const file = new Blob([data], { type });
-    //         return URL.createObjectURL(file);
-    //     } catch (error) {
-    //         console.error("Error al crear la URL del Blob:", error);
-    //         return null;
-    //     }
-    // };
 
     const sendMail = async () => {
         if (order.atts.state !== 'AUTORIZADO') {
@@ -152,34 +112,8 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         }
     };
 
-    const downloadXml = async () => {
-        try {
-            const response = await axiosAuth.get('orders/download/' + order.id);
-            if (response.status >= 200) {
-                const a = document.createElement('a') //Create <a>
-                a.href = 'data:text/xml;base64,' + response.data.xml //Image Base64 Goes here
-                a.download = 'Factura.xml' //File name Here
-                a.click() //Downloaded file
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     const printfPdf = async () => {
-        try {
-            const response: AxiosResponse<Blob> = await axiosAuth.get(`orders/${order.id}/printf`, {
-                responseType: 'blob',
-            });
-
-            if (response.status >= 200) {
-                const blob = response.data; // ✅ Aquí
-                const url = URL.createObjectURL(blob);
-                setPdfUrl(url);
-            }
-        } catch (error) {
-            console.log(error)
-        }
+        setPdf({ route: `orders/${order.id}/printf`, name: `Impresión ${order.atts.serie}` })
     }
 
     useEffect(() => {
@@ -224,7 +158,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                     </div>
                 )}
             </div>
-            {pdfUrl && <PDFViewer pdfUrl={pdfUrl} />}
+            {pdf && <PDFViewer pdf={pdf} />}
         </>
     );
 };
