@@ -71,7 +71,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const getOptions = () => {
         const options = [
             { label: "Ver Pdf", onClick: showOrderPdf },
-            { label: "Descargar Xml", onClick: () => downloadXml(`orders/download/${order.id}`, axiosAuth, `Factura ${order.atts.serie}`) },
+            { label: "Descargar Xml", onClick: () => downloadXml(`orders/download/${order.id}`, axiosAuth, `${order.atts.voucher_type == 1 ? 'Factura' : 'NC'} ${order.atts.serie}`) },
             { label: "Enviar correo", onClick: sendMail },
         ];
 
@@ -90,7 +90,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     };
 
     const showOrderPdf = async () => {
-        setPdf({ route: `orders/${order.id}/pdf`, name: `Factura ${order.atts.serie}` })
+        setPdf({ route: `orders/${order.id}/pdf`, name: `${order.atts.voucher_type == 1 ? 'Factura' : 'NC'} ${order.atts.serie}` })
     };
 
     const sendMail = async () => {

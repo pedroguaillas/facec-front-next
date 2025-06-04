@@ -4,10 +4,10 @@ import React from 'react';
 
 export const PDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) => {
 
-    const { isOpen, isMobile, pdfUrl, toggle, isIOS, isStandalonePWA, isChromeIOS, canDisplayPDF } = usePDFViewer({ pdf });
+    const { isOpen, isMobile, pdfUrl, toggle } = usePDFViewer({ pdf });
 
     // Evitar renderizar el modal si se redirige
-    if ((isIOS() && (isStandalonePWA() || isChromeIOS())) || !canDisplayPDF()) {
+    if (isMobile) {
         return null;
     }
 

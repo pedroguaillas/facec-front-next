@@ -37,12 +37,12 @@ export const CustomerForm = () => {
 
             // TODO: falta que regrese una respuesta un Customer o Error por no poder guardar.
             if (params?.id !== undefined) {
-                await updateCustomer(params.id + '', axiosAuth, customer);
+                await updateCustomer(params.id + '', axiosAuth, parsed.data);
                 router.push('/customers');
                 return;
             }
 
-            const res = await storeCustomer(axiosAuth, customer);
+            const res = await storeCustomer(axiosAuth, parsed.data);
             console.log(res)
             router.push('/customers');
         }, null

@@ -20,5 +20,4 @@ export const taxSchema = z.object({
         ])
         .transform(val => Number(val))
         .refine(val => val >= 0, { message: "Cantidad debe ser mayor o igual a 0" }),
-
 });

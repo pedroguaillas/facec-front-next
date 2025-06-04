@@ -11,26 +11,26 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
+    const axiosAuth = useAxiosAuth();
 
     const isIOS = () =>
-        typeof window !== 'undefined' &&
-        /iPad|iPhone|iPod/.test(navigator.userAgent);
+        typeof window !== "undefined" && /iPhone/i.test(navigator.userAgent);
 
-    const isChromeIOS = () =>
-        typeof window !== 'undefined' && /CriOS/.test(navigator.userAgent);
+    const isAndroid = () =>
+        typeof window !== "undefined" && /Android/i.test(navigator.userAgent);
 
     const isStandalonePWA = () =>
-        typeof window !== 'undefined' &&
-        ('standalone' in window.navigator && (window.navigator as NavigatorExtended).standalone);
+        typeof window !== "undefined" &&
+        (
+            (window.navigator as NavigatorExtended).standalone === true ||
+            window.matchMedia('(display-mode: standalone)').matches
+        );
 
-    const canDisplayPDF = () => {
-        return typeof window !== 'undefined' && 'PDFViewer' in window || !/MSIE|Trident/.test(navigator.userAgent);
-    };
+    const canDisplayPDF = () =>
+        typeof window !== "undefined" && 'PDFViewer' in window || !/MSIE|Trident/.test(navigator.userAgent);
 
     const toggle = () => setIsOpen(!isOpen);
 
-    // Detectar si es móvil
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 760);
@@ -40,7 +40,6 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Hacer fetch del PDF como blob
     useEffect(() => {
         const fetchPdf = async () => {
             try {
@@ -61,12 +60,20 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
         }
     }, [pdf, axiosAuth]);
 
-    // Mostrar o redirigir según el dispositivo
     useEffect(() => {
         if (!pdfUrl) return;
 
-        if (isIOS() && (isStandalonePWA() || isChromeIOS())) {
+        if (isIOS()) {
             window.location.href = pdfUrl;
+        } else if (isAndroid()) {
+            if (isStandalonePWA()) {
+                window.location.href = pdfUrl;
+            } else {
+                const newTab = window.open(pdfUrl, '_blank');
+                if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+                    window.location.href = pdfUrl; // Fallback si bloqueado
+                }
+            }
         } else if (!canDisplayPDF()) {
             const link = document.createElement('a');
             link.href = pdfUrl;
@@ -77,5 +84,5 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
         }
     }, [pdfUrl, pdf]);
 
-    return { isOpen, isMobile, pdfUrl, toggle, isIOS, isStandalonePWA, isChromeIOS, canDisplayPDF }
-}
+    return { isOpen, isMobile, pdfUrl, toggle };
+};
