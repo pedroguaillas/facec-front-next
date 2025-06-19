@@ -2,7 +2,7 @@
 "use client";
 
 import { PrimaryButton, TextInput } from "@/components";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -37,8 +37,12 @@ export default function LoginPage() {
       setError("Credenciales incorrecto");
       setIsLoading(false);
     } else {
-      router.push("/dashboard");
-      // window.location.href = "/dashboard"; // Redirect on success
+      const session = await getSession(); // 🔄 Asegura que obtienes la sesión actualizada
+        if (session?.user.user.user === 'admin') {
+          router.push("/admin/companies");
+        } else {
+          router.push("/dashboard");
+        }
     }
   };
 

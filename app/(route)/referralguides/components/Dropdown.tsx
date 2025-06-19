@@ -76,7 +76,7 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
         if (referralGuide.atts.state !== "ANULADO") {
             options.splice(1, 0, {
                 label: renderSwitch[referralGuide.atts.state.replace(' ', '_')],
-                onClick: () => renderProcess[referralGuide.atts.state](parseInt(referralGuide.id), axiosAuth, fetchReferralGuides),
+                onClick: () => renderProcess[referralGuide.atts.state.replace(' ', '_')](parseInt(referralGuide.id), axiosAuth, fetchReferralGuides),
             });
         }
 

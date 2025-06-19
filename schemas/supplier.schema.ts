@@ -1,12 +1,13 @@
 import { z } from "zod";
+import { emptyStringToNull } from './general.schema';
 
 export const supplierSchema = z.object({
     type_identification: z.enum(['cédula', 'ruc', 'otro']),
     identication: z.string().regex(/^\d+$/, 'La identificación debe contener solo números'),
     name: z.string().min(3, "Nombre del cliente requerido").max(300, "Máximo 300 caracteres"),
-    address: z.string().optional(),
-    phone: z.string().optional(),
-    email: z.string().optional(),
+    address: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+    phone: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+    email: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
 }).superRefine((data, ctx) => {
     if (data.type_identification === 'cédula' && data.identication.length !== 10) {
         ctx.addIssue({

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { taxSchema } from './tax.schema';
 import { productOutputSchema } from './product-output.schema';
 import { VoucherType } from '@/constants';
+import { emptyStringToNull } from './general.schema';
 
 export const shopSchema = z
   .object({
@@ -10,12 +11,10 @@ export const shopSchema = z
     serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
       message: 'Corrija a este formato: 001-001-000000001',
     }),
-    voucher_type: z.coerce.number(), // 1 = Factura, 4 = Nota de crédito
+    voucher_type: z.coerce.number(), // 1 = Factura, 3 = Liquidación en compra, 4 = Nota de crédito
     authorization: z.string().optional(),
-    serie_retencion: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
-      message: 'Seleccione un punto de emisión',
-    }),
-    date_retention: z.string().min(1, { message: 'Escriba una fecha correcta' }),
+    serie_retencion: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+    date_retention: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
     no_iva: z.number(),
     base0: z.number(),
     base5: z.number(),
@@ -45,4 +44,24 @@ export const shopSchema = z
   }, {
     message: 'Ingrese un número de autorización válido',
     path: ['authorization'],
+  })
+  .refine((data) => {
+    // ✅ Si existen taxes, debe existir serie_retencion
+    if (data.taxes && data.taxes.length > 0) {
+      return !!data.serie_retencion;
+    }
+    return true;
+  }, {
+    message: 'Seleccione un punto de emisión',
+    path: ['serie_retencion'],
+  })
+  .refine((data) => {
+    // ✅ Si existen taxes, debe existir date_retention
+    if (data.taxes && data.taxes.length > 0) {
+      return !!data.date_retention;
+    }
+    return true;
+  }, {
+    message: 'Ingrese una fecha valida.',
+    path: ['serie_retencion'],
   });

@@ -46,7 +46,7 @@ interface ShopCreateProps {
 
     // Retencion
     serie_retencion?: string,
-    date_retention: string,
+    date_retention?: string,
 }
 
 interface TaxInput {

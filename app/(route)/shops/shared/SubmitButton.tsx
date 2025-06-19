@@ -22,7 +22,6 @@ export const SubmitButton = () => {
             ...shop,
             products: productOutputs,
             taxes,
-            state_retencion: 'CREADO',
             app_retention: applieWithholding,
             send: send,
             point_id: selectPoint?.id,
@@ -30,6 +29,7 @@ export const SubmitButton = () => {
 
         if (!applieWithholding) {
             delete form.serie_retencion;
+            delete form.date_retention;
             form.taxes = [];
         }
 

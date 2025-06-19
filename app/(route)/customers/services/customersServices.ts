@@ -5,7 +5,7 @@ export const getCustomers = async (
     axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
     pageUrl?: string | null,
     search?: string,
-    page?: number
+    page?: number,
 ) => {
     // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
     const url = pageUrl || `customerlist?page=${page}`;

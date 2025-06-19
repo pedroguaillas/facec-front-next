@@ -1,4 +1,4 @@
-import { Customer, LinkMeta, Links, Meta, Supplier, Tax } from "@/types";
+import { Customer, LinkMeta, Links, Meta, Supplier, Tax, Branch, EmisionPointForm } from "@/types";
 import { ProductOutput } from "@/types/order";
 
 export const initialMeta: Meta = {
@@ -56,4 +56,20 @@ export const initialTax: Tax = {
   porcentage: 0,
   value: 0,
   editable_porcentage: false,
+}
+
+export const initialBranch: Branch = {
+  id: '',
+  store: 1,
+  address: '',
+  type: 'matriz',
+}
+
+export const initialEmisionPoint: EmisionPointForm = {
+  point: 1,
+  invoice: 1,
+  creditnote: 1,
+  retention: 1,
+  referralguide: 1,
+  settlementonpurchase: 1,
 }
