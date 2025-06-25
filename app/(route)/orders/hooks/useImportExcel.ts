@@ -10,6 +10,7 @@ export const useImportExcel = () => {
         formData.append("point_id", "1");
 
         await storeLotServices(axiosAuth, formData);
+        window.location.reload(); // recarga toda la página
     };
 
     const handleLote = (
