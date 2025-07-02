@@ -4,7 +4,7 @@ import { useFormShop } from '../context/FormShopContext';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
 import { shopSchema } from '@/schemas/shop-schema';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { Tax } from '@/types';
 
@@ -13,6 +13,7 @@ export const SubmitButton = () => {
     const { applieWithholding, shop, productOutputs, taxes, selectPoint, setErrorShop, setErrorTaxes } = useFormShop();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
+    const params = useParams();
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -69,7 +70,11 @@ export const SubmitButton = () => {
         // 3. Enviar el formulario
         try {
             setIsPending(true);
-            await axiosAuth.post('shops', form);
+            if (params.id) {
+                await axiosAuth.put(`shops/${params.id}`, form);
+            } else {
+                await axiosAuth.post('shops', form);
+            }
             router.push('/shops');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);

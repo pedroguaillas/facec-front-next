@@ -59,7 +59,7 @@ export const RetentionInformation = () => {
                 {/* Col 3 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3 mx-auto'>
-                        <TextInput type='date' label='Fecha emisión *' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión *' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} />
                     </div>
                 </div>
             </div>}
