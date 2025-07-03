@@ -29,3 +29,12 @@ interface Product {
     stock?: number,
     price1: string | number,
 }
+
+interface ProductCsv {
+    code: string;
+    type_product: string;
+    name: string;
+    price1: string;
+    iva: string;
+    stock: string | null;
+}

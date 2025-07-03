@@ -1,3 +1,4 @@
+import { ProductCsv } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getProducts = async (
@@ -39,6 +40,19 @@ export const getProduct = async (
     return response.data;
   } catch (error) {
     console.error("Error al obtener facturas:", error);
+    return {};
+  }
+};
+
+export const importProductsServices = async (
+  axiosAuth: AxiosInstance,
+  products: ProductCsv[],
+) => {
+  try {
+    const response = await axiosAuth.post('products/import', { products });
+    return response.data;
+  } catch (error) {
+    console.error("Error al importar productos:", error);
     return {};
   }
 };
