@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { taxSchema } from './tax.schema';
 import { productOutputSchema } from './product-output.schema';
 import { VoucherType } from '@/constants';
-import { emptyStringToNull } from './general.schema';
+import { emptyStringToNull, parseLocalDate } from './general.schema';
 
 export const shopSchema = z
   .object({
@@ -56,12 +56,23 @@ export const shopSchema = z
     path: ['serie_retencion'],
   })
   .refine((data) => {
-    // ✅ Si existen taxes, debe existir date_retention
     if (data.taxes && data.taxes.length > 0) {
-      return !!data.date_retention;
+      if (!data.date_retention) return false;
+
+      try {
+        const retentionDate = parseLocalDate(data.date_retention);
+        const mainDate = parseLocalDate(data.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return retentionDate >= mainDate && retentionDate <= today;
+      } catch {
+        return false;
+      }
     }
+
     return true;
   }, {
-    message: 'Ingrese una fecha valida.',
-    path: ['serie_retencion'],
+    message: 'La fecha de retención debe ser mayor o igual a la fecha del comprobante y no puede ser mayor a hoy.',
+    path: ['date_retention'],
   });

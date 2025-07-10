@@ -5,6 +5,6 @@ export const getDate = () => {
 
 export const getMinDate = () => {
     const minDate = new Date();
-    minDate.setMonth(minDate.getMonth() - 3);
+    minDate.setHours(minDate.getUTCDay() - (4 * 24));
     return minDate.toLocaleDateString('en-Ca', { timeZone: 'America/Guayaquil' });
 }

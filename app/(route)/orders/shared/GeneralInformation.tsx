@@ -25,6 +25,12 @@ export const GeneralInformation = () => {
         label: `${point.store} - ${point.point} - ${point.recognition}`
     }));
 
+    const getMinDateNC = () => {
+        const minDate = new Date();
+        minDate.setFullYear(minDate.getFullYear() - 1);
+        return minDate.toLocaleDateString('en-Ca', { timeZone: 'America/Guayaquil' });
+    }
+
     // Solo le llamo a este Hooks para que se ejecute el useEffect que tiene dentro
     useSelectPoint();
 
@@ -85,13 +91,13 @@ export const GeneralInformation = () => {
                     {Number(invoice.voucher_type) === 4 && (
                         <>
                             <div className='lg:w-2/3'>
-                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' max={getDate()} />
+                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' min={getMinDateNC()} max={getDate()} />
                             </div>
                             <div className='lg:w-2/3'>
                                 <TextInput label='Serie factura *' value={invoice.serie_order ?? ''} error={formErrors.serie_order} onChange={handleChange} name='serie_order' maxLength={17} />
                             </div>
                             <div className='lg:w-2/3'>
-                                <TextInput label='Motivo *' value={invoice.rason ?? ''} error={formErrors.rason} onChange={handleChange} name='rason' />
+                                <TextInput label='Motivo *' value={invoice.reason ?? ''} error={formErrors.reason} onChange={handleChange} name='reason' />
                             </div>
                         </>
                     )}

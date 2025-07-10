@@ -32,8 +32,8 @@ export const ButtonSubmit = () => {
             point_id: selectPoint?.id,
         };
 
-        if (Number(form.voucher_type) === 4 && form.rason) {
-            form.rason = form.rason.trim();
+        if (Number(form.voucher_type) === 4 && form.reason) {
+            form.reason = form.reason.trim();
         }
 
         // 2. Validar el formulario

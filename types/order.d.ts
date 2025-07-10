@@ -45,7 +45,7 @@ interface OrderCreateProps {
     guia?: string;
     date_order?: string;
     serie_order?: string;
-    rason?: string;
+    reason?: string;
 }
 
 interface PayMethod {

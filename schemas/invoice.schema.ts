@@ -22,7 +22,7 @@ export const invoiceSchema = z
     // Para notas de crédito
     date_order: z.string().optional(),
     serie_order: z.string().optional(),
-    rason: z.string().optional(),
+    reason: z.string().optional(),
     products: z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
     aditionals: z.array(aditionalInformationSchema).optional(),
   })
@@ -58,9 +58,9 @@ export const invoiceSchema = z
   // 3. Motivo debe existir y tener al menos 3 caracteres
   .refine(
     (data) =>
-      data.voucher_type !== 4 || (!!data.rason && data.rason.length >= 3),
+      data.voucher_type !== 4 || (!!data.reason && data.reason.length >= 3),
     {
-      path: ['rason'],
+      path: ['reason'],
       message: 'Es obligatorio el "Motivo" y debe contener al menos 3 caracteres',
     }
   )

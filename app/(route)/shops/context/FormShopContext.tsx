@@ -59,7 +59,7 @@ const initialShop: ShopCreateProps = {
     provider_id: 0,
 
     // Retencion
-    serie_retencion: 'Cree un punto de emisión',
+    serie_retencion: '',
     date_retention: getDate(),
 }
 
