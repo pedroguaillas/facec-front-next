@@ -56,3 +56,16 @@ export const importProductsServices = async (
     return {};
   }
 };
+
+export const deleteProduct = async (
+  id: number,
+  axiosAuth: AxiosInstance,
+) => {
+  try {
+    const response = await axiosAuth.delete('products/' + id);
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+    return {};
+  }
+};
