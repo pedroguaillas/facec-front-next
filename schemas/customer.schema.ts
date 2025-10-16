@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { emptyStringToNull } from './general.schema';
 
 export const customerSchema = z.object({
-    type_identification: z.enum(['cédula', 'ruc', 'otro']),
+    type_identification: z.enum(['cédula', 'ruc', 'pasaporte', 'otro']),
     identication: z
         .string()
         .regex(/^\d+$/, 'La identificación debe contener solo números'), // solo dígitos

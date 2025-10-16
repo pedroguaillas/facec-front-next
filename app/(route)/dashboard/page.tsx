@@ -51,7 +51,7 @@ const InvoicesPage = async () => {
                   : `Tu firma caduca el ${new Date(data.cert_expiration).toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' })}.`}
               </p>
               <a
-                href="/firma/renovar"
+                href="https://www.facec.ec/firma-electronica"
                 className="mt-2 sm:mt-0 bg-white text-black px-6 py-3 rounded-full font-semibold shadow-lg hover:scale-105 hover:bg-gray-100 transition-transform duration-300 animate-bounce"
               >
                 🚀 Renovar Ahora

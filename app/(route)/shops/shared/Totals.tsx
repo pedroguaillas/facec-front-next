@@ -35,13 +35,13 @@ export const Totals = () => {
     const subtotalRows = [
         { name: 'base0', label: 'Subtotal 0%', value: shop.base0, error: errorShop.base0 },
         { name: 'base5', label: 'Subtotal 5%', value: shop.base5, error: errorShop.base5 },
-        { name: 'base12', label: 'Subtotal 12%', value: shop.base12, error: errorShop.base12 },
+        // { name: 'base12', label: 'Subtotal 12%', value: shop.base12, error: errorShop.base12 },
         { name: 'base15', label: 'Subtotal 15%', value: shop.base15, error: errorShop.base15 },
     ];
 
     const ivaRows = [
         { label: 'IVA 5%', value: shop.base5 * 0.05 },
-        { label: 'IVA 12%', value: shop.base12 * 0.12 },
+        // { label: 'IVA 12%', value: shop.base12 * 0.12 },
         { label: 'IVA 15%', value: shop.base15 * 0.15 },
     ];
 

@@ -1,4 +1,5 @@
-import { AxiosInstance } from "axios";
+import { ApiResponse, ShopCreateProps } from "@/types";
+import axios, { AxiosInstance } from "axios";
 
 export const getShops = async (
     axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
@@ -12,6 +13,34 @@ export const getShops = async (
     } catch (error) {
         console.error("Error al obtener compras:", error);
         return [];
+    }
+};
+
+export const store = async (
+    axiosAuth: AxiosInstance,
+    data: object
+): Promise<ApiResponse<ShopCreateProps>> => {
+    try {
+        const response = await axiosAuth.post<ApiResponse<ShopCreateProps>>(
+            "shops",
+            data
+        );
+
+        return response.data;
+    } catch (error: unknown) {
+        // ✅ Type guard para Axios
+        if (axios.isAxiosError<ApiResponse<ShopCreateProps>>(error)) {
+            if (error.response) {
+                return error.response.data;
+            }
+        }
+
+        // ✅ Respuesta por defecto si no es AxiosError
+        return {
+            success: false,
+            message: "Error inesperado de conexión con el servidor.",
+            errors: {},
+        };
     }
 };
 

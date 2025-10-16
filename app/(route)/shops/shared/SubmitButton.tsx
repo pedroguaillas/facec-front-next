@@ -7,6 +7,7 @@ import { shopSchema } from '@/schemas/shop-schema';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { Tax } from '@/types';
+import { store } from '../services/shopsServices';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
@@ -35,7 +36,6 @@ export const SubmitButton = () => {
         }
 
         // 2. Validar el formulario
-        console.log(form)
         const parsed = shopSchema.safeParse(form);
 
         if (!parsed.success) {
@@ -73,9 +73,17 @@ export const SubmitButton = () => {
             if (params.id) {
                 await axiosAuth.put(`shops/${params.id}`, form);
             } else {
-                await axiosAuth.post('shops', form);
+                const response = await store(axiosAuth, form)
+
+                if (response.success) {
+                    console.log("✅ Shop creada:", response.data)
+                    router.push('/shops');
+                } else {
+                    console.log("Errores de validación backend:", response.errors)
+                    setErrorShop((prevState) => ({ ...prevState, ...response.errors }))
+                }
+                // await axiosAuth.post('shops', form);
             }
-            router.push('/shops');
         } catch (error) {
             console.log('Error al guardar el formulario' + error);
         }

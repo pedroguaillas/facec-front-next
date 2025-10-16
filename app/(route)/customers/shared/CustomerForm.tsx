@@ -51,6 +51,7 @@ export const CustomerForm = () => {
     const optionType = [
         { label: 'Cédula', value: 'cédula' },
         { label: 'RUC', value: 'ruc' },
+        { label: 'Pasaporte', value: 'pasaporte' },
     ]
 
     return (

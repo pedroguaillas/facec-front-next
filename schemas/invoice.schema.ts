@@ -69,6 +69,6 @@ export const invoiceSchema = z
     (data) => !(data.pay_method === 1 && data.total >= 500),
     {
       path: ['pay_method'],
-      message: 'Si el total es mayor o igual a 500, debe seleccionar otro forma de pago',
+      message: 'Monto desde $500, debe seleccionar otro forma de pago',
     }
   );
