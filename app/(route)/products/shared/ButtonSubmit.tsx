@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { PrimaryButton } from '@/components';
 import { useState } from 'react';
+import { productStoreService, productUpdateService } from '../services/productServices';
 
 export const ButtonSubmit = () => {
 
@@ -17,9 +18,7 @@ export const ButtonSubmit = () => {
 
     const handleSubmit = async () => {
         // 1. Crear el formulario
-        const form = {
-            ...product,
-        };
+        const form = { ...product };
 
         // 2. Validar el formulario
         const parsed = productSchema.safeParse(form);
@@ -34,18 +33,26 @@ export const ButtonSubmit = () => {
         }
 
         // 3. Enviar el formulario
-        try {
-            setIsPending(true);
-            if (params?.id) {
-                await axiosAuth.put(`product/${params.id}`, form);
-            } else {
-                await axiosAuth.post('product', form);
-            }
-            router.push('/products');
-        } catch (error) {
-            setIsPending(false);
-            console.log('Error al guardar el formulario' + error);
+        setIsPending(true);
+
+        let response = undefined;
+
+        if (params?.id) {
+            response = await productUpdateService(Number(params.id), axiosAuth, form);
+        } else {
+            response = await productStoreService(axiosAuth, form);
         }
+
+        const { message, data, errors } = response;
+
+        if (data) {
+            router.push('/products');
+        } else if (errors) {
+            setErrorProduct(errors);
+        } else {
+            console.log(message);
+        }
+        setIsPending(false);
     }
 
     return (

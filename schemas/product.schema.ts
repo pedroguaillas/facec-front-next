@@ -5,7 +5,9 @@ export const productSchema = z.object({
   code: z.string().min(1, "Codigo requerido").max(25, "Máximo 25 caracteres"),
   aux_cod: z.string().nullable().optional(),
   type_product: z.number(),
-  name: z.string().min(3, "Nombre del producto requerido").max(300, "Máximo 300 caracteres"),
+  name: z.string()
+    .min(3, "Nombre del producto requerido min 3 caracteres")
+    .max(300, "Máximo 300 caracteres"),
   iva: z.number(),
   ice: z.string().nullable().optional(),
   stock: z.number().nullable().optional(),

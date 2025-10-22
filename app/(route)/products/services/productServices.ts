@@ -1,4 +1,5 @@
-import { ProductCsv } from "@/types";
+import { handleApiRequest } from "@/helpers/apiHandler";
+import { Product, ProductCsv } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getProducts = async (
@@ -30,6 +31,17 @@ export const getCreateProduct = async (
     return {};
   }
 };
+
+export const productStoreService = async (
+  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+  form: object
+) => handleApiRequest<Product>(() => axiosAuth.post('product', form));
+
+export const productUpdateService = async (
+  id: number,
+  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+  form: object
+) => handleApiRequest<Product>(() => axiosAuth.put(`product/${id}`, form));
 
 export const getProduct = async (
   id: string,

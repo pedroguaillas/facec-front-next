@@ -7,7 +7,7 @@ import { shopSchema } from '@/schemas/shop-schema';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { Tax } from '@/types';
-import { store } from '../services/shopsServices';
+import { shopStoreService, shopUpdateService } from '../services/shopsServices';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
@@ -68,26 +68,31 @@ export const SubmitButton = () => {
         }
 
         // 3. Enviar el formulario
-        try {
-            setIsPending(true);
-            if (params.id) {
-                await axiosAuth.put(`shops/${params.id}`, form);
-            } else {
-                const response = await store(axiosAuth, form)
+        setIsPending(true);
 
-                if (response.success) {
-                    console.log("✅ Shop creada:", response.data)
-                    router.push('/shops');
-                } else {
-                    console.log("Errores de validación backend:", response.errors)
-                    setErrorShop((prevState) => ({ ...prevState, ...response.errors }))
-                }
-                // await axiosAuth.post('shops', form);
-            }
-        } catch (error) {
-            console.log('Error al guardar el formulario' + error);
+        let response = undefined;
+
+        if (params?.id) {
+            response = await shopUpdateService(Number(params.id), axiosAuth, form);
+        } else {
+            response = await shopStoreService(axiosAuth, form);
         }
+
+        const { message, data, errors } = response;
+
+        if (data) {
+            router.push('/shops');
+        } else if (errors) {
+            setErrorShop(errors);
+        } else {
+            alert(message);
+        }
+        setIsPending(false);
     };
+
+    if (params?.id && shop.state_retencion === 'AUTORIZADO') {
+        return null;
+    }
 
     return (
         <div className='flex justify-end mt-4 gap-2'>

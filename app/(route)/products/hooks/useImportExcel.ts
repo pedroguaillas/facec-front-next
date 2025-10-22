@@ -1,5 +1,5 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { importProductsServices } from "../services/ordersServices";
+import { importProductsServices } from "../services/productServices";
 import { ProductCsv } from "@/types";
 
 export const useImportExcel = () => {
@@ -37,7 +37,7 @@ export const useImportExcel = () => {
                 name: words[2]?.trim() || '',
                 price1: words[3] || '',
                 iva: words[4] || '',
-                stock: words[5] !== undefined ? words[5].trim() : null,
+                stock: words[5] && words[5].trim() !== '' ? words[5].trim() : null,
             };
 
             products.push(object);

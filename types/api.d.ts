@@ -1,15 +1,15 @@
-// Respuesta genérica de API
-export interface ApiResponse<T> {
-    success: boolean
-    message: string
-    data?: T
-    errors?: Record<string, string>
+export interface LaravelValidationErrors {
+    [key: string]: string;
 }
 
-export type ValidationErrors<T> = Partial<Record<keyof T, string>>;
+export interface LaravelErrorResponse {
+    message: string;
+    errors?: Record<string, string[]>;
+}
 
-export interface ApiError<T = Partial<Record<keyof T, string>>> {
-    message?: string;
-    errors?: ValidationErrors<T>;
-    status?: number;
+// Respuesta genérica de API
+export interface ApiResponse<T> {
+    message?: string
+    data?: T
+    errors?: LaravelValidationErrors
 }

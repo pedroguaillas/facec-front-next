@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
-import { getCreateProduct, getProduct } from "../services/ordersServices";
+import { getCreateProduct, getProduct } from "../services/productServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
@@ -9,11 +9,11 @@ import { Product } from "@/types";
 
 interface ProductCreateContextType {
     product: Product;
-    errorProduct: Record<keyof Product, string>;
+    errorProduct: Partial<Record<keyof Product, string>>;
     ivaTaxes: [];
     iceCataloges: [];
     setProduct: Dispatch<SetStateAction<Product>>;
-    setErrorProduct: Dispatch<SetStateAction<Record<keyof Product, string>>>;
+    setErrorProduct: Dispatch<SetStateAction<Partial<Record<keyof Product, string>>>>;
 }
 
 const ProductCreateContext = createContext<ProductCreateContextType | undefined>(undefined);
@@ -36,7 +36,7 @@ const initialProduct: Product = {
 export const ProductFormProvider = ({ id, children }: Props) => {
 
     const [product, setProduct] = useState<Product>(initialProduct);
-    const [errorProduct, setErrorProduct] = useState<Record<keyof Product, string>>({} as Record<keyof Product, string>);
+    const [errorProduct, setErrorProduct] = useState<Partial<Record<keyof Product, string>>>({});
     const [ivaTaxes, setIvaTaxes] = useState<[]>([]);
     const [iceCataloges, setIceCataloges] = useState<[]>([]);
     const { status } = useSession();

@@ -5,7 +5,7 @@ import { useProducts } from '../context/ProductContext';
 import { PrimaryButton, TableResponsive } from '@/components'
 import { useState } from 'react';
 import { axiosAuth } from '@/lib/axios';
-import { deleteProduct } from '../services/ordersServices';
+import { deleteProduct } from '../services/productServices';
 
 export const ProductsTable = () => {
 
