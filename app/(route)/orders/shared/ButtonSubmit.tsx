@@ -129,7 +129,7 @@ export const ButtonSubmit = () => {
                 Guardar
             </button>
             <button
-                onClick={(e) => handleSubmit(e, false)}
+                onClick={(e) => handleSubmit(e, true)}
                 disabled={isPending}
                 className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
                 {isPending && (
