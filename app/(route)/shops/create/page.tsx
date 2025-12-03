@@ -1,6 +1,6 @@
 import { GeneralInformation, ListProducts, RetentionInformation, ListTaxes, Totals } from "../shared";
 import { FormShopProvider } from "../context/FormShopContext";
-import { Separate, Title } from "@/components";
+import { RequiredFields, Separate, Title } from "@/components";
 
 const PageCreateShop = () => {
     return (
@@ -16,10 +16,7 @@ const PageCreateShop = () => {
 
                     {/* Card */}
                     <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
-                        <h2>
-                            <span className="font-bold">Nota: </span>
-                            Los campos marcados con * son obligatorios
-                        </h2>
+                        <RequiredFields />
                         <Separate />
                         <GeneralInformation />
                         <ListProducts />

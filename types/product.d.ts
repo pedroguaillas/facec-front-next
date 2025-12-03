@@ -38,3 +38,20 @@ interface ProductCsv {
     iva: string;
     stock: string | null;
 }
+
+interface SriCategory {
+    code: string;
+    type: string;
+    description: string;
+}
+
+interface ProductCreateResponse {
+    ivaTaxes: [];
+    iceCataloges: [];
+    sriCategories: SriCategory[];
+    transport: boolean;
+}
+
+interface ProductEditResponse extends ProductCreateResponse {
+    product: Product;
+}

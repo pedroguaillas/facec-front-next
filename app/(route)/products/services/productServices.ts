@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { Product, ProductCsv } from "@/types";
+import { Product, ProductCreateResponse, ProductCsv, ProductEditResponse } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getProducts = async (
@@ -22,39 +22,23 @@ export const getProducts = async (
 
 export const getCreateProduct = async (
   axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-) => {
-  try {
-    const response = await axiosAuth.get('product/create');
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener facturas:", error);
-    return {};
-  }
-};
+) => handleApiRequest<ProductCreateResponse>(() => axiosAuth.get('product/create'));
 
 export const productStoreService = async (
   axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
   form: object
 ) => handleApiRequest<Product>(() => axiosAuth.post('product', form));
 
+export const getEditProduct = async (
+  id: string,
+  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+) => handleApiRequest<ProductEditResponse>(() =>axiosAuth.get('product/' + id));
+
 export const productUpdateService = async (
   id: number,
   axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
   form: object
 ) => handleApiRequest<Product>(() => axiosAuth.put(`product/${id}`, form));
-
-export const getProduct = async (
-  id: string,
-  axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-) => {
-  try {
-    const response = await axiosAuth.get('product/' + id);
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener facturas:", error);
-    return {};
-  }
-};
 
 export const importProductsServices = async (
   axiosAuth: AxiosInstance,

@@ -4,7 +4,7 @@ import { createContext, useState, useContext, useEffect, ReactNode, SetStateActi
 import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput } from "@/types/order";
 import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
-import { CustomerProps, EmisionPoint } from "@/types";
+import { CustomerProps, EmisionPoint, Repayment } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
@@ -18,6 +18,9 @@ interface InvoicesContextType {
   selectPoint: EmisionPoint | null;
   selectCustom: CustomerProps | null;
   tourism: boolean;
+  repayment: boolean;
+  repayments: Repayment[];
+  errorRepayments: Record<string, Partial<Record<keyof Repayment, string>>>;
   productOutputs: ProductOutput[];
   errorProductOutputs: Record<string, Partial<Record<keyof ProductOutput, string>>>;
   aditionalInformation: AditionalInformation[];
@@ -29,6 +32,8 @@ interface InvoicesContextType {
   setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
   setSelectCustom: Dispatch<SetStateAction<CustomerProps | null>>;
   setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
+  setRepayments: Dispatch<SetStateAction<Repayment[]>>;
+  setErrorRepayments: Dispatch<SetStateAction<Record<string, Partial<Record<keyof Repayment, string>>>>>;
   setErrorProductOutputs: Dispatch<SetStateAction<Record<string, Partial<Record<keyof ProductOutput, string>>>>>;
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
   setErrorAditionalInformation: Dispatch<SetStateAction<Record<string, Partial<Record<keyof AditionalInformation, string>>>>>;
@@ -81,6 +86,9 @@ export const FormInvoiceProvider = ({ children }: Props) => {
   const [errorAditionalInformation, setErrorAditionalInformation] = useState<Record<string, Partial<Record<keyof AditionalInformation, string>>>>({});
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof OrderCreateProps, string>>>({});
   const [tourism, setTourism] = useState(false);
+  const [repayment, setRepayment] = useState(false);
+  const [repayments, setRepayments] = useState<Repayment[]>([]);
+  const [errorRepayments, setErrorRepayments] = useState<Record<string, Partial<Record<keyof Repayment, string>>>>({});
   const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
   const [isActiveIce, setIsActiveIce] = useState(false);
   const { status } = useSession();
@@ -104,11 +112,12 @@ export const FormInvoiceProvider = ({ children }: Props) => {
           setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
         } else {
           const data = await getCreateInvoice(axiosAuth);
-          const { points, methodOfPayments, pay_method, tourism } = data;
+          const { points, methodOfPayments, pay_method, tourism, repayment } = data;
           setInvoice((prev) => ({ ...prev, pay_method }));
           setPoints(points);
           setPayMethods(methodOfPayments);
           setTourism(tourism);
+          setRepayment(repayment);
           setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
         }
       } catch (error) {
@@ -120,8 +129,8 @@ export const FormInvoiceProvider = ({ children }: Props) => {
 
   return (
     <FormInvoiceContext.Provider value={{
-      invoice, selectPoint, selectCustom, payMethods, points, tourism, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, selectCustom, payMethods, points, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
+      setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setRepayments, setErrorRepayments, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
     }}>
       {children}
     </FormInvoiceContext.Provider>

@@ -1,6 +1,7 @@
 import { aditionalInformationSchema } from './aditional-information.schema';
 import { productOutputSchema } from './product-output.schema';
 import { z } from 'zod';
+import { repaymentSchema } from './repayment.schema';
 
 export const invoiceSchema = z
   .object({
@@ -12,7 +13,8 @@ export const invoiceSchema = z
     voucher_type: z.coerce.number(), // 1 = Factura, 4 = Nota de crédito
     total: z.number(),
     discount: z.union([
-      z.string().refine(val => val.trim() !== "", { message: "Descuento requerida" }),
+      z.string()
+        .refine(val => val.trim() !== "", { message: "Descuento requerida" }),
       z.number()
     ])
       .transform(val => Number(val))
@@ -23,7 +25,27 @@ export const invoiceSchema = z
     date_order: z.string().optional(),
     serie_order: z.string().optional(),
     reason: z.string().optional(),
-    products: z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
+    products: z.array(productOutputSchema)
+      .min(1, { message: 'Debe agregar al menos un producto' }),
+    repayments: z.array(repaymentSchema).optional().superRefine((repayments, ctx) => {
+      // ✅ Verificar que repayments existe y tiene elementos
+      if (!repayments || repayments.length === 0) {
+        return; // Si es undefined o vacío, no validar
+      }
+
+      const seenCodes = new Set<string>();
+
+      repayments.forEach((repayment, index) => {
+        if (seenCodes.has(repayment.authorization)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `La autorización está duplicado`,
+            path: [index, 'authorization'],
+          });
+        }
+        seenCodes.add(repayment.authorization);
+      });
+    }),
     aditionals: z.array(aditionalInformationSchema).optional(),
   })
   .refine(
@@ -33,6 +55,30 @@ export const invoiceSchema = z
     {
       path: ['guia'],
       message: 'Corrija a este formato: 001-001-000000001',
+    }
+  )
+  // Validación: suma de bases de reembolsos debe ser igual al total
+  .refine(
+    (data) => {
+      // Si no hay reembolsos, no validar
+      if (!data.repayments || data.repayments.length === 0) {
+        return true;
+      }
+
+      // Calcular la suma de todas las bases de los impuestos de reembolsos
+      const totalBasesReembolsos = data.repayments.reduce((total, repayment) => {
+        const baseRepayment = repayment.repaymentTaxes.reduce((sum, tax) => {
+          return sum + tax.base + tax.iva;
+        }, 0);
+        return total + baseRepayment;
+      }, 0);
+
+      // Comparar con el total de la factura (con tolerancia para decimales)
+      return Math.abs(totalBasesReembolsos - data.total) < 0.01;
+    },
+    {
+      path: ['repayments'],
+      message: 'La suma de las bases de los reembolsos debe ser igual al total de la factura',
     }
   )
   // 1. Emisión de factura (date_order) obligatoria si es Nota de Crédito

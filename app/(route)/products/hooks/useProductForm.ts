@@ -3,7 +3,10 @@ import { useState } from "react";
 
 export const useProductForm = () => {
 
-    const { product, errorProduct, ivaTaxes, iceCataloges, setProduct, setErrorProduct } = useProductCreateContext();
+    const {
+        product, errorProduct, ivaTaxes, iceCataloges, sriCategories,
+        setProduct, setErrorProduct
+    } = useProductCreateContext();
     const [breakdown, setBreakdown] = useState<boolean>(false);
     const [total, setTotal] = useState('');
 
@@ -38,5 +41,8 @@ export const useProductForm = () => {
         { value: 2, label: 'Servicio' },
     ];
 
-    return { product, errorProduct, optionType, ivaTaxes, iceCataloges, breakdown, total, handleChange, handleSelect, onChangeCheckbox, handleTotal };
+    return {
+        product, errorProduct, optionType, ivaTaxes, iceCataloges, sriCategories, breakdown, total,
+        handleChange, handleSelect, onChangeCheckbox, handleTotal
+    };
 }

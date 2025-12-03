@@ -27,11 +27,11 @@ export const CarrierForm = () => {
 
                 <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={carrier.type_identification} handleSelect={handleChange} />
 
-                <TextInput type='text' label='Identificación *' value={carrier.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={13} />
+                <TextInput type='text' label='Identificación' value={carrier.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={13} required />
 
-                <TextInput type='text' label='Nombre *' value={carrier.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} />
+                <TextInput type='text' label='Nombre' value={carrier.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} required />
 
-                <TextInput type='text' label='Placa *' value={carrier.license_plate} error={errors.license_plate} onChange={handleChange} name='license_plate' maxLength={10} />
+                <TextInput type='text' label='Placa' value={carrier.license_plate} error={errors.license_plate} onChange={handleChange} name='license_plate' maxLength={10} required />
 
                 <TextInput type='email' label='Correo electrónico' value={carrier.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={100} />
 

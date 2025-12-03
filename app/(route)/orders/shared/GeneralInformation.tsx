@@ -1,6 +1,6 @@
 "use client";
 
-import { SelectCustomer, SelectOption, TextInput } from '@/components';
+import { LabelComponent, SelectCustomer, SelectOption, TextInput } from '@/components';
 import { useFormInvoice } from '../context/FormInvoiceContext';
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
@@ -62,16 +62,16 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} required />
                     </div>
                     {points.length > 1 && !params.id && (
                         <div className="flex flex-col lg:w-2/3">
-                            <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} />
+                            <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} required />
                         </div>
                     )}
                     <div className='py-2'><span className='font-bold'>N° de serie: </span>{invoice.serie}</div>
                     <div className='flex flex-col lg:w-2/3'>
-                        <span>Cliente</span>
+                        <LabelComponent name='name' label='Cliente' required />
                         <SelectCustomer label={selectCustom?.atts.name ?? ''} error={formErrors.customer_id} selectCustomer={handleSelectCustomer} />
                     </div>
                 </div>

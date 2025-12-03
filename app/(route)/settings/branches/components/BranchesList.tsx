@@ -4,6 +4,7 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import React, { useCallback, useEffect, useState } from 'react'
 import { ModalFormBranch } from './ModalFormBranch';
 import Link from 'next/link';
+import { Branch } from '@/types';
 
 export const BranchesList = () => {
     const [branches, setBranches] = useState<Branch[]>([]);

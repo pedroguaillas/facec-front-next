@@ -13,5 +13,6 @@ export * from './order.d';
 export * from './paginate.d';
 export * from './product.d';
 export * from './referral-guide.d';
+export * from './repayment.d';
 export * from './shop.d';
 export * from './supplier.d';

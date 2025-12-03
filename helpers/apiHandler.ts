@@ -1,3 +1,4 @@
+import { CodeErrors } from "@/constants/codeErrors";
 import { ApiResponse, LaravelErrorResponse, LaravelValidationErrors } from "@/types";
 import { AxiosError } from "axios";
 
@@ -9,6 +10,10 @@ export async function handleApiRequest<T>(
         return { data: response.data };
     } catch (err) {
         const error = err as AxiosError<LaravelErrorResponse>;
+
+        if (error.response === undefined) {
+            return new Error(CodeErrors.NETWORK_ERROR);
+        }
 
         // El unico error que capturamos es cuando no pasa la validación en el Backend
         if (error.response && error.response.status === 422) {

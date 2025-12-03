@@ -1,6 +1,6 @@
 'use client';
 
-import { SelectCarrier, SelectCustomer, SelectOption, Separate, TextInput } from '@/components';
+import { LabelComponent, SelectCarrier, SelectCustomer, SelectOption, Separate, TextInput } from '@/components';
 import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { useGeneralInformation } from '../hooks/useGeneralInformation';
 import { useSelectPoint } from '../hooks/useSelectPoint';
@@ -24,7 +24,7 @@ export const GeneralInformation = () => {
 						{/* !Todo: Check handleSelect function */}
 						{points.length > 1 && (
 							<div className='flex flex-col lg:w-2/3'>
-								<SelectOption label='Punto Emisión' name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errors.serie} handleSelect={handleSelectPoint} />
+								<SelectOption label='Punto Emisión' name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errors.serie} handleSelect={handleSelectPoint} required />
 							</div>
 						)}
 						<div className='py-2'>
@@ -32,31 +32,31 @@ export const GeneralInformation = () => {
 							{referralGuide.serie}
 						</div>
 						<div className='flex flex-col lg:w-2/3'>
-							<span>Transportista</span>
+							<LabelComponent name='carrier_id' label='Transportista' required />
 							<SelectCarrier label={selectCarrier?.atts.name} error={errors.carrier_id} selectCarrier={handleSelectCarrier} />
 						</div>
 						<div className='flex flex-col lg:w-2/3 pt-2'>
-							<span>Destinatario/Cliente</span>
+							<LabelComponent name='customer_id' label='Destinatario/Cliente' required />
 							<SelectCustomer label={selectCustom?.atts.name} error={errors.customer_id} optionCreate={false} selectCustomer={handleSelectCustomer} />
 						</div>
 						<div className='lg:w-2/3'>
-							<TextInput type='text' label='Dirección partida *' value={referralGuide.address_from} error={errors.address_from} onChange={handleChange} name='address_from' maxLength={300} />
+							<TextInput type='text' label='Dirección partida' value={referralGuide.address_from} error={errors.address_from} onChange={handleChange} name='address_from' maxLength={300} required />
 						</div>
 						<div className='lg:w-2/3'>
-							<TextInput type='text' label='Dirección destino *' value={referralGuide.address_to} error={errors.address_to} onChange={handleChange} name='address_to' maxLength={300} />
+							<TextInput type='text' label='Dirección destino' value={referralGuide.address_to} error={errors.address_to} onChange={handleChange} name='address_to' maxLength={300} required />
 						</div>
 					</div>
 
 					{/* Col 2 */}
 					<div className='w-full'>
 						<div className='lg:w-2/3'>
-							<TextInput type='date' label='Fecha inicio *' value={referralGuide.date_start} error={errors.date_start} onChange={handleChange} name='date_start' />
+							<TextInput type='date' label='Fecha inicio' value={referralGuide.date_start} error={errors.date_start} onChange={handleChange} name='date_start' required />
 						</div>
 						<div className='lg:w-2/3'>
-							<TextInput type='date' label='Fecha fin *' value={referralGuide.date_end} error={errors.date_end} onChange={handleChange} name='date_end' />
+							<TextInput type='date' label='Fecha fin' value={referralGuide.date_end} error={errors.date_end} onChange={handleChange} name='date_end' required />
 						</div>
 						<div className='lg:w-2/3'>
-							<TextInput type='text' label='Motivo translado *' value={referralGuide.reason_transfer} error={errors.reason_transfer} onChange={handleChange} name='reason_transfer' maxLength={300} />
+							<TextInput type='text' label='Motivo translado' value={referralGuide.reason_transfer} error={errors.reason_transfer} onChange={handleChange} name='reason_transfer' maxLength={300} required />
 						</div>
 						<div className='lg:w-2/3'>
 							<TextInput type='text' label='Cod estable destino' value={referralGuide.branch_destiny ?? ''} error={errors.branch_destiny} onChange={handleChange} name='branch_destiny' maxLength={3} />

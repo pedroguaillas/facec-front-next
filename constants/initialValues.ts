@@ -1,4 +1,4 @@
-import { Customer, LinkMeta, Links, Meta, Supplier, Tax, Branch, EmisionPointForm } from "@/types";
+import { Customer, LinkMeta, Links, Meta, Supplier, Tax, Branch, EmisionPointForm, Repayment, RepaymentTax } from "@/types";
 import { ProductOutput } from "@/types/order";
 
 export const initialMeta: Meta = {
@@ -32,6 +32,22 @@ export const initialProductItem: ProductOutput = {
   total_iva: 0,
   ice: undefined,
   percentage: 0,
+};
+
+export const initialRepayment: Repayment = {
+  id: '',
+  identification: '',
+  sequential: '',
+  date: '',
+  authorization: '',
+  repaymentTaxes: [],
+};
+
+export const initialRepaymentTax: RepaymentTax = {
+  id: '',
+  iva_tax_code: '',
+  base: 0,
+  iva: 0,
 };
 
 export const initialCustomer: Customer = {

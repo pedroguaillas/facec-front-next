@@ -15,4 +15,8 @@ export interface Company {
     guia_in_invoice: boolean,
     import_in_invoice: boolean,
     import_in_invoices: boolean,
+
+    // Servicio de transporte:
+    transport: boolean,
+    repayment: boolean,
 }

@@ -67,17 +67,17 @@ export const CustomerForm = () => {
                         <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={customer.type_identification} handleSelect={handleChange} />
                     </div>
                     <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Identificación *' value={customer.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={customer.type_identification === 'cédula' ? 10 : 13} />
+                        <TextInput type='text' label='Identificación' value={customer.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={customer.type_identification === 'cédula' ? 10 : 13} required />
                     </div>
                     <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Nombre *' value={customer.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} />
+                        <TextInput type='text' label='Nombre' value={customer.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} required />
                     </div>
                 </div>
 
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Dirección' value={customer.address ?? ''} error={errors.address} onChange={handleChange} name='address' maxLength={300} />
+                        <TextInput type='text' label='Dirección' value={customer.address ?? ''} error={errors.address} onChange={handleChange} name='address' maxLength={300} required />
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='Teléfono' value={customer.phone ?? ''} error={errors.phone} onChange={handleChange} name='phone' maxLength={20} />

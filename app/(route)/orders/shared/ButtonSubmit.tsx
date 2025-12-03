@@ -7,10 +7,11 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter, useParams } from 'next/navigation';
 import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
+import { Repayment } from '@/types';
 
 export const ButtonSubmit = () => {
 
-    const { invoice, selectPoint, productOutputs, aditionalInformation, setFormErrors, setErrorProductOutputs, setErrorAditionalInformation } = useFormInvoice();
+    const { invoice, selectPoint, productOutputs, aditionalInformation, repayments, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
@@ -30,6 +31,7 @@ export const ButtonSubmit = () => {
                 description: aditional.description.trim(),
             })),
             point_id: selectPoint?.id,
+            repayments
         };
 
         if (Number(form.voucher_type) === 4 && form.reason) {
@@ -64,6 +66,23 @@ export const ButtonSubmit = () => {
             });
 
             setErrorProductOutputs(productErrors); // ← Necesitas este estado para manejar errores por producto
+
+            // 🔹 Errores dentro del array `products`
+            const repaymentErrors: Record<string, Partial<Record<keyof Repayment, string>>> = {};
+
+            parsed.error.errors.forEach((err) => {
+                if (err.path[0] === 'repayments' && typeof err.path[1] === 'number') {
+                    const index = err.path[1]; // posición del item
+                    const field = err.path[2] as keyof Repayment; // campo del producto
+                    const repaymentId = form.repayments[index]?.id;
+                    if (repaymentId) {
+                        if (!repaymentErrors[repaymentId]) repaymentErrors[repaymentId] = {};
+                        repaymentErrors[repaymentId][field] = err.message;
+                    }
+                }
+            });
+
+            setErrorRepayments(repaymentErrors);
 
             // 🔹 Errores dentro del array `aditionals`
             const aditionalErrors: Record<string, Partial<Record<keyof AditionalInformation, string>>> = {};

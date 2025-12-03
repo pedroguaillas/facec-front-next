@@ -1,11 +1,17 @@
 "use client";
 
-import { SelectOption, Separate, TextInput } from '@/components';
+import { LabelComponent, SelectOption, Separate, TextInput } from '@/components';
 import { useProductForm } from '../hooks/useProductForm';
+import { SelectSriCategory } from './SelectSriCategory';
+import { useProductCreateContext } from '../context/ProductFormContext';
 
 export const ProductForm = () => {
 
-    const { product, errorProduct, optionType, ivaTaxes, iceCataloges, breakdown, total, handleChange, handleSelect, onChangeCheckbox, handleTotal } = useProductForm();
+    const { product, errorProduct, ivaTaxes, iceCataloges, transport } = useProductCreateContext();
+    const {
+        optionType, breakdown, total,
+        handleChange, handleSelect, onChangeCheckbox, handleTotal
+    } = useProductForm();
 
     return (
         <>
@@ -17,18 +23,20 @@ export const ProductForm = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Código *' value={product.code} error={errorProduct.code} onChange={handleChange} name='code' maxLength={25} />
+                        <TextInput type='text' label='Código' value={product.code} error={errorProduct.code} onChange={handleChange} name='code' maxLength={25} required />
                     </div>
-                    {product.iva === 5 && (
-                        <div className='lg:w-2/3'>
-                            <TextInput type='text' label='Código aux *' value={product.aux_cod ?? ''} error={errorProduct.aux_cod} onChange={handleChange} name='aux_cod' maxLength={25} />
+                    {(transport || product.iva === 5) && (
+                        <div className='w-full'>
+                            <div className='lg:w-2/3'>
+                                <SelectSriCategory error={errorProduct.aux_cod} />
+                            </div>
                         </div>
                     )}
                     <div className='lg:w-2/3'>
                         <SelectOption label="Tipo" name='type_product' options={optionType} selectedValue={product.type_product} handleSelect={handleSelect} />
                     </div>
                     <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Nombre *' value={product.name} error={errorProduct.name} onChange={handleChange} name='name' maxLength={300} />
+                        <TextInput type='text' label='Nombre' value={product.name} error={errorProduct.name} onChange={handleChange} name='name' maxLength={300} required />
                     </div>
                 </div>
 
@@ -38,7 +46,7 @@ export const ProductForm = () => {
                         <input type='checkbox' checked={breakdown} onChange={onChangeCheckbox} /> ¿Necesitas desglosar el IVA?
                     </div>
                     <div className='lg:w-2/3'>
-                        <label className='text-sm'>Precio *</label>
+                        <LabelComponent name='price' label='Precio' required />
                         <div className='flex flex-row'>
                             <input type='text' value={total} onChange={handleTotal} placeholder='Total' maxLength={15}
                                 className={`p-1 border border-l-slate-400 border-r-white border-y-slate-400 rounded-l 

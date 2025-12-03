@@ -1,4 +1,4 @@
-import React from 'react';
+import { LabelComponent } from '../label/LabelComponent';
 
 // Definición de la interfaz Props con tipado correcto
 interface Props {
@@ -34,10 +34,7 @@ export const TextInput = ({
 }: Props) => {
     return (
         <div className="flex flex-col gap-1 my-2">
-            <label htmlFor={name} className="text-sm font-medium dark:text-gray-300">
-                {label}
-                {required && <span className="text-red-500">*</span>} {/* Indicador visual de requerido */}
-            </label>
+            <LabelComponent name={name} label={label} required={required} />
             <input
                 // id={name} // Vincula el label con el input
                 type={type}

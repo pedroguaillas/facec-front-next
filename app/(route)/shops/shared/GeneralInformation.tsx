@@ -1,7 +1,7 @@
 "use client";
 
 import { useGeneralInformation } from "../hooks/useGeneralInformation";
-import { SelectOption, SelectProvider, TextInput } from "@/components"
+import { LabelComponent, SelectOption, SelectProvider, TextInput } from "@/components"
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useFormShop } from "../context/FormShopContext";
 import { VoucherType } from "@/constants";
@@ -33,12 +33,12 @@ export const GeneralInformation = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type='date' label='Fecha emisión *' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} required />
                     </div>
                     {Number(shop.voucher_type) === VoucherType.LIQUIDATION && points.length > 1 && (
                         <>
                             <div className="flex flex-col lg:w-2/3">
-                                <SelectOption label="Punto Emi *" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errorShop.serie} handleSelect={handleSelectPoint} />
+                                <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errorShop.serie} handleSelect={handleSelectPoint} required />
                             </div>
                         </>
                     )}
@@ -46,15 +46,17 @@ export const GeneralInformation = () => {
                     {Number(shop.voucher_type) === VoucherType.LIQUIDATION && <div className='py-2'><span>N° de serie: </span>{shop.serie}</div>}
 
                     {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (<div className='lg:w-2/3'>
-                        <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} />
+                        <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} required />
                     </div>)}
                     <div className='flex flex-col lg:w-2/3'>
-                        <span>Proveedor *</span>
+                        <LabelComponent name="provider_id" label="Proveedor" required />
                         <SelectProvider selectProvider={handleSelectProvider} label={selectProvider?.atts.name} error={errorShop.provider_id} />
                     </div>
-                    <div className='lg:w-2/3'>
-                        <TextInput type='text' label='Autorización' value={shop.authorization} error={errorShop.authorization} onChange={handleChange} name='authorization' maxLength={49} />
-                    </div>
+                    {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
+                        <div className='lg:w-2/3'>
+                            <TextInput type='text' label='Autorización' value={shop.authorization} error={errorShop.authorization} onChange={handleChange} name='authorization' maxLength={49} required />
+                        </div>
+                    )}
                 </div>
 
                 {/* Col 2 */}

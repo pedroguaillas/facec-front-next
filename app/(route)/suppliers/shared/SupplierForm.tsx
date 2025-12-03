@@ -23,17 +23,17 @@ export const SupplierForm = () => {
                         <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={supplier.type_identification} handleSelect={handleChange} />
                     </div>
                     <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Identificación *" value={supplier.identication} name="identication" error={errors.identication} onChange={handleChange} maxLength={13} />
+                        <TextInput type="text" label="Identificación" value={supplier.identication} name="identication" error={errors.identication} onChange={handleChange} maxLength={13} required />
                     </div>
                     <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Razon social / Proveedor *" value={supplier.name} name="name" error={errors.name} onChange={handleChange} maxLength={300} />
+                        <TextInput type="text" label="Razon social / Proveedor" value={supplier.name} name="name" error={errors.name} onChange={handleChange} maxLength={300} required />
                     </div>
                 </div>
 
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Dirección" value={supplier.address ?? ''} name="address" error={errors.address} onChange={handleChange} maxLength={300} />
+                        <TextInput type="text" label="Dirección" value={supplier.address ?? ''} name="address" error={errors.address} onChange={handleChange} maxLength={300} required />
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput type="text" label="Teléfono" value={supplier.phone ?? ''} name="phone" error={errors.phone} onChange={handleChange} maxLength={20} />

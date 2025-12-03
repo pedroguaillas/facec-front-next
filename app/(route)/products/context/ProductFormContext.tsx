@@ -1,17 +1,21 @@
 "use client";
 
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
-import { getCreateProduct, getProduct } from "../services/productServices";
+import { getCreateProduct, getEditProduct } from "../services/productServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { Product } from "@/types";
+import { Product, SriCategory } from "@/types";
+import { CodeErrors } from "@/constants/codeErrors";
+import { redirect } from 'next/navigation';
 
 interface ProductCreateContextType {
     product: Product;
     errorProduct: Partial<Record<keyof Product, string>>;
     ivaTaxes: [];
     iceCataloges: [];
+    sriCategories: SriCategory[];
+    transport: boolean;
     setProduct: Dispatch<SetStateAction<Product>>;
     setErrorProduct: Dispatch<SetStateAction<Partial<Record<keyof Product, string>>>>;
 }
@@ -39,41 +43,44 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     const [errorProduct, setErrorProduct] = useState<Partial<Record<keyof Product, string>>>({});
     const [ivaTaxes, setIvaTaxes] = useState<[]>([]);
     const [iceCataloges, setIceCataloges] = useState<[]>([]);
+    const [sriCategories, setSriCategories] = useState<SriCategory[]>([]);
+    const [transport, setTransport] = useState(false);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
     useEffect(() => {
-        const fetchCreateProduct = async () => {
+        const fetchFormProduct = async () => {
             if (status !== "authenticated") return;
 
-            try {
-                let data;
+            let response;
 
-                if (id !== undefined) {
-                    data = await getProduct(id, axiosAuth);
-                    setProduct({ ...data.product, id: id + '' });
-                } else {
-                    data = await getCreateProduct(axiosAuth);
+            if (id !== undefined) {
+                response = await getEditProduct(id, axiosAuth);
+                if (response.data) {
+                    setProduct({ ...response.data.product, id: id + '' });
                 }
-                setIvaTaxes(data.ivaTaxes.map((item: { code: string, percentage: string }) => ({
-                    value: item.code,
-                    label: `IVA ${item.percentage}%`,
-                })));
-                setIceCataloges(data.iceCataloges.map((item: { code: string, description: string }) => ({
-                    value: item.code,
-                    label: item.description,
-                })));
-            } catch (error) {
-                console.error("Error al cargar datos: ", error);
+            } else {
+                response = await getCreateProduct(axiosAuth);
+            }
+
+            const { data, message } = response;
+
+            if (data) {
+                setIvaTaxes(data.ivaTaxes);
+                setIceCataloges(data.iceCataloges);
+                setSriCategories(data.sriCategories);
+                setTransport(data.transport);
+            } else if (message === CodeErrors.NETWORK_ERROR) {
+                redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
             }
         };
 
-        fetchCreateProduct();
+        fetchFormProduct();
     }, [status, axiosAuth, id]);
 
     return (
         <ProductCreateContext.Provider value={{
-            product, errorProduct, ivaTaxes, iceCataloges,
+            product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport,
             setProduct, setErrorProduct
         }}>
             {children}
@@ -88,4 +95,3 @@ export const useProductCreateContext = () => {
     }
     return context;
 }
-

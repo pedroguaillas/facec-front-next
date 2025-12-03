@@ -1,4 +1,4 @@
-import { Separate, Title } from "@/components";
+import { RequiredFields, Separate, Title } from "@/components";
 import { FormShopProvider } from "../context/FormShopContext";
 import { GeneralInformation, ListProducts, ListTaxes, RetentionInformation, Totals } from "../shared";
 
@@ -16,9 +16,7 @@ const PageShopEdit = () => {
 
                     {/* Card */}
                     <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
-                        <h2>
-                            <span className="font-bold">Nota: </span>
-                        </h2>
+                        <RequiredFields />
                         <Separate />
                         <GeneralInformation />
                         <ListProducts />

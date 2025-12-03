@@ -1,6 +1,6 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, TitleForm, Totals } from "../shared";
+import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, Totals } from "../shared";
 import { FormInvoiceProvider } from "../context/FormInvoiceContext";
-import { Separate, Title } from "@/components";
+import { Separate, Title, RequiredFields } from "@/components";
 
 const EditOrderPage = () => {
     return (
@@ -17,7 +17,7 @@ const EditOrderPage = () => {
 
                     {/* Card */}
                     <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
-                        <TitleForm title='Nota:' description='Los campos marcados con * son obligatorios' />
+                        <RequiredFields />
                         <Separate />
                         <GeneralInformation />
                         <Separate />

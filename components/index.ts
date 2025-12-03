@@ -1,9 +1,12 @@
 // Elements
 export * from './text-input/TextInput';
 export * from './select-option/SelectOption';
+export * from './switch/Switch';
 export * from './primary-button/PrimaryButton';
 export * from './title/Title';
 export * from './separate/Separate';
+export * from './legend-required/RequiredFields';
+export * from './label/LabelComponent';
 
 // Components
 export * from './table-responsive/TableResponsive';

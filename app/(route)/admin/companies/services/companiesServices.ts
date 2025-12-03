@@ -1,5 +1,6 @@
+import { handleApiRequest } from "@/helpers/apiHandler";
 import { Company, GeneralPaginate } from "@/types";
-import { AxiosInstance } from "axios"
+import { AxiosInstance } from "axios";
 
 export const getCompanies = async (
     axiosAuth: AxiosInstance,
@@ -24,3 +25,9 @@ export const storeCompany = async (axiosAuth: AxiosInstance, form: object) => {
         return null;
     }
 }
+
+export const getCompanyEdit = async (axiosAuth: AxiosInstance, id: string) =>
+    handleApiRequest<Company>(() => axiosAuth.get(`admin/companies/${id}/edit`));
+
+export const updateCompany = async (axiosAuth: AxiosInstance, form: object, id: string) =>
+    handleApiRequest<Company>(() => axiosAuth.put(`admin/companies/${id}`, form))

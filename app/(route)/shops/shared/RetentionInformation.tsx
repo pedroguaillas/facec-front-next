@@ -44,7 +44,7 @@ export const RetentionInformation = () => {
                 {points.length > 1 && (
                     <div className='w-full'>
                         <div className="lg:w-2/3">
-                            <SelectOption label="Punto Emi *" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} />
+                            <SelectOption label="Punto Emi" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} required />
                         </div>
                     </div>
                 )}
@@ -59,7 +59,7 @@ export const RetentionInformation = () => {
                 {/* Col 3 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3 mx-auto'>
-                        <TextInput type='date' label='Fecha emisión *' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} />
+                        <TextInput type='date' label='Fecha emisión' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} required />
                     </div>
                 </div>
             </div>}
