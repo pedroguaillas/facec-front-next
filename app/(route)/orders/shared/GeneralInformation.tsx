@@ -91,13 +91,13 @@ export const GeneralInformation = () => {
                     {Number(invoice.voucher_type) === 4 && (
                         <>
                             <div className='lg:w-2/3'>
-                                <TextInput type='date' label='Emisión factura *' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' min={getMinDateNC()} max={getDate()} />
+                                <TextInput type='date' label='Emisión factura' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' min={getMinDateNC()} max={getDate()} required />
                             </div>
                             <div className='lg:w-2/3'>
-                                <TextInput label='Serie factura *' value={invoice.serie_order ?? ''} error={formErrors.serie_order} onChange={handleChange} name='serie_order' maxLength={17} />
+                                <TextInput label='Serie factura' value={invoice.serie_order ?? ''} error={formErrors.serie_order} onChange={handleChange} name='serie_order' maxLength={17} required />
                             </div>
                             <div className='lg:w-2/3'>
-                                <TextInput label='Motivo *' value={invoice.reason ?? ''} error={formErrors.reason} onChange={handleChange} name='reason' />
+                                <TextInput label='Motivo' value={invoice.reason ?? ''} error={formErrors.reason} onChange={handleChange} name='reason' required />
                             </div>
                         </>
                     )}
