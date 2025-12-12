@@ -9,6 +9,7 @@ export * from './legend-required/RequiredFields';
 export * from './label/LabelComponent';
 
 // Components
+export * from './dialog/Dialog';
 export * from './table-responsive/TableResponsive';
 export * from './paginate/Paginate';
 export * from './pdf-viewer/PDFViewer';

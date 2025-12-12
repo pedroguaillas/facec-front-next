@@ -1,8 +1,7 @@
 "use client";
 
-import { Dialog } from '@/components/dialog/Dialog';
 import { useProducts } from '../context/ProductContext';
-import { PrimaryButton, TableResponsive } from '@/components'
+import { Dialog, PrimaryButton, TableResponsive } from '@/components'
 import { useState } from 'react';
 import { axiosAuth } from '@/lib/axios';
 import { deleteProduct } from '../services/productServices';

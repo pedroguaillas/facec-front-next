@@ -8,14 +8,15 @@ import { useProductCreateContext } from '../context/ProductFormContext';
 import { LabelComponent } from '@/components';
 
 interface Props {
+    initialLabel?: string;
     error?: string;
 }
 
-export const SelectSriCategory = ({ error }: Props) => {
+export const SelectSriCategory = ({ initialLabel = '', error }: Props) => {
 
-    const [label, setlabel] = useState('');
+    const [search, setSearch] = useState(initialLabel);
     const [modal, setModal] = useState<boolean>(false);
-    const { setProduct } = useProductCreateContext();
+    const { product, setProduct } = useProductCreateContext();
 
     const toggle = () => {
         setModal(!modal);
@@ -23,17 +24,17 @@ export const SelectSriCategory = ({ error }: Props) => {
 
     const selectSriCategory = (sriCategory: SriCategory) => {
         setProduct(prevState => ({ ...prevState, aux_cod: sriCategory.code }))
-        setlabel(sriCategory.description);
+        setSearch(sriCategory.description);
         toggle();
     }
 
     return (
         <div className='flex flex-col w-full'>
-            <LabelComponent label='Categoría / Código auxiliar' name='sri_category_id' required />
+            <LabelComponent label='Categoría / Código auxiliar' name='sri_category_id' required={product.iva === 5} />
             <div className='flex w-full'>
                 <input
                     type='text'
-                    value={label}
+                    value={search}
                     readOnly={true}
                     placeholder='...'
                     className={`w-full border border-primary hover:border-primaryhover rounded-l px-2

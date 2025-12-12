@@ -7,7 +7,7 @@ import { useProductCreateContext } from '../context/ProductFormContext';
 
 export const ProductForm = () => {
 
-    const { product, errorProduct, ivaTaxes, iceCataloges, transport } = useProductCreateContext();
+    const { product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport } = useProductCreateContext();
     const {
         optionType, breakdown, total,
         handleChange, handleSelect, onChangeCheckbox, handleTotal
@@ -28,7 +28,10 @@ export const ProductForm = () => {
                     {(transport || product.iva === 5) && (
                         <div className='w-full'>
                             <div className='lg:w-2/3'>
-                                <SelectSriCategory error={errorProduct.aux_cod} />
+                                <SelectSriCategory
+                                    initialLabel={sriCategories.findIndex(sc => sc.code === product.aux_cod) ? sriCategories.find(sc => sc.code === product.aux_cod)?.description : ''}
+                                    error={errorProduct.aux_cod}
+                                />
                             </div>
                         </div>
                     )}
