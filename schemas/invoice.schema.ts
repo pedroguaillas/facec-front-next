@@ -5,7 +5,7 @@ import { repaymentSchema } from './repayment.schema';
 
 export const invoiceSchema = z
   .object({
-    date: z.string().min(1, { message: 'Escriba una fecha correcta' }),
+    // date: z.string().min(1, { message: 'Escriba una fecha correcta' }),
     customer_id: z.number().min(1, { message: 'Seleccione el cliente' }),
     serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
       message: 'Seleccione el punto de emisión',

@@ -61,9 +61,10 @@ export const GeneralInformation = () => {
 
                 {/* Col 1 */}
                 <div className='w-full'>
-                    <div className='lg:w-2/3'>
+                    <div className='py-2'><span className='font-bold'>Fecha emisión: </span>{invoice.date}</div>
+                    {/* <div className='lg:w-2/3'>
                         <TextInput type='date' label='Fecha emisión' value={invoice.date} error={formErrors.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} required />
-                    </div>
+                    </div> */}
                     {points.length > 1 && !params.id && (
                         <div className="flex flex-col lg:w-2/3">
                             <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} required />
