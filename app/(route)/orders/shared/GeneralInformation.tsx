@@ -2,7 +2,7 @@
 
 import { LabelComponent, SelectCustomer, SelectOption, TextInput } from '@/components';
 import { useFormInvoice } from '../context/FormInvoiceContext';
-import { getDate, getMinDate } from "@/helpers/dateHelper";
+import { getDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
 import { useParams } from "next/navigation";
 import { CustomerProps } from '@/types';
