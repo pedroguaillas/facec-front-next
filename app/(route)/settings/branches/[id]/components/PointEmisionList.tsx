@@ -7,19 +7,18 @@ import { useCallback, useEffect, useState } from "react";
 import { ModalFormEmisionPoint } from "./ModalFormEmisionPoint";
 
 export const PointEmisionList = () => {
-
     const params = useParams();
     const axiosAuth = useAxiosAuth();
 
     const [emisionPoints, setEmisionPoints] = useState<EmisionPoint[]>([]);
 
     const fetchGetEmisionPoints = useCallback(async () => {
-        const response = await axiosAuth.get(`branch/${params.id}`);
+        const response = await axiosAuth.get(`branches/${params.id}/points`);
         setEmisionPoints(response.data.points);
     }, [axiosAuth, params]);
 
     useEffect(() => {
-        fetchGetEmisionPoints()
+        fetchGetEmisionPoints();
     }, [axiosAuth, fetchGetEmisionPoints]);
 
     return (
@@ -39,10 +38,11 @@ export const PointEmisionList = () => {
                     </thead>
                     <tbody>
                         {emisionPoints.map((emisionPoint, index) => (
-                            <tr key={emisionPoint.point}
-                                className={`text-center ${index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''} [&>td]:p-1`}
+                            <tr
+                                key={emisionPoint.point}
+                                className={`text-center ${index % 2 === 0 ? "bg-gray-200 dark:bg-gray-900 rounded" : ""} [&>td]:p-1`}
                             >
-                                <td>{(emisionPoint.point + '').padStart(3, '0')}</td>
+                                <td>{(emisionPoint.point + "").padStart(3, "0")}</td>
                                 <td>{emisionPoint.invoice}</td>
                                 <td>{emisionPoint.retention}</td>
                                 <td>{emisionPoint.settlementonpurchase}</td>
@@ -55,5 +55,5 @@ export const PointEmisionList = () => {
                 </table>
             </div>
         </>
-    )
-}
+    );
+};

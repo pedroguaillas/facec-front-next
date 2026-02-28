@@ -8,10 +8,10 @@ export const getCustomers = async (
     page?: number,
 ) => {
     // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
-    const url = pageUrl || `customerlist?page=${page}`;
+    const url = pageUrl || `customers?page=${page}`;
     try {
         const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.post(fullUrl, { search });
+        const response = await axiosAuth.get(fullUrl, { params: { search } });
         return response.data;
     } catch (error) {
         console.error("Error al obtener clientes: ", error);
@@ -25,7 +25,7 @@ export const getCustomer = async (
 ): Promise<Customer | null> => {
     // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
     try {
-        const response = await axiosAuth.get(`customers/${id}/edit`);
+        const response = await axiosAuth.get(`customers/${id}`);
         return response.data.customer as Customer;
     } catch (error) {
         console.error("Error al obtener clientes: ", error);

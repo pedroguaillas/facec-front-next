@@ -12,7 +12,7 @@ export const useModalSelectCustomer = (handleSelect: (custom: CustomerProps) => 
     const axiosAuth = useAxiosAuth();
 
     const toggle = () => {
-        setIsOpen(prev => {
+        setIsOpen((prev) => {
             const next = !prev;
             if (!next) {
                 setSearch("");
@@ -22,37 +22,39 @@ export const useModalSelectCustomer = (handleSelect: (custom: CustomerProps) => 
             }
             return next;
         });
-    }
+    };
 
-    const fetchCustomer = useCallback(async (page: string = 'page=1') => {
-        if (!page) return;
+    const fetchCustomer = useCallback(
+        async (page: string = "page=1") => {
+            if (!page) return;
 
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<CustomerProps>>(`customerlist?page=${pageNumber}`, {
-                search,
-                paginate: 10,
-            });
-            const { data, meta, links } = res.data;
-            setSuggestions(data);
-            setMeta(meta);
-            setLinks(links);
-        } catch (error) {
-            console.error(error);
-        }
-    }, [search, axiosAuth]);
+            const pageNumber = page.split("=")[1];
+            try {
+                const res = await axiosAuth.get<GeneralPaginate<CustomerProps>>(`customers?page=${pageNumber}`, {
+                    params: { search, paginate: 10 },
+                });
+                const { data, meta, links } = res.data;
+                setSuggestions(data);
+                setMeta(meta);
+                setLinks(links);
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        [search, axiosAuth],
+    );
 
     const handleSelectLocal = (custom: CustomerProps) => {
         handleSelect(custom);
         toggle();
-    }
+    };
 
     useEffect(() => {
         if (isOpen) {
             // VALIDADO: que no ejecuete en bucle
-            fetchCustomer()
+            fetchCustomer();
         }
     }, [isOpen, fetchCustomer]);
 
-    return { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCustomer, handleSelectLocal }
-}
+    return { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCustomer, handleSelectLocal };
+};

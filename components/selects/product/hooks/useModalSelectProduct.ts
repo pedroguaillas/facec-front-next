@@ -1,7 +1,7 @@
-import { initialLinks, initialMeta } from '@/constants/initialValues';
-import { GeneralPaginate, Links, Meta, ProductProps } from '@/types';
-import { useCallback, useEffect, useState } from 'react'
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import { initialLinks, initialMeta } from "@/constants/initialValues";
+import { GeneralPaginate, Links, Meta, ProductProps } from "@/types";
+import { useCallback, useEffect, useState } from "react";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 export const useModalSelectProduct = (handleSelect: (product: ProductProps) => void) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +12,7 @@ export const useModalSelectProduct = (handleSelect: (product: ProductProps) => v
     const axiosAuth = useAxiosAuth();
 
     const toggle = () => {
-        setIsOpen(prev => {
+        setIsOpen((prev) => {
             const next = !prev;
             if (!next) {
                 setSearch("");
@@ -24,29 +24,31 @@ export const useModalSelectProduct = (handleSelect: (product: ProductProps) => v
         });
     };
 
-    const fetchProduct = useCallback(async (page: string = 'page=1') => {
-        if (!page) return;
+    const fetchProduct = useCallback(
+        async (page: string = "page=1") => {
+            if (!page) return;
 
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
-                search,
-                paginate: 10,
-            });
-            const { data, meta, links } = res.data;
-            setSuggestions(data);
-            setMeta(meta);
-            setLinks(links);
-        } catch (error) {
-            console.error(error);
-        }
-    }, [search, axiosAuth]);
+            const pageNumber = page.split("=")[1];
+            try {
+                const res = await axiosAuth.get<GeneralPaginate<ProductProps>>(`products?page=${pageNumber}`, {
+                    params: { search, paginate: 10 },
+                });
+                const { data, meta, links } = res.data;
+                setSuggestions(data);
+                setMeta(meta);
+                setLinks(links);
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        [search, axiosAuth],
+    );
 
     // handleSelectLocal es necesario porque toca resetear los valores iniciales
     const handleSelectLocal = (product: ProductProps) => {
         handleSelect(product);
         toggle();
-    }
+    };
 
     useEffect(() => {
         // VALIDADO: Solo cuando se abre el modal
@@ -55,5 +57,5 @@ export const useModalSelectProduct = (handleSelect: (product: ProductProps) => v
         }
     }, [isOpen, fetchProduct]);
 
-    return { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal }
-}
+    return { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal };
+};

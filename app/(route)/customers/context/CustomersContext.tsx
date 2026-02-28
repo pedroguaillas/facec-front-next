@@ -33,35 +33,46 @@ export const CustomersProvider = ({ children }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
     // Ejecuta al inicio y cuando cambie el search, page
-    const fetchCustomers = useCallback(async (pageUrl = `customerlist?page=${page}`) => {
-        if (status !== "authenticated") return;
-        console.log('useCallback, fetchCustomers')
+    const fetchCustomers = useCallback(
+        async (pageUrl = `customers?page=${page}`) => {
+            if (status !== "authenticated") return;
+            console.log("useCallback, fetchCustomers");
 
-        try {
-            const data = await getCustomers(axiosAuth, pageUrl, search, page);
-            setCustomers(data.data);
-            setMeta(data.meta);
-            setLinks(data.links);
-        } catch (error) {
-            console.error("Error al obtener clientes:", error);
-        }
-    }, [status, axiosAuth, search, page]);
+            try {
+                const data = await getCustomers(axiosAuth, pageUrl, search, page);
+                setCustomers(data.data);
+                setMeta(data.meta);
+                setLinks(data.links);
+            } catch (error) {
+                console.error("Error al obtener clientes:", error);
+            }
+        },
+        [status, axiosAuth, search, page],
+    );
 
     useEffect(() => {
         // Validado: se ejecuta solo al inicio
         fetchCustomers();
-        console.log('useEffect, fetchCustomers')
+        console.log("useEffect, fetchCustomers");
     }, [fetchCustomers]);
 
     return (
-        <CustomersContext.Provider value={{
-            customers, search, page, meta, links,
-            fetchCustomers, setSearch, setPage
-        }}>
+        <CustomersContext.Provider
+            value={{
+                customers,
+                search,
+                page,
+                meta,
+                links,
+                fetchCustomers,
+                setSearch,
+                setPage,
+            }}
+        >
             {children}
         </CustomersContext.Provider>
     );
-}
+};
 
 export const useCustomers = () => {
     const context = useContext(CustomersContext);
@@ -69,4 +80,4 @@ export const useCustomers = () => {
         throw new Error("useCustomers must be used within a CustomersProvider");
     }
     return context;
-}
+};

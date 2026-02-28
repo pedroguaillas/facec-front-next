@@ -32,34 +32,45 @@ export const ProductsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchProducts = useCallback(async (pageUrl = `productlist?page=${page}`) => {
-        if (status !== "authenticated") return;
-        console.log('useCallback, fetchProducts')
+    const fetchProducts = useCallback(
+        async (pageUrl = `products?page=${page}`) => {
+            if (status !== "authenticated") return;
+            console.log("useCallback, fetchProducts");
 
-        try {
-            const data = await getProducts(axiosAuth, pageUrl, search, page);
-            setProducts(data.data);
-            setMeta(data.meta);
-            setLinks(data.links);
-        } catch (error) {
-            console.error("Error al obtener productos:", error);
-        }
-    }, [status, axiosAuth, search, page]); // Dependencias correctas
+            try {
+                const data = await getProducts(axiosAuth, pageUrl, search, page);
+                setProducts(data.data);
+                setMeta(data.meta);
+                setLinks(data.links);
+            } catch (error) {
+                console.error("Error al obtener productos:", error);
+            }
+        },
+        [status, axiosAuth, search, page],
+    ); // Dependencias correctas
 
     useEffect(() => {
-        console.log('useEffect, start')
+        console.log("useEffect, start");
         fetchProducts();
     }, [fetchProducts]);
 
     return (
-        <ProductsContext.Provider value={{
-            products, search, page, meta, links,
-            fetchProducts, setSearch, setPage
-        }}>
+        <ProductsContext.Provider
+            value={{
+                products,
+                search,
+                page,
+                meta,
+                links,
+                fetchProducts,
+                setSearch,
+                setPage,
+            }}
+        >
             {children}
         </ProductsContext.Provider>
     );
-}
+};
 
 export const useProducts = () => {
     const context = useContext(ProductsContext);
@@ -67,4 +78,4 @@ export const useProducts = () => {
         throw new Error("useOrders must be used within an OrdersProvider");
     }
     return context;
-}
+};

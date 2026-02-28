@@ -4,3 +4,5 @@
 
 Es un empredimiento personal, que saque a modo prueba y por aprender React
 Durante el desarrollo aprendi mucho y hoy estoy en Next.js un Framework robusto para React.
+
+Accept changes for change from laravel lumen 10 to laravel 12

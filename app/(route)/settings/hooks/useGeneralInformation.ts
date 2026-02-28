@@ -5,6 +5,7 @@ export const useGeneralInformation = () => {
     const axiosAuth = useAxiosAuth();
 
     const [form, setForm] = useState({
+        id: 0,
         ruc: '',
         company: '',
         rimpe: 0,
@@ -54,7 +55,7 @@ export const useGeneralInformation = () => {
             formData.append('cert', form.cert);
         }
 
-        const response = await axiosAuth.post('company_update', formData, {
+        const response = await axiosAuth.put(`companies/${form.id}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
 

@@ -2,8 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { GeneralPaginate, ProductProps } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
-export const useSelectProduct = (label: string = "", index: number, selectProduct: (index: number, product: ProductProps) => void) => {
-
+export const useSelectProduct = (
+    label: string = "",
+    index: number,
+    selectProduct: (index: number, product: ProductProps) => void,
+) => {
     const [search, setSearch] = useState(label ?? "");
     const [suggestions, setSuggestions] = useState<ProductProps[]>([]);
     const [skipFetch, setSkipFetch] = useState<boolean>(label ? true : false); // 👈 Para evitar fetch al seleccionar
@@ -12,30 +15,32 @@ export const useSelectProduct = (label: string = "", index: number, selectProduc
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSkipFetch(false); // 👈 habilita búsqueda
         setSearch(event.target.value);
-    }
+    };
 
     const handleSelect = (product: ProductProps) => {
         setSearch(product.atts.name);
         setSuggestions([]);
         setSkipFetch(true); // 👈 evita la búsqueda
         selectProduct(index, product);
-    }
+    };
 
-    const fetchProduct = useCallback(async (page: string = 'page=1') => {
-        if (!page) return;
+    const fetchProduct = useCallback(
+        async (page: string = "page=1") => {
+            if (!page) return;
 
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<ProductProps>>(`productlist?page=${pageNumber}`, {
-                search,
-                paginate: 5,
-            });
-            const { data } = res.data;
-            setSuggestions(data);
-        } catch (error) {
-            console.error(error);
-        }
-    }, [search, axiosAuth]);
+            const pageNumber = page.split("=")[1];
+            try {
+                const res = await axiosAuth.get<GeneralPaginate<ProductProps>>(`products?page=${pageNumber}`, {
+                    params: { search, paginate: 5 },
+                });
+                const { data } = res.data;
+                setSuggestions(data);
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        [search, axiosAuth],
+    );
 
     useEffect(() => {
         // VALIDADO: solo para mostrar sugerencias desde dos caracteres
@@ -44,5 +49,5 @@ export const useSelectProduct = (label: string = "", index: number, selectProduc
         }
     }, [search, skipFetch, fetchProduct]);
 
-    return { search, suggestions, handleSelect, handleChange }
-}
+    return { search, suggestions, handleSelect, handleChange };
+};

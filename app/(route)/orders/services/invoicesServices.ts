@@ -7,7 +7,7 @@ export const getInvoices = async (
 ) => {
     try {
         const fullUrl = new URL(pageUrl, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.post(fullUrl, { search });
+        const response = await axiosAuth.get(fullUrl, { params: { search } });
         return response.data;
     } catch (error) {
         console.error("Error al obtener facturas:", error);
@@ -15,14 +15,11 @@ export const getInvoices = async (
     }
 };
 
-export const storeLotServices = async (
-    axiosAuth: AxiosInstance,
-    formData: FormData
-) => {
+export const storeLotServices = async (axiosAuth: AxiosInstance, formData: FormData) => {
     try {
-        const res = await axiosAuth.post('orders/lot', formData, {
+        const res = await axiosAuth.post("orders/lot", formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                "Content-Type": "multipart/form-data",
             },
         });
 
@@ -30,4 +27,4 @@ export const storeLotServices = async (
     } catch (err) {
         console.error(err);
     }
-}
+};
