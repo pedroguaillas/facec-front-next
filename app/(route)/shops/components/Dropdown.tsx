@@ -46,29 +46,29 @@ const handleApiCall = async (
 // 🔹 Diccionario de acciones asociadas al estado de la orden
 const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
 > = {
-    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/xml/${id}`, axiosAuth, fetchInvoices),
-    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/sendsri/${id}`, axiosAuth, fetchInvoices),
-    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/authorize/${id}`, axiosAuth, fetchInvoices),
-    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/authorize/${id}`, axiosAuth, fetchInvoices),
-    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/authorize/${id}`, axiosAuth, fetchInvoices),
-    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/xml/${id}`, axiosAuth, fetchInvoices),
+    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/process`, axiosAuth, fetchInvoices),
+    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/sendsri`, axiosAuth, fetchInvoices),
+    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/authorize`, axiosAuth, fetchInvoices),
+    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/authorize`, axiosAuth, fetchInvoices),
+    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/authorize`, axiosAuth, fetchInvoices),
+    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/process`, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
         handleApiCall(`retentions/cancel/${id}`, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
-    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/xml/${id}`, axiosAuth, fetchInvoices),
+    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`retentions/${id}/process`, axiosAuth, fetchInvoices),
 };
 
 // 🔹 Diccionario de acciones asociadas al estado de la orden
 const renderProcessLC: Record<string, (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
 > = {
-    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/xml`, axiosAuth, fetchInvoices),
+    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/process`, axiosAuth, fetchInvoices),
     FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/sendsri`, axiosAuth, fetchInvoices),
     ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/authorize`, axiosAuth, fetchInvoices),
     RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/authorize`, axiosAuth, fetchInvoices),
     EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/authorize`, axiosAuth, fetchInvoices),
-    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/xml`, axiosAuth, fetchInvoices),
+    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/process`, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
         handleApiCall(`shops/${id}/cancel`, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
-    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/xml`, axiosAuth, fetchInvoices),
+    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall(`shops/${id}/process`, axiosAuth, fetchInvoices),
 };
 
 export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
@@ -81,8 +81,8 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [
-            { label: "Ver Pdf", onClick: () => setPdf({ route: `retentions/pdf/${shop.id}`, name: `Retención ${shop.atts.serie_retencion}` }) },
-            { label: "Descargar Xml", onClick: () => downloadXml(`retentions/download/${shop.id}`, axiosAuth, `Retención ${shop.atts.serie_retencion}`) },
+            { label: "Ver Pdf", onClick: () => setPdf({ route: `retentions/${shop.id}/pdf`, name: `Retención ${shop.atts.serie_retencion}` }) },
+            { label: "Descargar Xml", onClick: () => downloadXml(`retentions/${shop.id}/xml`, axiosAuth, `Retención ${shop.atts.serie_retencion}`) },
             { label: "Enviar correo", onClick: sendMail },
         ];
 

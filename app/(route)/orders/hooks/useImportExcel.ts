@@ -10,12 +10,10 @@ export const useImportExcel = () => {
         formData.append("point_id", "1");
 
         await storeLotServices(axiosAuth, formData);
-        window.location.reload(); // recarga toda la página
+        // window.location.reload(); // recarga toda la página
     };
 
-    const handleLote = (
-        e: React.ChangeEvent<HTMLInputElement> | DragEvent
-    ) => {
+    const handleLote = (e: React.ChangeEvent<HTMLInputElement> | DragEvent) => {
         let files: FileList | null;
 
         if ("dataTransfer" in e) {

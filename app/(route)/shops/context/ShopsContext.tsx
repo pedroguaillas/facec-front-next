@@ -36,7 +36,7 @@ export const ShopsProvider = ({ children }: Props) => {
         if (status !== "authenticated") return;
 
         try {
-            const url = pageUrl ? pageUrl : `shoplist?page=${page}`;
+            const url = pageUrl ? pageUrl : `shops?page=${page}`;
             const data = await getShops(axiosAuth, url, search);
             setShops(data.data);
             setMeta(data.meta);

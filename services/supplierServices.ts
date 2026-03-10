@@ -1,13 +1,12 @@
 import { Supplier, SupplierProps } from "@/types";
 import { AxiosInstance } from "axios";
 
-export const findSupplierByIdentification = async (
+export const resolveSupplier = async (
     axiosAuth: AxiosInstance,
     identication: string
 ): Promise<Supplier | null> => {
-    const url = identication.length === 10 ? 'searchByCedula' : 'searchByRuc';
     try {
-        const res = await axiosAuth.get(`providers/${url}/${identication}`);
+        const res = await axiosAuth.get(`providers/resolve/${identication}`);
         return res.data.provider as Supplier;
     } catch (error) {
         console.log(error);

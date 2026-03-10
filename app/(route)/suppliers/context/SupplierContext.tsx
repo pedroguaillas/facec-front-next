@@ -29,7 +29,7 @@ export const SupplierProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth();
 
-    const fetchSuppliers = useCallback(async (pageUrl = `providerlist?page=${page}`) => {
+    const fetchSuppliers = useCallback(async (pageUrl = `providers?page=${page}`) => {
         if (status !== 'authenticated') return;
         try {
             const data = await getSuppliers(axiosAuth, pageUrl, search, page);

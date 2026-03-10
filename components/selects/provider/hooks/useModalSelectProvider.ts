@@ -29,9 +29,8 @@ export const useModalSelectProvider = (handleSelect: (provider: SupplierProps) =
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<CustomerProps>>(`providerlist?page=${pageNumber}`, {
-                search,
-                paginate: 10,
+            const res = await axiosAuth.get<GeneralPaginate<CustomerProps>>(`providers?page=${pageNumber}`, {
+                params:{search,paginate: 10}
             });
             const { data, meta, links } = res.data;
             setSuggestions(data);

@@ -1,33 +1,19 @@
-import { Carrier } from "@/types";
+import { handleApiRequest } from "@/helpers/apiHandler";
+import { Carrier, CarrierProps, GeneralPaginate } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getCarriers = async (
     axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-    pageUrl?: string | null,
+    pageUrl: string,
     search?: string,
     page?: number
-) => {
-    // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
-    const url = pageUrl || `carrierlist?page=${page}`;
-    try {
-        const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.post(fullUrl, { search });
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener transportistas:", error);
-        return [];
-    }
-};
+) => handleApiRequest<GeneralPaginate<CarrierProps>>(() => axiosAuth.get(pageUrl, { params: { search, page } }));
 
-export const getCarrier = async (
-    id: string,
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-): Promise<Carrier | null> => {
-    try {
-        const response = await axiosAuth.get(`carriers/${id}/edit`);
-        return response.data.carrier as Carrier;
-    } catch (error) {
-        console.error("Error al obtener transportista: ", error);
-        return null;
-    }
-};
+export const storeCarrier = async (axiosAuth: AxiosInstance, form: object) =>
+    handleApiRequest<Carrier>(() => axiosAuth.post('carriers', form));
+
+export const getCarrier = async (axiosAuth: AxiosInstance, id: string) =>
+    handleApiRequest<Carrier>(() => axiosAuth.get(`carriers/${id}`));
+
+export const updateCarrier = async (axiosAuth: AxiosInstance, id: string, form: object) =>
+    handleApiRequest<Carrier>(() => axiosAuth.put(`carriers/${id}`, form));

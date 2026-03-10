@@ -7,10 +7,10 @@ export const getSuppliers = async (
     search?: string,
     page?: number
 ): Promise<GeneralPaginate<SupplierProps> | null> => {
-    const url = pageUrl || `providerlist?page=${page}`;
+    const url = pageUrl || `providers?page=${page}`;
     try {
         const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.post(fullUrl, { search });
+        const response = await axiosAuth.get(fullUrl, { params: { search } });
         return response.data;
     } catch (error) {
         console.error("Error al obtener proveedores:", error);

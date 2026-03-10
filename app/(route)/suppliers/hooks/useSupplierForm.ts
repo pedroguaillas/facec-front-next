@@ -1,4 +1,4 @@
-import { findSupplierByIdentification, storeSupplier, updateSupplier } from "@/services/supplierServices";
+import { resolveSupplier, storeSupplier, updateSupplier } from "@/services/supplierServices";
 import { initialSupplier } from "@/constants/initialValues";
 import { getSupplier } from "../services/suppliersServices";
 import { supplierSchema } from "@/schemas/supplier.schema";
@@ -69,7 +69,7 @@ export const useSupplierForm = () => {
 
     useEffect(() => {
         const handleCustom = async () => {
-            const res = await findSupplierByIdentification(axiosAuth, supplier.identication);
+            const res = await resolveSupplier(axiosAuth, supplier.identication);
             if (res !== null) {
                 if (res.branch_id !== 0) {
                     setErrors({ identication: 'El proveedor ya esta registrado' })

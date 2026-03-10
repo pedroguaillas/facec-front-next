@@ -9,7 +9,7 @@ export const getShops = async (
 ) => {
     try {
         const fullUrl = new URL(pageUrl, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.post(fullUrl, { search });
+        const response = await axiosAuth.get(fullUrl, {params: { search }});
         return response.data;
     } catch (error) {
         console.error("Error al obtener compras:", error);

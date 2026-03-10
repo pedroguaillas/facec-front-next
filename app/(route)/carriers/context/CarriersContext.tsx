@@ -32,15 +32,16 @@ export const CarriersProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchCarriers = useCallback(async (pageUrl = `carrierlist?page=${page}`) => {
+    const fetchCarriers = useCallback(async (pageUrl = `carriers?page=${page}`) => {
         if (status !== "authenticated") return;
-        console.log('useCallback, fetchCarriers')
 
         try {
-            const data = await getCarriers(axiosAuth, pageUrl, search, page);
-            setCarriers(data.data);
-            setMeta(data.meta);
-            setLinks(data.links);
+            const response = await getCarriers(axiosAuth, pageUrl, search, page);
+            if (response) {
+                setCarriers(response.data);
+                setMeta(response.meta);
+                setLinks(response.links);
+            }
         } catch (error) {
             console.error("Error al obtener productos:", error);
         }

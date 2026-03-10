@@ -32,10 +32,10 @@ const handleApiCall = async (
     id: number,
     axiosAuth: AxiosInstance,
     fetchInvoices: () => void,
-    alertMessage?: string
+    alertMessage?: string,
 ): Promise<void> => {
     try {
-        const response = await axiosAuth.get(`orders/${endpoint}/${id}`);
+        const response = await axiosAuth.get(`orders/${id}/${endpoint}`);
         if (response.status >= 200) {
             fetchInvoices();
         } else if (alertMessage) {
@@ -47,17 +47,25 @@ const handleApiCall = async (
 };
 
 // 🔹 Diccionario de acciones asociadas al estado de la orden
-const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
+const renderProcess: Record<
+    string,
+    (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
 > = {
-    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
-    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("sendsri", id, axiosAuth, fetchInvoices),
+    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("send", id, axiosAuth, fetchInvoices),
     ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
     RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
     EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
+    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
-        handleApiCall("cancel", id, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
-    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
+        handleApiCall(
+            "cancel",
+            id,
+            axiosAuth,
+            fetchInvoices,
+            "Para anular el comprobante en este sistema, primero debe anularlo en el SRI",
+        ),
+    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
 };
 
 export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
@@ -65,13 +73,21 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchInvoices } = useInvoices();
     const { data: session } = useSession();
-    const [pdf, setPdf] = useState<{ route: string, name: string } | null>(null);
+    const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [
             { label: "Ver Pdf", onClick: showOrderPdf },
-            { label: "Descargar Xml", onClick: () => downloadXml(`orders/download/${order.id}`, axiosAuth, `${order.atts.voucher_type == 1 ? 'Factura' : 'NC'} ${order.atts.serie}`) },
+            {
+                label: "Descargar Xml",
+                onClick: () =>
+                    downloadXml(
+                        `orders/${order.id}/xml`,
+                        axiosAuth,
+                        `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
+                    ),
+            },
             { label: "Enviar correo", onClick: sendMail },
         ];
 
@@ -81,8 +97,8 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {
-                label: renderSwitch[order.atts.state.replace(' ', '_')],
-                onClick: () => renderProcess[order.atts.state.replace(' ', '_')](order.id, axiosAuth, fetchInvoices),
+                label: renderSwitch[order.atts.state.replace(" ", "_")],
+                onClick: () => renderProcess[order.atts.state.replace(" ", "_")](order.id, axiosAuth, fetchInvoices),
             });
         }
 
@@ -90,17 +106,20 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     };
 
     const showOrderPdf = async () => {
-        setPdf({ route: `orders/${order.id}/pdf`, name: `${order.atts.voucher_type == 1 ? 'Factura' : 'NC'} ${order.atts.serie}` })
+        setPdf({
+            route: `orders/${order.id}/pdf`,
+            name: `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
+        });
     };
 
     const sendMail = async () => {
-        if (order.atts.state !== 'AUTORIZADO') {
-            alert('La factura debe estar AUTORIZADO para enviar')
-            return
+        if (order.atts.state !== "AUTORIZADO") {
+            alert("La factura debe estar AUTORIZADO para enviar");
+            return;
         }
         if (order.customer.email === null) {
-            alert('Agregue el CORREO ELECTRÓNICO del cliente para enviar')
-            return
+            alert("Agregue el CORREO ELECTRÓNICO del cliente para enviar");
+            return;
         }
         try {
             const response = await axiosAuth.get(`orders/${order.id}/mail`);
@@ -108,13 +127,13 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                 fetchInvoices();
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
     const printfPdf = async () => {
-        setPdf({ route: `orders/${order.id}/printf`, name: `Impresión ${order.atts.serie}` })
-    }
+        setPdf({ route: `orders/${order.id}/printf`, name: `Impresión ${order.atts.serie}` });
+    };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -133,14 +152,20 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     return (
         <>
             <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
-
                 {/* Dropdown Button */}
-                <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer">&#60;</button>
+                <button
+                    onClick={() => setIsOpen(index)}
+                    className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer"
+                >
+                    &#60;
+                </button>
 
                 {/* Dropdown Menu */}
                 {isOpen && (
-                    <div className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700 
-                ${only ? '-mt-20' : '-mt-4'}`}>
+                    <div
+                        className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700
+                ${only ? "-mt-20" : "-mt-4"}`}
+                    >
                         <div className="py-1">
                             {getOptions().map((option, indexOption) => (
                                 <button

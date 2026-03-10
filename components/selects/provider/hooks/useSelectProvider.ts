@@ -26,9 +26,8 @@ export const useSelectProvider = (label: string = "", selectProvider: (provider:
 
         const pageNumber = page.split("=")[1];
         try {
-            const res = await axiosAuth.post<GeneralPaginate<SupplierProps>>(`providerlist?page=${pageNumber}`, {
-                search,
-                paginate: 5,
+            const res = await axiosAuth.get<GeneralPaginate<SupplierProps>>(`providers?page=${pageNumber}`, {
+               params:{ search, paginate: 5},
             });
             const { data } = res.data;
             setSuggestions(data);
