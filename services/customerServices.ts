@@ -1,36 +1,23 @@
-import { Customer } from "@/types";
+import { handleApiRequest } from "@/helpers/apiHandler";
+import { ApiResponse, Customer } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const findCustomerByIdentification = async (
     axiosAuth: AxiosInstance,
     identication: string,
-): Promise<Customer | null> => {
-    const url = identication.length === 10 ? "searchByCedula" : "searchByRuc";
-    try {
-        const res = await axiosAuth.get(`customers/resolve/${identication}`);
-        return res.data.customer as Customer;
-    } catch (err) {
-        console.log(err);
-        return null;
-    }
-};
+): Promise<ApiResponse<Customer>> =>
+    handleApiRequest<Customer>(() => axiosAuth.get(`customers/resolve/${identication}`))
 
-export const storeCustomer = async (axiosAuth: AxiosInstance, data: unknown): Promise<Customer | null> => {
-    try {
-        const response = await axiosAuth.post("customers", data);
-        return response.data.customer as Customer;
-    } catch (error) {
-        console.error("Error creating customer:", error);
-        return null;
-    }
-};
+export const storeCustomer = async (
+    axiosAuth: AxiosInstance,
+    data: object
+): Promise<ApiResponse<Customer>> =>
+    handleApiRequest<Customer>(() => axiosAuth.post("customers", data));
 
-export const updateCustomer = async (id: string, axiosAuth: AxiosInstance, data: unknown): Promise<Customer | null> => {
-    try {
-        const response = await axiosAuth.put("customers/" + id, data);
-        return response.data.customer as Customer;
-    } catch (error) {
-        console.error("Error creating customer:", error);
-        return null;
-    }
-};
+
+export const updateCustomer = async (
+    id: string,
+    axiosAuth: AxiosInstance,
+    data: object
+): Promise<ApiResponse<Customer>> =>
+    handleApiRequest<Customer>(() => axiosAuth.put("customers/" + id, data));

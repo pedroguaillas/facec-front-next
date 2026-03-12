@@ -52,25 +52,16 @@ export const ProductFormProvider = ({ id, children }: Props) => {
         const fetchFormProduct = async () => {
             if (status !== "authenticated") return;
 
-            let response;
-
-            if (id !== undefined) {
-                response = await getEditProduct(id, axiosAuth);
-                if (response.data) {
-                    setProduct({ ...response.data.product, id: id + '' });
-                }
-            } else {
-                response = await getCreateProduct(axiosAuth);
-            }
-
-            const { data, message } = response;
+            const { data, error } = (id !== undefined)
+                ? await getEditProduct(id, axiosAuth)
+                : await getCreateProduct(axiosAuth);
 
             if (data) {
                 setIvaTaxes(data.ivaTaxes);
                 setIceCataloges(data.iceCataloges);
                 setSriCategories(data.sriCategories);
                 setTransport(data.transport);
-            } else if (message === CodeErrors.NETWORK_ERROR) {
+            } else if (error === CodeErrors.NETWORK_ERROR) {
                 redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
             }
         };

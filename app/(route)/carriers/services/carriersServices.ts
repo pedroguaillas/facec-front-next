@@ -1,19 +1,22 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { Carrier, CarrierProps, GeneralPaginate } from "@/types";
+import { ApiResponse, Carrier } from "@/types";
 import { AxiosInstance } from "axios";
 
-export const getCarriers = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-    pageUrl: string,
-    search?: string,
-    page?: number
-) => handleApiRequest<GeneralPaginate<CarrierProps>>(() => axiosAuth.get(pageUrl, { params: { search, page } }));
-
-export const storeCarrier = async (axiosAuth: AxiosInstance, form: object) =>
+export const storeCarrier = async (
+    axiosAuth: AxiosInstance,
+    form: object
+): Promise<ApiResponse<Carrier>> =>
     handleApiRequest<Carrier>(() => axiosAuth.post('carriers', form));
 
-export const getCarrier = async (axiosAuth: AxiosInstance, id: string) =>
+export const getCarrier = async (
+    axiosAuth: AxiosInstance,
+    id: string
+): Promise<ApiResponse<Carrier>> =>
     handleApiRequest<Carrier>(() => axiosAuth.get(`carriers/${id}`));
 
-export const updateCarrier = async (axiosAuth: AxiosInstance, id: string, form: object) =>
+export const updateCarrier = async (
+    axiosAuth: AxiosInstance,
+    id: string,
+    form: object
+): Promise<ApiResponse<Carrier>> =>
     handleApiRequest<Carrier>(() => axiosAuth.put(`carriers/${id}`, form));

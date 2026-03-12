@@ -1,7 +1,8 @@
-import { CarrierProps, GeneralPaginate, Links, Meta } from "@/types";
+import { CarrierProps, Links, Meta } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import { initialLinks, initialMeta } from "@/constants";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { getCarriers } from "@/services/carrierServices";
 
 export const useModalSelectCarrier = (handleSelect: (carrier: CarrierProps) => void) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,21 +25,16 @@ export const useModalSelectCarrier = (handleSelect: (carrier: CarrierProps) => v
         });
     }
 
-    const fetchCarrier = useCallback(async (page: string = 'page=1') => {
-        if (!page) return;
+    const fetchCarrier = useCallback(async (pageUrl: string = 'carriers?page=1&paginate=10') => {
+        if (search) {
+            pageUrl = `${pageUrl}&search=${search}`;
+        }
 
-        const pageNumber = page.split('=')[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<CarrierProps>>(`carrierlist?page=${pageNumber}`, {
-                search,
-                paginate: 10
-            })
-            const { data, meta, links } = res.data;
-            setSuggestions(data);
-            setMeta(meta);
-            setLinks(links);
-        } catch (error) {
-            console.error(error);
+        const { data } = await getCarriers(axiosAuth, pageUrl);
+        if (data) {
+            setSuggestions(data.data);
+            setMeta(data.meta);
+            setLinks(data.links);
         }
     }, [search, axiosAuth])
 

@@ -36,15 +36,16 @@ export const CustomersProvider = ({ children }: Props) => {
     const fetchCustomers = useCallback(
         async (pageUrl = `customers?page=${page}`) => {
             if (status !== "authenticated") return;
-            console.log("useCallback, fetchCustomers");
 
-            try {
-                const data = await getCustomers(axiosAuth, pageUrl, search, page);
+            if (search) {
+                pageUrl = `${pageUrl}&search=${search}`
+            }
+
+            const { data } = await getCustomers(axiosAuth, pageUrl);
+            if (data) {
                 setCustomers(data.data);
                 setMeta(data.meta);
                 setLinks(data.links);
-            } catch (error) {
-                console.error("Error al obtener clientes:", error);
             }
         },
         [status, axiosAuth, search, page],
@@ -53,20 +54,13 @@ export const CustomersProvider = ({ children }: Props) => {
     useEffect(() => {
         // Validado: se ejecuta solo al inicio
         fetchCustomers();
-        console.log("useEffect, fetchCustomers");
     }, [fetchCustomers]);
 
     return (
         <CustomersContext.Provider
             value={{
-                customers,
-                search,
-                page,
-                meta,
-                links,
-                fetchCustomers,
-                setSearch,
-                setPage,
+                customers, search, page, meta, links,
+                fetchCustomers, setSearch, setPage,
             }}
         >
             {children}

@@ -34,7 +34,7 @@ const handleApiCall = async (
     alertMessage?: string
 ): Promise<void> => {
     try {
-        const response = await axiosAuth.get(`referralguides/${endpoint}/${id}`);
+        const response = await axiosAuth.get(`referralguides/${id}/${endpoint}`);
         if (response.status >= 200) {
             fetchReferralGuides();
         } else if (alertMessage) {
@@ -48,15 +48,15 @@ const handleApiCall = async (
 // 🔹 Diccionario de acciones asociadas al estado de la orden
 const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetchReferralGuides: () => void) => Promise<void>
 > = {
-    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
+    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("sendsri", id, axiosAuth, fetchInvoices),
     ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
     RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
     EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
+    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
         handleApiCall("cancel", id, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
-    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("xml", id, axiosAuth, fetchInvoices),
+    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
 };
 
 export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Props) => {

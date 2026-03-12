@@ -62,11 +62,11 @@ export const ImportXml = () => {
             address: getTag(xmlDoc, "dirMatriz"),
         };
 
-        const supplier = await storeSupplier(axiosAuth, provider);
+        const { data } = await storeSupplier(axiosAuth, provider);
 
-        if (supplier) {
-            setShop((prevState) => ({ ...prevState, provider_id: supplier.id }))
-            setSelectProvider(supplier);
+        if (data) {
+            setShop((prevState) => ({ ...prevState, provider_id: Number(data.id) }))
+            setSelectProvider({ id: Number(data.id), atts: { identication: '', name: data.name } });
         }
     };
 

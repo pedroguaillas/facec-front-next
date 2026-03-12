@@ -32,18 +32,20 @@ export const ShopsProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchShops = useCallback(async (pageUrl?: string) => {
+    const fetchShops = useCallback(async (pageUrl: string = `shops?page=${page}`) => {
         if (status !== "authenticated") return;
 
-        try {
-            const url = pageUrl ? pageUrl : `shops?page=${page}`;
-            const data = await getShops(axiosAuth, url, search);
+        if (search) {
+            pageUrl = `${pageUrl}&search=${search}`;
+        }
+
+        const { data } = await getShops(axiosAuth, pageUrl);
+        if (data) {
             setShops(data.data);
             setMeta(data.meta);
             setLinks(data.links);
-        } catch (error) {
-            console.error("Error al obtener facturas:", error);
         }
+
     }, [status, axiosAuth, search, page]);
 
     useEffect(() => {

@@ -11,9 +11,16 @@ export async function handleApiRequest<T>(
     } catch (err) {
         const error = err as AxiosError<LaravelErrorResponse>;
 
+        // TODO: este error debe ir en Interceptor de axios
         if (error.response === undefined) {
-            return new Error(CodeErrors.NETWORK_ERROR);
+            return { error: CodeErrors.NETWORK_ERROR_MESSAGE };
         }
+
+        // TODO: estos errores especificos pueden estar aqui
+        //   401 → sesión expirada (¿redirigir al login?)
+        //   403 → sin permisos
+        //   404 → recurso no encontrado
+        //   500 → error del servidor
 
         // El unico error que capturamos es cuando no pasa la validación en el Backend
         if (error.response && error.response.status === 422) {
@@ -27,6 +34,6 @@ export async function handleApiRequest<T>(
             return { errors: flattenedErrors };
         }
 
-        return new Error('Se produjo un error inesperado');
+        return { error: 'Se produjo un error inesperado' };
     }
 }

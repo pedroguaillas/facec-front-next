@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { CarrierProps, GeneralPaginate } from "@/types";
+import { CarrierProps } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { getCarriers } from "@/services/carrierServices";
 
 export const useSelectCarrier = (label: string = "", selectCarrier: (carrier: CarrierProps) => void) => {
-    
+
     const [search, setSearch] = useState('');
     const [suggestions, setSuggestions] = useState<CarrierProps[]>([]);
     const [skipFetch, setSkipFetch] = useState(false);
@@ -21,19 +22,13 @@ export const useSelectCarrier = (label: string = "", selectCarrier: (carrier: Ca
         selectCarrier(carrier);
     }
 
-    const fetchCarrier = useCallback(async (page: string = 'page=1') => {
-        if (!page) return;
-
-        const pageNumber = page.split("=")[1];
-        try {
-            const res = await axiosAuth.post<GeneralPaginate<CarrierProps>>(`carrierlist?page=${pageNumber}`, {
-                search,
-                paginate: 5,
-            });
-            const { data } = res.data;
-            setSuggestions(data);
-        } catch (error) {
-            console.error(error);
+    const fetchCarrier = useCallback(async (pageUrl: string = `carriers?page=1&paginate=5`) => {
+        if (search) {
+            pageUrl = `${pageUrl}&search=${search}`;
+        }
+        const { data } = await getCarriers(axiosAuth, pageUrl);
+        if (data) {
+            setSuggestions(data.data);
         }
     }, [search, axiosAuth]);
 

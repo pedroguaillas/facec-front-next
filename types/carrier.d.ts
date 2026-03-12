@@ -12,7 +12,7 @@ export interface CarrierProps {
 
 interface Carrier {
     id: string,
-    type_identification: string;
+    type_identification: 'cédula' | 'ruc';
     identication: string;
     name: string;
     address?: string;

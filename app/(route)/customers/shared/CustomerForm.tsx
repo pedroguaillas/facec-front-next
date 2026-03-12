@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { ButtonSubmit } from './ButtonSubmit';
 import { useActionState } from 'react';
+import { parseZodErrors } from '@/helpers/zodHelper';
 
 export const CustomerForm = () => {
 
@@ -24,26 +25,20 @@ export const CustomerForm = () => {
             );
 
             const parsed = customerSchema.safeParse(customer);
-
             if (!parsed.success) {
-                console.log('errores', parsed.error)
-                const formatted: Record<string, string> = {};
-                parsed.error.errors.forEach(err => {
-                    formatted[err.path[0] as string] = err.message;
-                });
-                setErrors(formatted);
+                setErrors(parseZodErrors(parsed.error));
                 return;
             }
 
-            // TODO: falta que regrese una respuesta un Customer o Error por no poder guardar.
-            if (params?.id !== undefined) {
-                await updateCustomer(params.id + '', axiosAuth, parsed.data);
-                router.push('/customers');
+            const response = params?.id
+            ? await updateCustomer(params.id + '', axiosAuth, parsed.data)
+            : await storeCustomer(axiosAuth, parsed.data);
+
+            if (response.errors) {
+                setErrors(response.errors);
                 return;
             }
 
-            const res = await storeCustomer(axiosAuth, parsed.data);
-            console.log(res)
             router.push('/customers');
         }, null
     );

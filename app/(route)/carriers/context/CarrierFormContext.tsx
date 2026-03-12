@@ -38,9 +38,9 @@ export const CarrierFormProvider = ({ id, children }: Props) => {
         const fetchCarrier = async () => {
             if (!id) return;
 
-            const res = await getCarrier(axiosAuth, id);
-            if (res.data) {
-                setCarrier(res.data);
+            const { data } = await getCarrier(axiosAuth, id);
+            if (data) {
+                setCarrier(data);
             }
         }
         if (id) {

@@ -51,11 +51,11 @@ export const CompaniesFormProvider = ({ id, children }: Props) => {
     const fetchCompany = useCallback(async () => {
         if (status !== "authenticated") return;
 
-        const { data, message } = await getCompanyEdit(axiosAuth, id);
+        const { data, error } = await getCompanyEdit(axiosAuth, id);
 
         if (data) {
             setCompany(data);
-        } else if (message === CodeErrors.NETWORK_ERROR) {
+        } else if (error === CodeErrors.NETWORK_ERROR) {
             redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
         }
         

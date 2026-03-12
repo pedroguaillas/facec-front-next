@@ -82,22 +82,22 @@ export const FormShopProvider = ({ children }: Props) => {
         const fetchCreateShop = async () => {
             if (status !== "authenticated") return;
 
-            try {
-                if (typeof params?.id === 'string') {
-                    const data = await getShop(axiosAuth, params?.id as string);
+            if (typeof params?.id === 'string') {
+                const { data } = await getShop(axiosAuth, params?.id as string);
+                if (data) {
                     setShop(data.shop);
                     setSelectProvider(data.providers[0]);
                     setApplieWithholding(data.shopretentionitems.length > 0);
                     setTaxInputs(data.taxes);
                     setTaxes(data.shopretentionitems.map((item: Tax) => ({ ...item, id: nanoid() })));
                     setProductOutputs(data.shopitems.map((item: ProductOutput) => ({ ...item, id: item.id + '', total_iva: (Number(item.price) * Number(item.quantity)).toFixed(2) })));
-                } else {
-                    const data = await getCreateShop(axiosAuth);
+                }
+            } else {
+                const { data } = await getCreateShop(axiosAuth);
+                if (data) {
                     setPoints(data.points);
                     setTaxInputs(data.taxes);
                 }
-            } catch (error) {
-                console.log("Error al cargar: ", error);
             }
         }
         fetchCreateShop();

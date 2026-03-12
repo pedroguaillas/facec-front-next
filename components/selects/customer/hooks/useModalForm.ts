@@ -28,13 +28,13 @@ export const useModalForm = () => {
     }
 
     const getCustom = useCallback(async () => {
-        const res = await findCustomerByIdentification(axiosAuth, customer.identication);
-        if (res !== null) {
-            if (res.branch_id !== 0) {
+        const { data } = await findCustomerByIdentification(axiosAuth, customer.identication);
+        if (data) {
+            if (data.branch_id !== 0) {
                 setErrors({ identication: 'El cliente ya esta registrado' })
                 return;
             }
-            const { name, address, email, phone } = res
+            const { name, address, email, phone } = data
             const updatedCustomer = {
                 ...({ name }),
                 ...(address ? { address } : {}),
@@ -61,10 +61,10 @@ export const useModalForm = () => {
         }
 
         setIsSaving(!isSaving);
-        const res = await storeCustomer(axiosAuth, customer);
+        const { data } = await storeCustomer(axiosAuth, customer);
 
-        if (res !== null) {
-            handleSelect({ id: Number(res.id), atts: { identication: res.identication, name: res.name } });
+        if (data) {
+            handleSelect({ id: Number(data.id), atts: { identication: data.identication, name: data.name } });
             toogle();
         }
     }

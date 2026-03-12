@@ -56,10 +56,10 @@ export const useSupplierForm = () => {
     useEffect(() => {
         const fetchGetSupplier = async () => {
             if (typeof params?.id === 'string') {
-                const res = await getSupplier(params.id, axiosAuth);
-                if (res !== null) {
+                const { data } = await getSupplier(params.id, axiosAuth);
+                if (data) {
                     setSkiFetch(true);
-                    setSupplier({ ...res, id: res.id + '' });
+                    setSupplier({ ...data, id: data.id + '' });
                 }
             }
         }
@@ -69,13 +69,13 @@ export const useSupplierForm = () => {
 
     useEffect(() => {
         const handleCustom = async () => {
-            const res = await resolveSupplier(axiosAuth, supplier.identication);
-            if (res !== null) {
-                if (res.branch_id !== 0) {
+            const { data } = await resolveSupplier(axiosAuth, supplier.identication);
+            if (data) {
+                if (data.branch_id && data.branch_id !== 0) {
                     setErrors({ identication: 'El proveedor ya esta registrado' })
                     return;
                 }
-                const { name, address, email, phone } = res
+                const { name, address, email, phone } = data
                 setSupplier(prev => ({
                     ...prev,
                     name, address, email, phone

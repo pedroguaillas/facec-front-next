@@ -5,10 +5,11 @@ import { CarriersProvider, useCarriers } from './context/CarriersContext';
 import { CarriersFilter, CarriersTable } from './components';
 
 const CarriersPagination = () => {
-    const { meta, links, fetchCarriers } = useCarriers();
+    const { meta, links, fetchCarriers, setPage } = useCarriers();
 
     const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
         e.preventDefault();
+        setPage(parseInt(pageUrl?.match(/page=(\d+)/)?.[1] || '1'));
         fetchCarriers(pageUrl);
     };
 

@@ -70,22 +70,16 @@ export const SubmitButton = () => {
         // 3. Enviar el formulario
         setIsPending(true);
 
-        let response = undefined;
-
-        if (params?.id) {
-            response = await shopUpdateService(Number(params.id), axiosAuth, form);
-        } else {
-            response = await shopStoreService(axiosAuth, form);
-        }
-
-        const { message, data, errors } = response;
+        const { error, data, errors } = (params?.id)
+            ? await shopUpdateService(Number(params.id), axiosAuth, form)
+            : await shopStoreService(axiosAuth, form);
 
         if (data) {
             router.push('/shops');
         } else if (errors) {
             setErrorShop(errors);
         } else {
-            alert(message);
+            alert(error);
         }
         setIsPending(false);
     };

@@ -99,9 +99,9 @@ export const FormInvoiceProvider = ({ children }: Props) => {
     const fetchEditInvoice = async () => {
       if (status !== "authenticated") return;
 
-      try {
-        if (typeof params?.id === 'string') {
-          const data = await getInvoice(axiosAuth, params.id as string);
+      if (typeof params?.id === 'string') {
+        const { data } = await getInvoice(axiosAuth, params.id as string);
+        if (data) {
           const { customers, methodOfPayments, order, order_aditionals, order_items, points } = data;
           setInvoice({ ...order, id: order.id + '' });
           setPoints(points);
@@ -110,8 +110,10 @@ export const FormInvoiceProvider = ({ children }: Props) => {
           setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
           setProductOutputs(order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' })));
           setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
-        } else {
-          const data = await getCreateInvoice(axiosAuth);
+        }
+      } else {
+        const { data } = await getCreateInvoice(axiosAuth);
+        if (data) {
           const { points, methodOfPayments, pay_method, tourism, repayment } = data;
           setInvoice((prev) => ({ ...prev, pay_method }));
           setPoints(points);
@@ -120,8 +122,6 @@ export const FormInvoiceProvider = ({ children }: Props) => {
           setRepayment(repayment);
           setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
         }
-      } catch (error) {
-        console.error("Error al cargar: ", error);
       }
     }
     fetchEditInvoice();

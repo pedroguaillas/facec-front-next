@@ -1,30 +1,18 @@
+import { handleApiRequest } from "@/helpers/apiHandler";
+import { ApiResponse, GeneralPaginate, OrderProps } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getInvoices = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
     pageUrl: string,
-    search?: string,
-) => {
-    try {
-        const fullUrl = new URL(pageUrl, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.get(fullUrl, { params: { search } });
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener facturas:", error);
-        return [];
-    }
-};
+): Promise<ApiResponse<GeneralPaginate<OrderProps>>> =>
+    handleApiRequest<GeneralPaginate<OrderProps>>(() => axiosAuth.get(pageUrl));
 
-export const storeLotServices = async (axiosAuth: AxiosInstance, formData: FormData) => {
-    try {
-        const res = await axiosAuth.post("orders/lot", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-
-        console.log(res);
-    } catch (err) {
-        console.error(err);
-    }
-};
+export const storeLotServices = async (
+    axiosAuth: AxiosInstance,
+    formData: FormData
+) => handleApiRequest<unknown>(() => axiosAuth.post("orders/lot", formData, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+}));

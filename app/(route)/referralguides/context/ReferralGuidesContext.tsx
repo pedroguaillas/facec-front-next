@@ -28,17 +28,14 @@ export const ReferralGuidesProvider = ({ children }: Props) => {
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
-    const fetchReferralGuides = useCallback(async (pageUrl?: string) => {
+    const fetchReferralGuides = useCallback(async (pageUrl = `referralguides?page=${page}`) => {
         if (status !== "authenticated") return;
 
-        try {
-            const url = pageUrl || `referralguides?page=${page}`;
-            const data = await getReferralGuides(axiosAuth, url);
+        const { data } = await getReferralGuides(axiosAuth, pageUrl);
+        if (data) {
             setReferralGuides(data.data);
             setMeta(data.meta);
             setLinks(data.links);
-        } catch (error) {
-            console.error("Error al obtener guias de remisión: ", error);
         }
     }, [status, axiosAuth, page]); // Dependencias correctas
 

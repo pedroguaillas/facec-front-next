@@ -1,3 +1,6 @@
+// Alert
+export * from './alert/Alert';
+
 // Elements
 export * from './text-input/TextInput';
 export * from './select-option/SelectOption';

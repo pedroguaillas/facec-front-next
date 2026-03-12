@@ -35,15 +35,16 @@ export const ProductsProvider = ({ children }: Props) => {
     const fetchProducts = useCallback(
         async (pageUrl = `products?page=${page}`) => {
             if (status !== "authenticated") return;
-            console.log("useCallback, fetchProducts");
 
-            try {
-                const data = await getProducts(axiosAuth, pageUrl, search, page);
+            if (search) {
+                pageUrl = `${pageUrl}&search=${search}`;
+            }
+
+            const { data } = await getProducts(axiosAuth, pageUrl);
+            if (data) {
                 setProducts(data.data);
                 setMeta(data.meta);
                 setLinks(data.links);
-            } catch (error) {
-                console.error("Error al obtener productos:", error);
             }
         },
         [status, axiosAuth, search, page],
@@ -57,14 +58,8 @@ export const ProductsProvider = ({ children }: Props) => {
     return (
         <ProductsContext.Provider
             value={{
-                products,
-                search,
-                page,
-                meta,
-                links,
-                fetchProducts,
-                setSearch,
-                setPage,
+                products, search, page, meta, links,
+                fetchProducts, setSearch, setPage,
             }}
         >
             {children}

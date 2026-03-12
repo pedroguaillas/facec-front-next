@@ -1,10 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { getCarriers } from "../services/carriersServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { Links, Meta, CarrierProps } from "@/types";
+import { getCarriers } from "@/services/carrierServices";
 
 interface CarriersContextType {
     carriers: CarrierProps[];
@@ -35,20 +35,20 @@ export const CarriersProvider = ({ children }: Props) => {
     const fetchCarriers = useCallback(async (pageUrl = `carriers?page=${page}`) => {
         if (status !== "authenticated") return;
 
-        try {
-            const response = await getCarriers(axiosAuth, pageUrl, search, page);
-            if (response) {
-                setCarriers(response.data);
-                setMeta(response.meta);
-                setLinks(response.links);
-            }
-        } catch (error) {
-            console.error("Error al obtener productos:", error);
+        if (search) {
+            pageUrl = `${pageUrl}&search=${search}`;
         }
-    }, [status, axiosAuth, search, page]); // Dependencias correctas
+
+        const { data } = await getCarriers(axiosAuth, pageUrl);
+        if (data) {
+            setCarriers(data?.data ?? []);
+            setMeta(data?.meta ?? null);
+            setLinks(data?.links ?? null);
+        }
+
+    }, [status, axiosAuth, search, page]);
 
     useEffect(() => {
-        console.log('useEffect, start')
         fetchCarriers();
     }, [fetchCarriers]);
 

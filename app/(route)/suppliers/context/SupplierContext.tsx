@@ -31,15 +31,14 @@ export const SupplierProvider = ({ children }: Props) => {
 
     const fetchSuppliers = useCallback(async (pageUrl = `providers?page=${page}`) => {
         if (status !== 'authenticated') return;
-        try {
-            const data = await getSuppliers(axiosAuth, pageUrl, search, page);
-            if (data) {
-                setSuppliers(data.data);
-                setMeta(data.meta);
-                setLinks(data.links);
-            }
-        } catch (error) {
-            console.error("Error al obtener proveedores:", error);
+        if (search) {
+            pageUrl = `${pageUrl}&search=${search}`;
+        }
+        const { data } = await getSuppliers(axiosAuth, pageUrl);
+        if (data) {
+            setSuppliers(data.data);
+            setMeta(data.meta);
+            setLinks(data.links);
         }
     }, [status, axiosAuth, search, page])
 

@@ -19,6 +19,7 @@ interface OrderProps {
 }
 
 interface OrderCreateProps {
+    id?: string;
     serie: string;
     date: string;
     expiration_days: number; //Eliminar

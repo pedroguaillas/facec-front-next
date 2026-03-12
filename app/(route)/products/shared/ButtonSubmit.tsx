@@ -7,6 +7,7 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { PrimaryButton } from '@/components';
 import { useState } from 'react';
 import { productStoreService, productUpdateService } from '../services/productServices';
+import { parseZodErrors } from '@/helpers/zodHelper';
 
 export const ButtonSubmit = () => {
 
@@ -23,34 +24,23 @@ export const ButtonSubmit = () => {
         // 2. Validar el formulario
         const parsed = productSchema.safeParse(form);
         if (!parsed.success) {
-            console.log('Validación', parsed.error.errors);
-            const formatted: Record<string, string> = {};
-            parsed.error.errors.forEach(err => {
-                formatted[err.path[0] as string] = err.message;
-            });
-            setErrorProduct(formatted);
+            setErrorProduct(parseZodErrors(parsed.error));
             return;
         }
 
         // 3. Enviar el formulario
         setIsPending(true);
 
-        let response = undefined;
-
-        if (params?.id) {
-            response = await productUpdateService(Number(params.id), axiosAuth, form);
-        } else {
-            response = await productStoreService(axiosAuth, form);
-        }
-
-        const { message, data, errors } = response;
+        const { error, data, errors } = (params?.id)
+            ? await productUpdateService(Number(params.id), axiosAuth, form)
+            : await productStoreService(axiosAuth, form);
 
         if (data) {
             router.push('/products');
         } else if (errors) {
             setErrorProduct(errors);
         } else {
-            console.log(message);
+            console.log(error);
         }
         setIsPending(false);
     }

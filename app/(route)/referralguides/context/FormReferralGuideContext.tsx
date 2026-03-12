@@ -2,7 +2,7 @@
 
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState, } from 'react';
 import { CarrierProps, CustomerProps, EmisionPoint, ProductOutput, ReferralGuideCreateProps, } from '@/types';
-import { getCreateReferralGuide, getReferralGuide } from '../services/createReferralGuideServices';
+import { getCreateReferralGuide, getReferralGuide } from '../services/referralGuidesServices';
 import { initialProductItem } from '@/constants/initialValues';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { getDate } from '@/helpers/dateHelper';
@@ -62,21 +62,20 @@ export const FormReferralGuideProvider = ({ children }: Props) => {
 		const fetchCreateReferralGuide = async () => {
 			if (status !== 'authenticated') return;
 
-			try {
-				if (typeof params?.id === 'string') {
-					const data = await getReferralGuide(axiosAuth, params.id as string);
+			if (typeof params?.id === 'string') {
+				const { data } = await getReferralGuide(axiosAuth, params.id as string);
+				if (data) {
 					setReferralGuide(data.referralguide);
 					setSelectCustom(data.customers[0]);
 					setSelectCarrier(data.carriers[0]);
 					setProductOutputs(data.referralguide_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' })));
-				} else {
-					const data = await getCreateReferralGuide(axiosAuth);
-					setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
-					const { points } = data;
-					setPoints(points);
 				}
-			} catch (error) {
-				console.error('Error al cargar: ', error);
+			} else {
+				const { data } = await getCreateReferralGuide(axiosAuth);
+				if (data) {
+					setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
+					setPoints(data);
+				}
 			}
 		};
 

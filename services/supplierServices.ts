@@ -1,43 +1,22 @@
-import { Supplier, SupplierProps } from "@/types";
+import { handleApiRequest } from "@/helpers/apiHandler";
+import { ApiResponse, Supplier, SupplierProps } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const resolveSupplier = async (
     axiosAuth: AxiosInstance,
     identication: string
-): Promise<Supplier | null> => {
-    try {
-        const res = await axiosAuth.get(`providers/resolve/${identication}`);
-        return res.data.provider as Supplier;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
+): Promise<ApiResponse<Supplier>> =>
+    handleApiRequest<Supplier>(() => axiosAuth.get(`providers/resolve/${identication}`));
 
 export const storeSupplier = async (
     axiosAuth: AxiosInstance,
-    provider: unknown
-) => {
-    try {
-        const res = await axiosAuth.post('providers', provider);
-        const { id, identication, name } = res.data.provider;
-        return { id, atts: { identication, name } } as SupplierProps;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
+    provider: object
+): Promise<ApiResponse<Supplier>> =>
+    handleApiRequest<Supplier>(() => axiosAuth.post('providers', provider));
 
 export const updateSupplier = async (
     id: string,
     axiosAuth: AxiosInstance,
-    provider: unknown
-) => {
-    try {
-        const res = await axiosAuth.put(`providers/${id}`, provider);
-        return res.data.provider as SupplierProps;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
+    provider: object
+): Promise<ApiResponse<SupplierProps>> =>
+    handleApiRequest<SupplierProps>(() => axiosAuth.put(`providers/${id}`, provider));

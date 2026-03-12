@@ -1,42 +1,29 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { Product, ProductCreateResponse, ProductCsv, ProductEditResponse } from "@/types";
+import { GeneralPaginate, Product, ProductCreateResponse, ProductCsv, ProductEditResponse, ProductProps } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getProducts = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-    pageUrl?: string | null,
-    search?: string,
-    page?: number,
-) => {
-    // const axiosInstance = axiosAuth(); // 📌 Asegúrate de llamar a la función si `api` es un método
-    const url = pageUrl || `products?page=${page}`;
-    try {
-        const fullUrl = new URL(url, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.get(fullUrl, { params: { search } });
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener facturas:", error);
-        return [];
-    }
-};
+    axiosAuth: AxiosInstance,
+    pageUrl: string,
+) => handleApiRequest<GeneralPaginate<ProductProps>>(() => axiosAuth.get(pageUrl))
 
 export const getCreateProduct = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
 ) => handleApiRequest<ProductCreateResponse>(() => axiosAuth.get("product/create"));
 
 export const productStoreService = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
     form: object,
 ) => handleApiRequest<Product>(() => axiosAuth.post("product", form));
 
 export const getEditProduct = async (
     id: string,
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
 ) => handleApiRequest<ProductEditResponse>(() => axiosAuth.get("product/" + id));
 
 export const productUpdateService = async (
     id: number,
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
     form: object,
 ) => handleApiRequest<Product>(() => axiosAuth.put(`product/${id}`, form));
 

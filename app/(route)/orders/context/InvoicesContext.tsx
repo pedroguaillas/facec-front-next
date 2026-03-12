@@ -32,20 +32,18 @@ export const InvoicesProvider = ({ children }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
     const fetchInvoices = useCallback(
-        async (pageUrl?: string) => {
+        async (pageUrl: string = `orders?page=${page}`) => {
             if (status !== "authenticated") return;
 
-            try {
-                // pageUrl trae de Paginación
-                // Y en la 1ra carga o al recargar la pagina requiere valor por defecto orderlist?page=${page}
-                const url = pageUrl || `orders?page=${page}`;
+            if (search) {
+                pageUrl = `${pageUrl}&search=${search}`;
+            }
 
-                const data = await getInvoices(axiosAuth, url, search);
+            const { data } = await getInvoices(axiosAuth, pageUrl);
+            if (data) {
                 setInvoices(data.data);
                 setMeta(data.meta);
                 setLinks(data.links);
-            } catch (error) {
-                console.error("Error al obtener facturas:", error);
             }
         },
         [status, axiosAuth, search, page],
@@ -58,14 +56,8 @@ export const InvoicesProvider = ({ children }: Props) => {
     return (
         <InvoicesContext.Provider
             value={{
-                invoices,
-                search,
-                page,
-                meta,
-                links,
-                fetchInvoices,
-                setSearch,
-                setPage,
+                invoices, search, page, meta, links,
+                fetchInvoices, setSearch, setPage,
             }}
         >
             {children}

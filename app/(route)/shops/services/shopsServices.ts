@@ -1,54 +1,32 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { Product, ShopCreateProps } from "@/types";
+import { EmisionPoint, GeneralPaginate, ProductOutput, ShopCreateProps, ShopProps, SupplierProps, Tax, TaxInput } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getShops = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
     pageUrl: string,
-    search?: string,
-) => {
-    try {
-        const fullUrl = new URL(pageUrl, process.env.NEXT_PUBLIC_API_URL).href;
-        const response = await axiosAuth.get(fullUrl, {params: { search }});
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener compras:", error);
-        return [];
-    }
-};
+) => handleApiRequest<GeneralPaginate<ShopProps>>(() => axiosAuth.get(pageUrl));
+
+interface ResCreateShop { points: EmisionPoint[], taxes: TaxInput[] }
 
 export const getCreateShop = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-) => {
-    try {
-        const response = await axiosAuth.get('shops/create');
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener facturas:", error);
-        return {};
-    }
-};
+    axiosAuth: AxiosInstance,
+) => handleApiRequest<ResCreateShop>(() => axiosAuth.get('shops/create'));
 
 export const shopStoreService = async (
     axiosAuth: AxiosInstance,
     form: object
 ) => handleApiRequest<ShopCreateProps>(() => axiosAuth.post('shops', form));
 
-export const shopUpdateService = async (
-    id: number,
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
-    form: object
-) => handleApiRequest<Product>(() => axiosAuth.put(`shops/${id}`, form));
+interface ResUpdateShop { shop: ShopCreateProps, providers: SupplierProps[], shopretentionitems: Tax[], taxes: TaxInput[], shopitems: ProductOutput[] }
 
 export const getShop = async (
-    axiosAuth: AxiosInstance, // ✅ Recibe axiosAuth como argumento
+    axiosAuth: AxiosInstance,
     id: string,
-) => {
-    try {
-        const response = await axiosAuth.get(`shops/${id}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener la tienda:", error);
-        return {};
-    }
-};
+) => handleApiRequest<ResUpdateShop>(() => axiosAuth.get(`shops/${id}`));
+
+export const shopUpdateService = async (
+    id: number,
+    axiosAuth: AxiosInstance,
+    form: object
+) => handleApiRequest<ShopProps>(() => axiosAuth.put(`shops/${id}`, form));

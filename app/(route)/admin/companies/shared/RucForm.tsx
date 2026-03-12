@@ -77,11 +77,11 @@ export const RucForm = () => {
 
     useEffect(() => {
         const handleCustom = async () => {
-            const res = await findCompanyByRuc(axiosAuth, ruc.ruc);
-            if (res !== null) {
+            const {data} = await findCompanyByRuc(axiosAuth, ruc.ruc);
+            if (data) {
                 setRuc(prev => ({
                     ...prev,
-                    company: res.company,
+                    company: data.company,
                 }));
             }
         }

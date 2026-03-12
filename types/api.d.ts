@@ -9,7 +9,7 @@ export interface LaravelErrorResponse {
 
 // Respuesta genérica de API
 export interface ApiResponse<T> {
-    message?: string
+    error?: string
     data?: T
     errors?: LaravelValidationErrors
 }

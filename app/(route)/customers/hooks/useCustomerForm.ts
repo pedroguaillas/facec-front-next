@@ -24,10 +24,11 @@ export const useCustomerForm = () => {
     useEffect(() => {
         const fetchGetCustomer = async () => {
             if (typeof params?.id === 'string') {
-                const res = await getCustomer(params.id, axiosAuth);
-                if (res !== null) {
+
+                const { data } = await getCustomer(axiosAuth, params.id);
+                if (data) {
                     setSkiFetch(true);
-                    setCustomer({ ...res, id: res.id + '' });
+                    setCustomer(data);
                 }
             }
         }
@@ -37,13 +38,13 @@ export const useCustomerForm = () => {
 
     useEffect(() => {
         const handleCustom = async () => {
-            const res = await findCustomerByIdentification(axiosAuth, customer.identication);
-            if (res !== null) {
-                if (res.branch_id !== 0) {
+            const { data } = await findCustomerByIdentification(axiosAuth, customer.identication);
+            if (data) {
+                if (data.branch_id !== 0) {
                     setErrors({ identication: 'El cliente ya esta registrado' })
                     return;
                 }
-                const { name, address, email, phone } = res
+                const { name, address, email, phone } = data
                 setCustomer(prev => ({
                     ...prev,
                     name, address, email, phone
