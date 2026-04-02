@@ -11,12 +11,10 @@ export const resolveSupplier = async (
 export const storeSupplier = async (
     axiosAuth: AxiosInstance,
     provider: object
-): Promise<ApiResponse<Supplier>> =>
-    handleApiRequest<Supplier>(() => axiosAuth.post('providers', provider));
+) => handleApiRequest<Supplier>(() => axiosAuth.post('providers', provider));
 
 export const updateSupplier = async (
     id: string,
     axiosAuth: AxiosInstance,
     provider: object
-): Promise<ApiResponse<SupplierProps>> =>
-    handleApiRequest<SupplierProps>(() => axiosAuth.put(`providers/${id}`, provider));
+) => handleApiRequest<SupplierProps>(() => axiosAuth.put(`providers/${id}`, provider));
