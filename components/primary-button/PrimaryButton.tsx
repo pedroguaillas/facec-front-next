@@ -5,7 +5,7 @@ import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
     label,
-    type = 'button', // Valor por defecto más explícito
+    type = 'button',
     onClick,
     url = '/',
     isLoading,
@@ -13,27 +13,31 @@ export const PrimaryButton = ({
 }: ActionsTitle) => {
 
     const color: Record<ActionsTitle['action'], string> = {
-        'login': 'bg-primary dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'add': 'bg-primary dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'store': 'bg-primary dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'edit': 'bg-lime-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'import': 'bg-blue-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'export': 'bg-green-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
-        'delete': 'bg-red-600 dark:bg-primary dark:hover:bg-primaryhover hover:bg-green-700',
+        'login': 'bg-primary hover:bg-primaryhover',
+        'add': 'bg-primary hover:bg-primaryhover',
+        'store': 'bg-primary hover:bg-primaryhover',
+        'edit': 'bg-lime-600 hover:bg-lime-700',
+        'import': 'bg-blue-600 hover:bg-blue-700',
+        'export': 'bg-green-600 hover:bg-green-700',
+        'delete': 'bg-danger hover:bg-dangerhover',
     }
+
+    const baseClasses = `
+        rounded-lg inline-flex justify-center items-center gap-2
+        text-white text-sm font-medium
+        transition-all duration-150 cursor-pointer
+        active:scale-[0.98]
+        disabled:opacity-50 disabled:cursor-not-allowed
+    `;
 
     if (type === 'link')
         return (
             <Link
-                className={`w-full rounded p-2 inline-flex justify-center items-center gap-2 text-white transition-colors duration-200 cursor-pointer ${color[action]}`}
+                className={`${baseClasses} w-full px-4 py-2 ${color[action]}`}
                 href={url}
             >
-                {!isLoading && action === 'add' && (
-                    <FaPlus />
-                )}
-                {!isLoading && action === 'edit' && (
-                    <FaPen />
-                )}
+                {!isLoading && action === 'add' && <FaPlus className="text-xs" />}
+                {!isLoading && action === 'edit' && <FaPen className="text-xs" />}
                 {label}
             </Link>
         )
@@ -53,17 +57,14 @@ export const PrimaryButton = ({
             type={type}
             onClick={onClick}
             disabled={isLoading}
-            className={`
-                w-full rounded px-2 py-1 inline-flex justify-center 
-                items-center gap-2 text-white transition-colors 
-                duration-200 cursor-pointer ${color[action]}`}
+            className={`${baseClasses} w-full px-4 py-2 ${color[action]}`}
         >
             {isLoading ? (
-                <FaSpinner className="animate-spin" />
+                <FaSpinner className="animate-spin text-sm" />
             ) : (
                 (() => {
                     const IconComponent = icons[action];
-                    return IconComponent ? <IconComponent /> : null;
+                    return IconComponent ? <IconComponent className="text-sm" /> : null;
                 })()
             )}
             {label}

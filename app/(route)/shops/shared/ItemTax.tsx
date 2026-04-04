@@ -9,51 +9,50 @@ interface Props {
     error?: Partial<Record<keyof Tax, string>>;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const selectBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputError = "border-red-400";
+const inputNormal = "border-[var(--border-strong)]";
+
 export const ItemTax = ({ index, tax, error }: Props) => {
 
     const { updateItem, deleteItem } = useTaxes();
 
     return (
-        <tr className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-1 [&>td]:dark:border-gray-500">
+        <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
             <td>
                 <select
                     value={tax.code}
                     onChange={(e) => updateItem(index, 'code', e.target.value)}
-                    className={`w-full border rounded p-1 dark:bg-slate-800 
-                    ${error?.code ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`} >
-                    <option className="dark:bg-slate-800" value="">Seleccione</option>
-                    <option className="dark:bg-slate-800" value={2}>IVA</option>
-                    <option className="dark:bg-slate-800" value={1}>Imp. Renta</option>
+                    className={`${selectBase} ${error?.code ? inputError : inputNormal}`}
+                >
+                    <option value="">Seleccione</option>
+                    <option value={2}>IVA</option>
+                    <option value={1}>Imp. Renta</option>
                 </select>
             </td>
-            <td className="p-1">
+            <td className="p-1.5">
                 <SelectRetention index={index} tax={tax} error={error?.tax_code} />
             </td>
-            <td className="p-1 text-right">
+            <td className="p-1.5 text-right">
                 {tax.editable_porcentage ? (
                     <input
                         type="number"
                         value={tax.porcentage ?? ''}
-                        className={`
-                            w-full border rounded p-1
-                            ${error?.porcentage ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}
-                            `}
+                        className={`${inputBase} ${error?.porcentage ? inputError : inputNormal}`}
                         onChange={(e) => updateItem(index, 'porcentage', e.target.value)}
                     />
                 ) : (`${tax.porcentage}%`)}
             </td>
-            <td className="p-1">
+            <td className="p-1.5">
                 <input
                     type="number"
                     value={tax.base}
-                    className={`
-                        w-full border rounded p-1
-                        ${error?.base ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}
-                        `}
+                    className={`${inputBase} ${error?.base ? inputError : inputNormal}`}
                     onChange={(e) => updateItem(index, 'base', e.target.value)}
                 />
             </td>
-            <td className="p-1 text-right">{tax.value.toFixed(2)}</td>
+            <td className="p-1.5 text-right">{tax.value.toFixed(2)}</td>
             <td className="w-1">
                 <button
                     onClick={() => deleteItem(index)}

@@ -6,6 +6,8 @@ import { SubmitButton } from "./SubmitButton";
 import { VoucherType } from "@/constants";
 import { ChangeEvent } from "react";
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+
 export const Totals = () => {
 
     const { shop, setShop, errorShop, setErrorShop } = useFormShop();
@@ -51,25 +53,25 @@ export const Totals = () => {
                 <TableResponsive>
                     <thead>
                         <tr className="[&>th]:p-2">
-                            <th className="border border-gray-300 w-50">Resultados</th>
-                            <th className="border border-gray-300 w-32">Monto</th>
+                            <th className="border border-[var(--border)] w-50">Resultados</th>
+                            <th className="border border-[var(--border)] w-32">Monto</th>
                         </tr>
                     </thead>
                     <tbody className="[&>tr>td]:p-2">
                         {subtotalRows.map(({ name, label, value, error }) => (
                             <tr key={label}>
-                                <td className="border border-gray-300 text-left">{label}</td>
+                                <td className="border border-[var(--border)] text-left">{label}</td>
                                 {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
-                                    <td className="text-right border border-gray-300">{value.toFixed(2)}</td>}
+                                    <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>}
                                 {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
-                                    <td className="text-right border border-gray-300">
+                                    <td className="text-right border border-[var(--border)]">
                                         <input
                                             type="number"
                                             value={value}
                                             name={name}
                                             onChange={handleChange}
                                             min={0}
-                                            className={`w-full border rounded px-1 ${error ? 'border-red-500' : 'border-gray-300'}`}
+                                            className={`${inputBase} ${error ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
                                         />
                                     </td>
                                 )}
@@ -77,43 +79,43 @@ export const Totals = () => {
                         ))}
                         {ivaRows.map(({ label, value }) => (
                             <tr key={label}>
-                                <td className="border border-gray-300 text-left">{label}</td>
-                                <td className="text-right border border-gray-300">{value.toFixed(2)}</td>
+                                <td className="border border-[var(--border)] text-left">{label}</td>
+                                <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>
                             </tr>
                         ))}
                         <tr>
-                            <td className="border border-gray-300 text-left">No objeto de IVA ($)</td>
+                            <td className="border border-[var(--border)] text-left">No objeto de IVA ($)</td>
                             {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
-                                <td className="text-right border border-gray-300">{shop.no_iva.toFixed(2)}</td>}
+                                <td className="text-right border border-[var(--border)]">{shop.no_iva.toFixed(2)}</td>}
                             {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
-                                <td className="text-right border border-gray-300">
+                                <td className="text-right border border-[var(--border)]">
                                     <input
                                         type="number"
                                         value={shop.no_iva}
                                         name="no_iva"
                                         onChange={handleChange}
                                         min={0}
-                                        className={`w-full border rounded px-1 ${errorShop.no_iva ? 'border-red-500' : 'border-gray-300'}`}
+                                        className={`${inputBase} ${errorShop.no_iva ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
                                     />
                                 </td>
                             )}
                         </tr>
                         {shop.ice > 0 && (
                             <tr>
-                                <td className="border border-gray-300 text-left">Monto ICE</td>
-                                <td className="text-right border border-gray-300">{shop.ice}</td>
+                                <td className="border border-[var(--border)] text-left">Monto ICE</td>
+                                <td className="text-right border border-[var(--border)]">{shop.ice}</td>
                             </tr>
                         )}
                         {/* TODO: Verficar to.Fixed(2) en descuento y total */}
                         <tr>
-                            <td className="border border-gray-300 text-left">Descuento</td>
-                            <td className="text-right border border-gray-300">{shop.discount}</td>
+                            <td className="border border-[var(--border)] text-left">Descuento</td>
+                            <td className="text-right border border-[var(--border)]">{shop.discount}</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th className="border border-gray-300">TOTAL</th>
-                            <th className="text-right p-2 border border-gray-300">{shop.total}</th>
+                            <th className="border border-[var(--border)]">TOTAL</th>
+                            <th className="text-right p-2 border border-[var(--border)]">{shop.total}</th>
                         </tr>
                     </tfoot>
                 </TableResponsive>

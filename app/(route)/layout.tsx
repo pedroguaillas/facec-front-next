@@ -23,20 +23,34 @@ export default function Main({ children }: MainProps) {
     }, [status, router]);
 
     if (status === "loading") {
-        return <div className="text-center mt-8">Cargando sesión...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primaryhover to-primary flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">F</span>
+                    </div>
+                    <p className="text-sm text-[var(--foreground)] opacity-50">Cargando...</p>
+                </div>
+            </div>
+        );
     }
 
     if (status === "unauthenticated") {
-        return null; // ya redirigiste arriba
+        return null;
     }
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
             <Sidebar menu={menu} setMenu={setMenu} />
-            <Header menu={menu} setMenu={setMenu} />
-            {/* h-[calc(100vh-4em)] */}
-            <div className="md:ml-[5rem] flex flex-col flex-1 min-h-[calc(h-screen - 4em)] overflow-auto dark:bg-gray-900">
-                {children}
+            <div className={`
+                flex flex-col flex-1 min-h-screen
+                transition-all ease-out duration-300
+                ${menu ? 'md:ml-64' : 'md:ml-[4.5rem]'}
+            `}>
+                <Header menu={menu} setMenu={setMenu} />
+                <main className="flex-1 flex flex-col">
+                    {children}
+                </main>
             </div>
         </div>
     );

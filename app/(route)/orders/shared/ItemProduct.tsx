@@ -13,6 +13,10 @@ interface Props {
     removeItem: (index: number) => void;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputError = "border-red-400";
+const inputNormal = "border-[var(--border-strong)]";
+
 export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
     const { isTaxBreakdown, isActiveIce } = useFormInvoice();
@@ -30,21 +34,19 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
     }
 
     return (
-        <tr className="[&>td]:border [&>td]:border-gray-300 [&>td]:dark:border-gray-600 [&>td]:p-1">
+        <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
             <td>
                 <input
                     onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                     value={productOutput.quantity ?? ''}
                     type="number"
-                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.quantity ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                    className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
                 />
             </td>
             <td>
                 <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
             </td>
             <td className={isTaxBreakdown ? 'text-right' : ''}>
-                {/* TODO: agregar la cantidad de decimales correspondientes */}
                 {
                     isTaxBreakdown ? (
                         (+productOutput.price).toFixed(2)
@@ -54,8 +56,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                                 onChange={(e) => updateItem(index, 'price', e.target.value)}
                                 value={productOutput.price ?? ''}
                                 type="number"
-                                className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.price ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                                className={`${inputBase} ${error?.price ? inputError : inputNormal}`}
                             />
                         )
                 }
@@ -65,8 +66,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     onChange={(e) => updateItem(index, 'discount', e.target.value)}
                     value={productOutput.discount ?? ''}
                     type="number"
-                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.discount ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                    className={`${inputBase} ${error?.discount ? inputError : inputNormal}`}
                 />
             </td>
             {isTaxBreakdown ? <td className="text-right">{ivaCalculation().toFixed(2)}</td> : ''}
@@ -77,8 +77,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                             onChange={(e) => updateItem(index, 'total_iva', e.target.value)}
                             value={productOutput.total_iva ?? ''}
                             type="number"
-                            className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.total_iva ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                            className={`${inputBase} ${error?.total_iva ? inputError : inputNormal}`}
                         />
                     ) :
                         (productOutput.total_iva ?? '0.00')
@@ -91,8 +90,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                             onChange={(e) => updateItem(index, 'ice', e.target.value)}
                             value={productOutput.ice}
                             type="number"
-                            className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.ice ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                            className={`${inputBase} ${error?.ice ? inputError : inputNormal}`}
                         />
                     ) : null}
                 </td>

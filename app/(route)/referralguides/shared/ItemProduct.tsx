@@ -12,6 +12,10 @@ interface Props {
 	removeItem: (index: number) => void;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputError = "border-red-400";
+const inputNormal = "border-[var(--border-strong)]";
+
 export const ItemProduct = ({
 	index,
 	productOutput,
@@ -21,16 +25,13 @@ export const ItemProduct = ({
 	removeItem,
 }: Props) => {
 	return (
-		<tr className='[&>td]:border [&>td]:border-gray-300 [&>td]:dark:border-gray-600 [&>td]:p-1'>
+		<tr className='[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5'>
 			<td>
 				<input
 					onChange={e => updateItem(index, e.target.value)}
 					value={productOutput.quantity ?? ''}
 					type='number'
-					className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.quantity ? 'border-red-500'
-							: 'border-gray-300 focus:border-blue-500'
-						}`}
+					className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
 				/>
 			</td>
 			<td>

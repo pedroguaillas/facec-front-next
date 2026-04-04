@@ -3,6 +3,9 @@
 import { TableResponsive } from "@/components";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { useFormInvoice } from "../context/FormInvoiceContext";
+
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+
 export const Totals = () => {
     const { invoice, selectCustom, setInvoice, formErrors } = useFormInvoice();
 
@@ -50,59 +53,59 @@ export const Totals = () => {
             <TableResponsive>
                 <thead>
                     <tr className="[&>th]:p-2">
-                        <th className="border border-gray-300">Resultados</th>
-                        <th className="border border-gray-300 w-32">Monto</th>
+                        <th className="border border-[var(--border)]">Resultados</th>
+                        <th className="border border-[var(--border)] w-32">Monto</th>
                     </tr>
                 </thead>
                 <tbody className="[&>tr>td]:p-2">
                     {invoice.sub_total === 0 && (
                         <tr>
-                            <td className="border border-gray-300">Subtotal</td>
-                            <td className="text-right border border-gray-300">{invoice.sub_total.toFixed(2)}</td>
+                            <td className="border border-[var(--border)]">Subtotal</td>
+                            <td className="text-right border border-[var(--border)]">{invoice.sub_total.toFixed(2)}</td>
                         </tr>
                     )}
                     {subtotalRows.map(({ label, value }) => (
                         <tr key={label}>
-                            <td className="border border-gray-300">{label}</td>
-                            <td className="text-right border border-gray-300">{value.toFixed(2)}</td>
+                            <td className="border border-[var(--border)]">{label}</td>
+                            <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>
                         </tr>
                     ))}
                     <tr>
-                        <td className="border border-gray-300">Descuento</td>
-                        <td className="text-right border border-gray-300">
+                        <td className="border border-[var(--border)]">Descuento</td>
+                        <td className="text-right border border-[var(--border)]">
                             <input
                                 type="number"
                                 value={invoice.discount}
                                 onChange={handleDiscountChange}
                                 min={0}
                                 max={invoice.sub_total}
-                                className={`w-16 border rounded px-1 ${formErrors.discount ? 'border-red-500' : 'border-gray-300'}`}
+                                className={`${inputBase} w-20 ${formErrors.discount ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
                             />
                         </td>
                     </tr>
                     {invoice.ice > 0 && (
                         <tr>
-                            <td className="border border-gray-300">Monto de ICE</td>
-                            <td className="text-right border border-gray-300">{invoice.ice.toFixed(2)}</td>
+                            <td className="border border-[var(--border)]">Monto de ICE</td>
+                            <td className="text-right border border-[var(--border)]">{invoice.ice.toFixed(2)}</td>
                         </tr>
                     )}
                     {ivaRows.map(({ label, value }) => (
                         <tr key={label}>
-                            <td className="border border-gray-300">{label}</td>
-                            <td className="text-right border border-gray-300">{value.toFixed(2)}</td>
+                            <td className="border border-[var(--border)]">{label}</td>
+                            <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>
                         </tr>
                     ))}
                     {invoice.no_iva > 0 && (
                         <tr>
-                            <td className="border border-gray-300">No objeto de IVA</td>
-                            <td className="text-right border border-gray-300">{invoice.no_iva.toFixed(2)}</td>
+                            <td className="border border-[var(--border)]">No objeto de IVA</td>
+                            <td className="text-right border border-[var(--border)]">{invoice.no_iva.toFixed(2)}</td>
                         </tr>
                     )}
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th className="border border-gray-300">TOTAL</th>
-                        <th className="text-right p-2 border border-gray-300">{invoice.total.toFixed(2)}</th>
+                        <th className="border border-[var(--border)]">TOTAL</th>
+                        <th className="text-right p-2 border border-[var(--border)]">{invoice.total.toFixed(2)}</th>
                     </tr>
                 </tfoot>
             </TableResponsive>

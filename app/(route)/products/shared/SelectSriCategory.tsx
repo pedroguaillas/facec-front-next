@@ -29,27 +29,26 @@ export const SelectSriCategory = ({ initialLabel = '', error }: Props) => {
     }
 
     return (
-        <div className='flex flex-col w-full'>
+        <div className='flex flex-col w-full gap-1.5 my-2'>
             <LabelComponent label='Categoría / Código auxiliar' name='sri_category_id' required={product.iva === 5} />
-            <div className='flex w-full'>
-                <input
-                    type='text'
-                    value={search}
-                    readOnly={true}
-                    placeholder='...'
-                    className={`w-full border border-primary hover:border-primaryhover rounded-l px-2
-                                  ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'}`}
-                />
-                <button
-                    onClick={toggle}
-                    /* disabled={sriCategory.code === ''} */
-                    className='rounded-r p-2 bg-primary text-white cursor-pointer'
-                >
-                    <FaSearch />
-                </button>
-                <SelectModalSriCategory show={modal} selectSriCategory={selectSriCategory} onClose={toggle} />
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            <button
+                type="button"
+                onClick={toggle}
+                className={`
+                    w-full flex items-center justify-between
+                    border rounded-lg px-3 py-2 text-sm text-left
+                    transition-colors duration-150 cursor-pointer
+                    bg-[var(--background)] dark:text-gray-300
+                    ${error ? 'border-red-400' : 'border-[var(--border-strong)] hover:border-primary'}
+                `}
+            >
+                <span className={search ? 'text-[var(--foreground)]' : 'opacity-40'}>
+                    {search || 'Seleccionar categoría...'}
+                </span>
+                <FaSearch className="text-xs opacity-40 shrink-0 ml-2" />
+            </button>
+            <SelectModalSriCategory show={modal} selectSriCategory={selectSriCategory} onClose={toggle} />
+            {error && <p className="text-xs text-red-500">{error}</p>}
         </div>
     )
 }

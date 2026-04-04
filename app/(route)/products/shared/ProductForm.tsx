@@ -49,18 +49,20 @@ export const ProductForm = () => {
                         <input type='checkbox' checked={breakdown} onChange={onChangeCheckbox} /> ¿Necesitas desglosar el IVA?
                     </div>
                     <div className='lg:w-2/3'>
-                        <LabelComponent name='price' label='Precio' required />
-                        <div className='flex flex-row'>
-                            <input type='text' value={total} onChange={handleTotal} placeholder='Total' maxLength={15}
-                                className={`p-1 border border-l-slate-400 border-r-white border-y-slate-400 rounded-l 
-                                ${breakdown ? 'block' : 'hidden'}`} />
-                            <input type='number' value={product.price1} onChange={handleChange} name='price1'
-                                className={`p-1 border 
-                                ${breakdown ? 'rounded-r' : 'rounded'}
-                                ${errorProduct.price1 ? 'border-red-400' : 'border-slate-400'}
-                                `} />
+                        <div className='flex flex-col gap-1.5 my-2'>
+                            <LabelComponent name='price' label='Precio' required />
+                            <div className='flex flex-row'>
+                                <input type='text' value={total} onChange={handleTotal} placeholder='Total' maxLength={15}
+                                    className={`border rounded-l-lg px-3 py-2 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors border-[var(--border-strong)]
+                                    ${breakdown ? 'block' : 'hidden'}`} />
+                                <input type='number' value={product.price1} onChange={handleChange} name='price1'
+                                    className={`border px-3 py-2 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors
+                                    ${breakdown ? 'rounded-r-lg' : 'rounded-lg'}
+                                    ${errorProduct.price1 ? 'border-red-400' : 'border-[var(--border-strong)]'}
+                                    `} />
+                            </div>
+                            {errorProduct.price1 && <p className="text-xs text-red-500">{errorProduct.price1}</p>}
                         </div>
-                        {errorProduct.price1 && <p className="text-sm text-red-500">{errorProduct.price1}</p>}
                     </div>
                 </div>
             </div>

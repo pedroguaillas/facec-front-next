@@ -9,15 +9,20 @@ interface Props {
 
 export const Title = ({ title, subTitle, actions }: Props) => {
     return (
-        <div className="p-4 md:p-8 flex justify-between items-center bg-gray-100 dark:bg-gray-700/70">
+        <div
+            className="px-6 py-5 md:px-8 flex justify-between items-center border-b"
+            style={{
+                background: 'var(--surface)',
+                borderColor: 'var(--border)',
+            }}
+        >
             <div>
-                <h2 className="text-xl font-semibold">{title}</h2>
-                <h3>{subTitle}</h3>
+                <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+                <h3 className="text-sm opacity-60 mt-0.5">{subTitle}</h3>
             </div>
             <div className="flex gap-2">
                 {actions ? (
                     Array.isArray(actions) ? (
-                        // Render multiple buttons if actions is an array
                         actions.map((action, index) => (
                             <PrimaryButton
                                 key={index}
@@ -25,7 +30,6 @@ export const Title = ({ title, subTitle, actions }: Props) => {
                             />
                         ))
                     ) : (
-                        // Render a single button if actions is an object
                         <PrimaryButton
                             {...actions}
                         />

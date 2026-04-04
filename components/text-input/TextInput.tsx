@@ -1,24 +1,23 @@
 import { LabelComponent } from '../label/LabelComponent';
 
-// Definición de la interfaz Props con tipado correcto
 interface Props {
-    type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'month'; // Restringe los tipos válidos
+    type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'month';
     value: string;
     required?: boolean;
     label: string;
     name: string;
-    maxLength?: number; // Opcional para limitar la longitud del input
-    placeholder?: string; // Opcional para más flexibilidad
-    disabled?: boolean;   // Opcional para deshabilitar el input
-    className?: string;   // Opcional para clases personalizadas
-    error?: string; // 👉 Nuevo campo para mostrar errores
+    maxLength?: number;
+    placeholder?: string;
+    disabled?: boolean;
+    className?: string;
+    error?: string;
     min?: string;
     max?: string;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void; // Tipado correcto para onChange
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const TextInput = ({
-    type = 'text', // Valor por defecto más explícito
+    type = 'text',
     value,
     required,
     label,
@@ -27,35 +26,42 @@ export const TextInput = ({
     placeholder,
     disabled,
     className,
-    error, // 👉 Nuevo campo para mostrar errores
+    error,
     onChange,
     min,
     max,
 }: Props) => {
     return (
-        <div className="flex flex-col gap-1 my-2">
+        <div className="flex flex-col gap-1.5 my-2">
             <LabelComponent name={name} label={label} required={required} />
             <input
-                // id={name} // Vincula el label con el input
                 type={type}
-                name={name} // Útil para formularios
-                // className={`border border-slate-400 rounded px-2 py-1 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className || ''}`}
-                className={`border rounded px-2 py-1 focus:outline-none focus:ring-2 
-                    ${error ? 'border-red-500 focus:ring-red-400' : 'border-slate-400 focus:ring-blue-500'} 
-                    dark:text-gray-300 ${className || ''}`}
+                name={name}
+                className={`
+                    border rounded-lg px-3 py-2 text-sm
+                    transition-colors duration-150
+                    focus:outline-none
+                    ${error
+                        ? 'border-red-400 focus:border-red-500 bg-red-50/50 dark:bg-red-950/20'
+                        : 'border-[var(--border-strong)] focus:border-primary bg-[var(--background)]'
+                    }
+                    dark:text-gray-300
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    ${className || ''}
+                `}
                 value={value}
-                maxLength={maxLength} // Limita la longitud del input
+                maxLength={maxLength}
                 required={required}
                 onChange={onChange}
                 placeholder={placeholder}
                 disabled={disabled}
                 min={min}
                 max={max}
-                aria-required={required ? 'true' : 'false'} // Mejora de accesibilidad
-                aria-disabled={disabled ? 'true' : 'false'} // Mejora de accesibilidad
+                aria-required={required ? 'true' : 'false'}
+                aria-disabled={disabled ? 'true' : 'false'}
                 autoComplete='off'
             />
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
         </div>
     );
 };

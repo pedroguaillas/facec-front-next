@@ -12,17 +12,20 @@ interface Props {
   deleteItemRepayment: (index: number) => void;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputError = "border-red-400";
+const inputNormal = "border-[var(--border-strong)]";
+
 export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, deleteItemRepayment }: Props) => {
   const { addItemRepaymentTax, updateItemRepaymentTax, deleteItemRepaymentTax } = useItemRepaymentTaxes();
 
   return (
-    <tr className="[&>td]:p-1 [&>td]:border [&>td]:border-gray-300 [&>td]:py-2 [&>td]:dark:border-gray-500">
+    <tr className="[&>td]:p-1.5 [&>td]:border [&>td]:border-[var(--border)] [&>td]:py-2">
       <td>
         <input
           onChange={(e) => updateItemRepayment(index, 'identification', e.target.value)}
           value={repayment.identification}
-          className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.identification ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+          className={`${inputBase} ${error?.identification ? inputError : inputNormal}`}
           maxLength={13}
         />
       </td>
@@ -30,8 +33,7 @@ export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, de
         <input
           onChange={(e) => updateItemRepayment(index, 'sequential', e.target.value)}
           value={repayment.sequential}
-          className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-            ${error?.sequential ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+          className={`${inputBase} ${error?.sequential ? inputError : inputNormal}`}
           maxLength={17}
           placeholder="001-002-000000009"
         />
@@ -41,8 +43,7 @@ export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, de
           type="date"
           onChange={(e) => updateItemRepayment(index, 'date', e.target.value)}
           value={repayment.date}
-          className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-            ${error?.date ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+          className={`${inputBase} ${error?.date ? inputError : inputNormal}`}
           max={getDate()}
         />
       </td>
@@ -50,24 +51,22 @@ export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, de
         <input
           onChange={(e) => updateItemRepayment(index, 'authorization', e.target.value)}
           value={repayment.authorization}
-          className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-            ${error?.authorization ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+          className={`${inputBase} ${error?.authorization ? inputError : inputNormal}`}
           maxLength={49}
         />
-        {error?.authorization && <p className="text-red-500">{error.authorization}</p>}
+        {error?.authorization && <p className="text-xs text-red-500 mt-1">{error.authorization}</p>}
       </td>
       <td className="text-right">
         <div className="py-1 px-2">
           <div className="flex justify-between items-center mb-3">
-            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <h4 className="text-sm font-semibold dark:text-gray-300">
               Detalle de Impuestos
             </h4>
             <button
               onClick={() => addItemRepaymentTax(index)}
-              className="flex items-center gap-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-2 px-3 py-1 bg-primary text-white text-sm rounded-md hover:bg-primaryhover transition-colors cursor-pointer"
             >
-              +
-              Agregar
+              + Agregar
             </button>
           </div>
           <ItemRepaymentTaxes
@@ -85,6 +84,6 @@ export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, de
           <FaTrash />
         </button>
       </td>
-    </tr >
+    </tr>
   )
 }

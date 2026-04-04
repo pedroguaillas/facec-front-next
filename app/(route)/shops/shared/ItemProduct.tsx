@@ -10,15 +10,17 @@ interface ItemProductProps {
     deleteItem: (index: number) => void;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors border-[var(--border-strong)]";
+
 export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, deleteItem }: ItemProductProps) => {
     return (
-        <tr className="[&>td]:border [&>td]:border-gray-300 [&>td]:dark:border-gray-600 [&>td]:p-1">
+        <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
             <td>
                 <input
                     onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                     value={productOutput.quantity ?? ''}
                     type="number"
-                    className="w-full border px-1 rounded text-gray-600 dark:text-gray-300"
+                    className={inputBase}
                 />
             </td>
             <td>
@@ -29,7 +31,7 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, d
                     onChange={(e) => updateItem(index, 'price', e.target.value)}
                     value={productOutput.price ?? ''}
                     type="number"
-                    className="w-full border px-1 rounded text-gray-600 dark:text-gray-300"
+                    className={inputBase}
                 />
             </td>
             <td className="text-right">
@@ -43,4 +45,3 @@ export const ItemProduct = ({ index, productOutput, updateItem, selectProduct, d
         </tr>
     );
 };
-

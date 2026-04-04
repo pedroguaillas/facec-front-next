@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #e5e7eb;
+  --background: #f1f5f9;
   --foreground: #1d293d;
+  --surface: #ffffff;
+  --surface-hover: #f8fafc;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --sidebar-bg: #1e293b;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active: rgba(255, 255, 255, 0.12);
+  --sidebar-text: rgba(255, 255, 255, 0.65);
+  --sidebar-text-active: #ffffff;
+  --header-bg: #ffffff;
+  --header-border: rgba(0, 0, 0, 0.06);
 }
 
 @theme inline {
@@ -13,14 +24,11 @@
 }
 
 @theme {
-  /* Verde oscuro personalizado */
   --color-primary: #005c67;
   --color-primaryhover: #0096a3;
   --color-primarywhite: #a0d1d4;
-  /* Amarillo personalizado */
   --color-secondary: #ffffff;
   --color-secondaryhover: #eee;
-  /* Naranja personalizado */
   --color-success: #0e9f6e;
   --color-successhover: #117729;
   --color-danger: #dd1f12;
@@ -29,13 +37,52 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1d293d;
-    --foreground: #e5e7eb;
+    --background: #0f172a;
+    --foreground: #e2e8f0;
+    --surface: #1e293b;
+    --surface-hover: #334155;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: rgba(255, 255, 255, 0.06);
+    --sidebar-active: rgba(255, 255, 255, 0.1);
+    --sidebar-text: rgba(255, 255, 255, 0.55);
+    --sidebar-text-active: #ffffff;
+    --header-bg: #1e293b;
+    --header-border: rgba(255, 255, 255, 0.06);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, 'Inter', system-ui, -apple-system, sans-serif);
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
 }

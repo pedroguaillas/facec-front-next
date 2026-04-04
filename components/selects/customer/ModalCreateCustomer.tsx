@@ -19,9 +19,12 @@ export const ModalCreateCustomer = ({ handleSelect }: Props) => {
     return (
         <>
             <button
+                type="button"
                 onClick={toogle}
-                className='rounded-r p-2 bg-primary text-white cursor-pointer'>
-                <FaPlusCircle />
+                className='shrink-0 p-2.5 rounded-lg bg-primary hover:bg-primaryhover text-white cursor-pointer transition-colors'
+                title="Crear nuevo cliente"
+            >
+                <FaPlusCircle className="text-sm" />
             </button>
 
             <Modal

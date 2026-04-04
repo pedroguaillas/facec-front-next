@@ -9,30 +9,32 @@ interface Props {
     removeItem: (index: number) => void;
 }
 
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputError = "border-red-400";
+const inputNormal = "border-[var(--border-strong)]";
+
 export const ItemAditionalInformation = ({ index, aditionalInformation, error, updateItem, removeItem }: Props) => {
     return (
         <tr className="[&>th]:p-2">
-            <td className="border border-gray-300">
+            <td className="border border-[var(--border)] p-1.5">
                 <input
                     onChange={(e) => updateItem(index, 'name', e.target.value)}
                     value={aditionalInformation.name ?? ''}
                     type="text"
-                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.name ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                    className={`${inputBase} ${error?.name ? inputError : inputNormal}`}
                     maxLength={255}
                 />
             </td>
-            <td className="border border-gray-300">
+            <td className="border border-[var(--border)] p-1.5">
                 <input
                     onChange={(e) => updateItem(index, 'description', e.target.value)}
                     value={aditionalInformation.description ?? ''}
                     type="text"
-                    className={`w-full border px-1 rounded text-gray-600 dark:text-gray-300
-                        ${error?.description ? 'border-red-500' : 'border-gray-300 focus:border-blue-500'}`}
+                    className={`${inputBase} ${error?.description ? inputError : inputNormal}`}
                     maxLength={300}
                 />
             </td>
-            <td className='border border-gray-300 w-1'>
+            <td className='border border-[var(--border)] w-1 p-1.5'>
                 <button
                     onClick={() => removeItem(index)}
                     className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600"
