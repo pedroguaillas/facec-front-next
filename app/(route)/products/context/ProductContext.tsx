@@ -12,9 +12,11 @@ interface ProductsContextType {
     page: number;
     meta: Meta | null;
     links: Links | null;
+    productDeleteId: number | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
     fetchProducts: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
+    setProductDeleteId: (value: number | null) => void;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export const ProductsProvider = ({ children }: Props) => {
     const [page, setPage] = useState(1);
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
+    const [productDeleteId, setProductDeleteId] = useState<number | null>(null);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -51,15 +54,24 @@ export const ProductsProvider = ({ children }: Props) => {
     ); // Dependencias correctas
 
     useEffect(() => {
-        console.log("useEffect, start");
         fetchProducts();
     }, [fetchProducts]);
 
     return (
         <ProductsContext.Provider
             value={{
-                products, search, page, meta, links,
-                fetchProducts, setSearch, setPage,
+                // Resources
+                products,
+                search,
+                page,
+                meta,
+                links,
+                productDeleteId,
+                // actions
+                fetchProducts,
+                setSearch,
+                setPage,
+                setProductDeleteId,
             }}
         >
             {children}

@@ -1,5 +1,5 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { importProductsServices } from "../services/productServices";
+import { importProducts } from "../services/productServices";
 import { ProductCsv } from "@/types";
 
 export const useImportExcel = () => {
@@ -18,7 +18,7 @@ export const useImportExcel = () => {
             }
         };
 
-        reader.readAsText(input.files[0], 'ISO-8859-1');
+        reader.readAsText(input.files[0], "ISO-8859-1");
     };
 
     const uploadCsv = (csv: string) => {
@@ -29,15 +29,15 @@ export const useImportExcel = () => {
             const line = lines[i];
             if (line.trim().length === 0) continue;
 
-            const words = line.split(';');
+            const words = line.split(";");
 
             const object: ProductCsv = {
-                code: words[0]?.trim() || '',
-                type_product: words[1]?.trim() || '',
-                name: words[2]?.trim() || '',
-                price1: words[3] || '',
-                iva: words[4] || '',
-                stock: words[5] && words[5].trim() !== '' ? words[5].trim() : null,
+                code: words[0]?.trim() || "",
+                type_product: words[1]?.trim() || "",
+                name: words[2]?.trim() || "",
+                price1: words[3] || "",
+                iva: words[4] || "",
+                stock: words[5] && words[5].trim() !== "" ? words[5].trim() : null,
             };
 
             products.push(object);
@@ -47,8 +47,7 @@ export const useImportExcel = () => {
     };
 
     const saveProductsFromCsv = async (products: ProductCsv[]) => {
-
-        const res = await importProductsServices(axiosAuth, products);
+        const res = await importProducts(axiosAuth, products);
         console.log(res);
         window.location.reload();
     };

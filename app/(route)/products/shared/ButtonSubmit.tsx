@@ -1,16 +1,15 @@
 "use client";
 
-import { useProductCreateContext } from '../context/ProductFormContext';
-import { productSchema } from '@/schemas/product.schema';
-import { useRouter, useParams } from 'next/navigation';
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { PrimaryButton } from '@/components';
-import { useState } from 'react';
-import { productStoreService, productUpdateService } from '../services/productServices';
-import { parseZodErrors } from '@/helpers/zodHelper';
+import { useProductCreateContext } from "../context/ProductFormContext";
+import { productSchema } from "@/schemas/product.schema";
+import { useRouter, useParams } from "next/navigation";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { PrimaryButton } from "@/components";
+import { useState } from "react";
+import { storeProduct, updateProduct } from "../services/productServices";
+import { parseZodErrors } from "@/helpers/zodHelper";
 
 export const ButtonSubmit = () => {
-
     const { product, setErrorProduct } = useProductCreateContext();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
@@ -31,25 +30,31 @@ export const ButtonSubmit = () => {
         // 3. Enviar el formulario
         setIsPending(true);
 
-        const { error, data, errors } = (params?.id)
-            ? await productUpdateService(Number(params.id), axiosAuth, form)
-            : await productStoreService(axiosAuth, form);
+        const { error, data, errors } = params?.id
+            ? await updateProduct(Number(params.id), axiosAuth, form)
+            : await storeProduct(axiosAuth, form);
 
         if (data) {
-            router.push('/products');
+            router.push("/products");
         } else if (errors) {
             setErrorProduct(errors);
         } else {
             console.log(error);
         }
         setIsPending(false);
-    }
+    };
 
     return (
-        <div className='flex justify-end'>
-            <div className='w-28'>
-                <PrimaryButton label='Guardar' type='button' action='store' isLoading={isPending} onClick={handleSubmit} />
+        <div className="flex justify-end">
+            <div className="w-28">
+                <PrimaryButton
+                    label="Guardar"
+                    type="button"
+                    action="store"
+                    isLoading={isPending}
+                    onClick={handleSubmit}
+                />
             </div>
         </div>
-    )
-}
+    );
+};

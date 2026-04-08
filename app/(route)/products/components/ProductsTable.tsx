@@ -1,22 +1,21 @@
 "use client";
 
-import { useProducts } from '../context/ProductContext';
-import { Dialog, PrimaryButton, TableResponsive } from '@/components'
-import { useState } from 'react';
-import { axiosAuth } from '@/lib/axios';
-import { deleteProduct } from '../services/productServices';
+import { useProducts } from "../context/ProductContext";
+import { Dialog, PrimaryButton, TableResponsive } from "@/components";
+import { axiosAuth } from "@/lib/axios";
+import { deleteProduct } from "../services/productServices";
 
 export const ProductsTable = () => {
-
-    const { products } = useProducts();
-    const [productDeleteId, setProductDeleteId] = useState<number | null>(null);
+    const { products, productDeleteId, fetchProducts, setProductDeleteId } = useProducts();
 
     const confirmation = (accept: boolean) => {
         if (accept) {
-            deleteProduct(productDeleteId ?? 0, axiosAuth);
+            deleteProduct(productDeleteId ?? 0, axiosAuth).then(() => {
+                setProductDeleteId(null);
+                fetchProducts();
+            });
         }
-        setProductDeleteId(null);
-    }
+    };
 
     return (
         <>
@@ -24,7 +23,7 @@ export const ProductsTable = () => {
                 <thead>
                     <tr>
                         <th>CODIGO</th>
-                        <th className='text-left'>PRODUCTO/SERVICIO</th>
+                        <th className="text-left">PRODUCTO/SERVICIO</th>
                         <th className="text-right">PRECIO</th>
                         <th className="text-right">IVA</th>
                         <th></th>
@@ -32,17 +31,25 @@ export const ProductsTable = () => {
                 </thead>
                 <tbody>
                     {products.map((product, index) => (
-                        <tr key={product.id}
-                            className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
-                        >
+                        <tr key={product.id} className={index % 2 === 0 ? "bg-gray-200 dark:bg-gray-900 rounded" : ""}>
                             <td>{product.atts.code}</td>
-                            <td className='text-left'>{product.atts.name}</td>
+                            <td className="text-left">{product.atts.name}</td>
                             <td className="text-right">${product.atts.price1.toFixed(2)}</td>
                             <td className="text-right">{product.atts.iva}%</td>
-                            <td className='w-1'>
-                                <div className='flex gap-2'>
-                                    <PrimaryButton type='link' label='' action='edit' url={`products/${product.id.toString()}`} />
-                                    <PrimaryButton type='button' label='' action='delete' onClick={() => setProductDeleteId(product.id)} />
+                            <td className="w-1">
+                                <div className="flex gap-2">
+                                    <PrimaryButton
+                                        type="link"
+                                        label=""
+                                        action="edit"
+                                        url={`products/${product.id.toString()}`}
+                                    />
+                                    <PrimaryButton
+                                        type="button"
+                                        label=""
+                                        action="delete"
+                                        onClick={() => setProductDeleteId(product.id)}
+                                    />
                                 </div>
                             </td>
                         </tr>
@@ -52,10 +59,9 @@ export const ProductsTable = () => {
             <Dialog
                 itemId={productDeleteId}
                 confirmation={confirmation}
-                title='¿Estás seguro de querer eliminar este producto?'
-                sutTitle='Esta acción no se puede deshacer y eliminará el producto de forma
-                    permanente.'
+                title="¿Estás seguro de querer eliminar este producto?"
+                sutTitle="Esta acción no se puede deshacer y eliminará el producto de forma permanente."
             />
         </>
-    )
-}
+    );
+};

@@ -61,7 +61,8 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 setTransport(data.transport);
                 if ("product" in data) {
                     const editData = data as ProductEditResponse;
-                    setProduct(editData.product);
+                    // requiere convertir el ID en string
+                    setProduct({ ...editData.product, id: `${editData.product.id}` });
                 }
             } else if (error === CodeErrors.NETWORK_ERROR) {
                 redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
