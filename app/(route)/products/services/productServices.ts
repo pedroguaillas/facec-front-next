@@ -16,13 +16,13 @@ export const getCreateProduct = async (axiosAuth: AxiosInstance) =>
     handleApiRequest<ProductCreateResponse>(() => axiosAuth.get("products/create"));
 
 export const productStoreService = async (axiosAuth: AxiosInstance, form: object) =>
-    handleApiRequest<Product>(() => axiosAuth.post("product", form));
+    handleApiRequest<Product>(() => axiosAuth.post("products", form));
 
 export const getEditProduct = async (id: string, axiosAuth: AxiosInstance) =>
-    handleApiRequest<ProductEditResponse>(() => axiosAuth.get("product/" + id));
+    handleApiRequest<ProductEditResponse>(() => axiosAuth.get("products/" + id));
 
 export const productUpdateService = async (id: number, axiosAuth: AxiosInstance, form: object) =>
-    handleApiRequest<Product>(() => axiosAuth.put(`product/${id}`, form));
+    handleApiRequest<Product>(() => axiosAuth.put(`products/${id}`, form));
 
 export const importProductsServices = async (axiosAuth: AxiosInstance, products: ProductCsv[]) => {
     try {

@@ -5,9 +5,9 @@ import { getCreateProduct, getEditProduct } from "../services/productServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { Product, SriCategory } from "@/types";
+import { Product, SriCategory, ProductEditResponse } from "@/types";
 import { CodeErrors } from "@/constants/codeErrors";
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 interface ProductCreateContextType {
     product: Product;
@@ -33,12 +33,11 @@ const initialProduct: Product = {
     type_product: 1,
     name: "",
     iva: 4,
-    price1: '',
+    price1: "",
     stock: 1,
 };
 
 export const ProductFormProvider = ({ id, children }: Props) => {
-
     const [product, setProduct] = useState<Product>(initialProduct);
     const [errorProduct, setErrorProduct] = useState<Partial<Record<keyof Product, string>>>({});
     const [ivaTaxes, setIvaTaxes] = useState<[]>([]);
@@ -52,15 +51,18 @@ export const ProductFormProvider = ({ id, children }: Props) => {
         const fetchFormProduct = async () => {
             if (status !== "authenticated") return;
 
-            const { data, error } = (id !== undefined)
-                ? await getEditProduct(id, axiosAuth)
-                : await getCreateProduct(axiosAuth);
+            const { data, error } =
+                id !== undefined ? await getEditProduct(id, axiosAuth) : await getCreateProduct(axiosAuth);
 
             if (data) {
                 setIvaTaxes(data.ivaTaxes);
                 setIceCataloges(data.iceCataloges);
                 setSriCategories(data.sriCategories);
                 setTransport(data.transport);
+                if ("product" in data) {
+                    const editData = data as ProductEditResponse;
+                    setProduct(editData.product);
+                }
             } else if (error === CodeErrors.NETWORK_ERROR) {
                 redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
             }
@@ -70,14 +72,22 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     }, [status, axiosAuth, id]);
 
     return (
-        <ProductCreateContext.Provider value={{
-            product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport,
-            setProduct, setErrorProduct
-        }}>
+        <ProductCreateContext.Provider
+            value={{
+                product,
+                errorProduct,
+                ivaTaxes,
+                iceCataloges,
+                sriCategories,
+                transport,
+                setProduct,
+                setErrorProduct,
+            }}
+        >
             {children}
         </ProductCreateContext.Provider>
     );
-}
+};
 
 export const useProductCreateContext = () => {
     const context = useContext(ProductCreateContext);
@@ -85,4 +95,4 @@ export const useProductCreateContext = () => {
         throw new Error("useProductCreateContext must be used within a ProductFormProvider");
     }
     return context;
-}
+};
