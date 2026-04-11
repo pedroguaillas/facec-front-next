@@ -4,7 +4,7 @@ export const useFile = () => {
 
     const { setShop } = useFormShop();
 
-    const selectDocXml = (xmlDoc: Document, authorization: string) => {
+    const selectDocXml = (xmlDoc: Document, authorization: string, provider_id?: number) => {
 
         const tv = parseInt(getTag(xmlDoc, 'codDoc'));
         const dateRaw = getTag(xmlDoc, 'fechaEmision');
@@ -81,6 +81,7 @@ export const useFile = () => {
             discount,
             ice,
             total,
+            ...(provider_id !== undefined && { provider_id }),
         }));
     }
 

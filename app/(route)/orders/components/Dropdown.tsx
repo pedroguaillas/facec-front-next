@@ -52,10 +52,10 @@ const renderProcess: Record<
     (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
 > = {
     CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("send", id, axiosAuth, fetchInvoices),
-    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
+    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
         handleApiCall(
@@ -77,23 +77,22 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
-        const options = [
-            { label: "Ver Pdf", onClick: showOrderPdf },
-            {
-                label: "Descargar Xml",
-                onClick: () =>
-                    downloadXml(
-                        `orders/${order.id}/xml`,
-                        axiosAuth,
-                        `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
-                    ),
-            },
-            { label: "Enviar correo", onClick: sendMail },
-        ];
+        const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
 
         if (session?.user.permissions.printf) {
             options.push({ label: "Imprimir", onClick: printfPdf });
         }
+        options.push({ label: "Enviar correo", onClick: sendMail });
+
+        options.push({
+            label: "Descargar Xml",
+            onClick: () =>
+                downloadXml(
+                    `orders/${order.id}/xml`,
+                    axiosAuth,
+                    `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
+                ),
+        });
 
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {

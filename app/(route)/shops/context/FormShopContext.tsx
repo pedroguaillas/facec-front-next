@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useReducer } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef } from "react";
 import { EmisionPoint, ProductOutput, ShopCreateProps, SupplierProps, Tax, TaxInput } from "@/types";
 import { getCreateShop, getShop } from "../services/shopsServices";
 import { initialTax } from "@/constants/initialValues";
@@ -172,26 +172,44 @@ export const FormShopProvider = ({ children }: Props) => {
         fetchCreateShop();
     }, [status, axiosAuth, params?.id]);
 
-    // Setter wrappers — support both plain values and functional updates
-    const makeSetter = <T,>(
-        type: FormShopAction['type'],
-        getValue: (state: FormShopState) => T,
-    ): Dispatch<SetStateAction<T>> =>
-        (value) => {
-            const payload = typeof value === 'function'
-                ? (value as (prev: T) => T)(getValue(state))
-                : value;
-            dispatch({ type, payload } as FormShopAction);
-        };
+    // Ref siempre actualizado con el estado más reciente (evita closures obsoletos)
+    const stateRef = useRef(state);
+    stateRef.current = state;
 
-    const setShop            = makeSetter<ShopCreateProps>('SET_SHOP', s => s.shop);
-    const setSelectProvider  = makeSetter<SupplierProps | null>('SET_SELECT_PROVIDER', s => s.selectProvider);
-    const setSelectPoint     = makeSetter<EmisionPoint | null>('SET_SELECT_POINT', s => s.selectPoint);
-    const setErrorShop       = makeSetter<Partial<Record<keyof ShopCreateProps, string>>>('SET_ERROR_SHOP', s => s.errorShop);
-    const setTaxes           = makeSetter<Tax[]>('SET_TAXES', s => s.taxes);
-    const setErrorTaxes      = makeSetter<Record<string, Partial<Record<keyof Tax, string>>>>('SET_ERROR_TAXES', s => s.errorTaxes);
-    const setProductOutputs  = makeSetter<ProductOutput[]>('SET_PRODUCT_OUTPUTS', s => s.productOutputs);
-    const setApplieWithholding = makeSetter<boolean>('SET_APPLIE_WITHHOLDING', s => s.applieWithholding);
+    // Setters estables: dispatch es estable (garantía de useReducer), stateRef es un ref.
+    // useCallback con [dispatch] equivale a [] → la función nunca cambia de referencia,
+    // eliminando los bucles infinitos en useEffect/useCallback que dependen de estos setters.
+    const setShop = useCallback((value: SetStateAction<ShopCreateProps>) => {
+        dispatch({ type: 'SET_SHOP', payload: typeof value === 'function' ? value(stateRef.current.shop) : value });
+    }, [dispatch]);
+
+    const setSelectProvider = useCallback((value: SetStateAction<SupplierProps | null>) => {
+        dispatch({ type: 'SET_SELECT_PROVIDER', payload: typeof value === 'function' ? value(stateRef.current.selectProvider) : value });
+    }, [dispatch]);
+
+    const setSelectPoint = useCallback((value: SetStateAction<EmisionPoint | null>) => {
+        dispatch({ type: 'SET_SELECT_POINT', payload: typeof value === 'function' ? value(stateRef.current.selectPoint) : value });
+    }, [dispatch]);
+
+    const setErrorShop = useCallback((value: SetStateAction<Partial<Record<keyof ShopCreateProps, string>>>) => {
+        dispatch({ type: 'SET_ERROR_SHOP', payload: typeof value === 'function' ? value(stateRef.current.errorShop) : value });
+    }, [dispatch]);
+
+    const setTaxes = useCallback((value: SetStateAction<Tax[]>) => {
+        dispatch({ type: 'SET_TAXES', payload: typeof value === 'function' ? value(stateRef.current.taxes) : value });
+    }, [dispatch]);
+
+    const setErrorTaxes = useCallback((value: SetStateAction<Record<string, Partial<Record<keyof Tax, string>>>>) => {
+        dispatch({ type: 'SET_ERROR_TAXES', payload: typeof value === 'function' ? value(stateRef.current.errorTaxes) : value });
+    }, [dispatch]);
+
+    const setProductOutputs = useCallback((value: SetStateAction<ProductOutput[]>) => {
+        dispatch({ type: 'SET_PRODUCT_OUTPUTS', payload: typeof value === 'function' ? value(stateRef.current.productOutputs) : value });
+    }, [dispatch]);
+
+    const setApplieWithholding = useCallback((value: SetStateAction<boolean>) => {
+        dispatch({ type: 'SET_APPLIE_WITHHOLDING', payload: typeof value === 'function' ? value(stateRef.current.applieWithholding) : value });
+    }, [dispatch]);
 
     return (
         <FormShopContext.Provider value={{

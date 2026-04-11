@@ -1,16 +1,21 @@
-import { storeSupplier } from '@/services/supplierServices';
-import { useFormShop } from '../context/FormShopContext';
-import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { PrimaryButton } from '@/components';
-import { useFile } from '../hooks/useFile';
-import { ChangeEvent } from 'react';
-import { Supplier } from '@/types';
+"use client";
+
+import { resolveSupplier, storeSupplier } from "@/services/supplierServices";
+import { useFormShop } from "../context/FormShopContext";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { PrimaryButton } from "@/components";
+import { useFile } from "../hooks/useFile";
+import { ChangeEvent, useState } from "react";
+import { Supplier } from "@/types";
+import { ModalConfirmSupplier } from "./ModalConfirmSupplier";
 
 export const ImportXml = () => {
-
     const { selectDocXml } = useFile();
     const axiosAuth = useAxiosAuth();
     const { setSelectProvider, setShop } = useFormShop();
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [pendingSupplier, setPendingSupplier] = useState<Supplier | null>(null);
 
     const handleSelectFile = (e: ChangeEvent<HTMLInputElement>) => {
         const input = e.target;
@@ -43,8 +48,7 @@ export const ImportXml = () => {
         }
 
         const authorization = getTag(xmlDoc, "claveAcceso");
-
-        selectDocXml(xmlDoc, authorization);
+        const ruc = getTag(xmlDoc, "ruc");
 
         // const tv = parseInt(getTag(xmlDoc, "codDoc"));
         // if (tv !== voucher_type) {
@@ -52,22 +56,43 @@ export const ImportXml = () => {
         //   return;
         // }
 
-        const ruc = getTag(xmlDoc, "ruc");
+        const { data: existing } = await resolveSupplier(axiosAuth, ruc);
 
-        const provider: Supplier = {
+        // branch_id !== 0 significa que ya existe en la BD local → usar directamente
+        if (existing && existing.branch_id) {
+            selectDocXml(xmlDoc, authorization, Number(existing.id));
+            setSelectProvider({
+                id: Number(existing.id),
+                atts: { identication: existing.identication, name: existing.name, address: existing.address },
+            });
+            return;
+        }
+
+        // No está en la BD local (branch_id === 0 = vino del SRI, o no existe)
+        // Poblar el formulario con los datos financieros del XML y abrir modal para confirmar el proveedor
+        selectDocXml(xmlDoc, authorization);
+        setPendingSupplier({
             id: ruc,
             type_identification: "ruc",
             identication: ruc,
-            name: getTag(xmlDoc, "razonSocial"),
-            address: getTag(xmlDoc, "dirMatriz"),
-        };
+            name: existing?.name ?? getTag(xmlDoc, "razonSocial"),
+            address: existing?.address ?? getTag(xmlDoc, "dirMatriz"),
+        });
+        setModalOpen(true);
+    };
 
-        const { data } = await storeSupplier(axiosAuth, provider);
+    const handleModalSave = async (supplier: Supplier) => {
+        const { data } = await storeSupplier(axiosAuth, supplier);
 
         if (data) {
-            setShop((prevState) => ({ ...prevState, provider_id: Number(data.id) }))
-            setSelectProvider({ id: Number(data.id), atts: { identication: '', name: data.name } });
+            setShop((prev) => ({ ...prev, provider_id: Number(data.id) }));
+            setSelectProvider({
+                id: Number(data.id),
+                atts: { identication: data.identication, name: data.name, address: data.address },
+            });
         }
+
+        setModalOpen(false);
     };
 
     const getTag = (xmlDoc: Document | Element, tag: string): string => {
@@ -76,10 +101,18 @@ export const ImportXml = () => {
     };
 
     return (
-        <div className='mb-3'>
-            <PrimaryButton type='button' onClick={handleButton} label='Cargar XML' action='import' />
-            <input type='file' id='file_invoice' onChange={handleSelectFile} className='hidden' accept='.xml' />
-        </div>
-    )
-}
+        <div className="mb-3">
+            <PrimaryButton type="button" onClick={handleButton} label="Cargar XML" action="import" />
+            <input type="file" id="file_invoice" onChange={handleSelectFile} className="hidden" accept=".xml" />
 
+            {pendingSupplier && (
+                <ModalConfirmSupplier
+                    isOpen={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    supplier={pendingSupplier}
+                    onSave={handleModalSave}
+                />
+            )}
+        </div>
+    );
+};
