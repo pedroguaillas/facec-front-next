@@ -46,28 +46,6 @@ const handleApiCall = async (
     }
 };
 
-// 🔹 Diccionario de acciones asociadas al estado de la orden
-const renderProcess: Record<
-    string,
-    (id: number, axiosAuth: AxiosInstance, fetchInvoices: () => void) => Promise<void>
-> = {
-    CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
-        handleApiCall(
-            "cancel",
-            id,
-            axiosAuth,
-            fetchInvoices,
-            "Para anular el comprobante en este sistema, primero debe anularlo en el SRI",
-        ),
-    NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-};
-
 export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
@@ -97,7 +75,17 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {
                 label: renderSwitch[order.atts.state.replace(" ", "_")],
-                onClick: () => renderProcess[order.atts.state.replace(" ", "_")](order.id, axiosAuth, fetchInvoices),
+                onClick: () => {
+                    const state = order.atts.state.replace(" ", "_");
+                    const isCancel = state === "AUTORIZADO";
+                    handleApiCall(
+                        isCancel ? "cancel" : "process",
+                        order.id,
+                        axiosAuth,
+                        fetchInvoices,
+                        isCancel ? "Para anular el comprobante en este sistema, primero debe anularlo en el SRI" : undefined,
+                    );
+                },
             });
         }
 
