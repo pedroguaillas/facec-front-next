@@ -1,6 +1,6 @@
 import { ActionsTitle } from "@/types";
 import Link from "next/link";
-import { FaPen, FaPencilAlt, FaPlus, FaPlusCircle, FaSave, FaSignInAlt, FaSpinner, FaTrash, FaUpload } from "react-icons/fa";
+import { FaArrowLeft, FaPen, FaPencilAlt, FaPlus, FaPlusCircle, FaSave, FaSignInAlt, FaSpinner, FaTrash, FaUpload } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
 
 export const PrimaryButton = ({
@@ -20,6 +20,7 @@ export const PrimaryButton = ({
         'import': 'bg-blue-600 hover:bg-blue-700',
         'export': 'bg-green-600 hover:bg-green-700',
         'delete': 'bg-danger hover:bg-dangerhover',
+        'back': 'bg-slate-600 hover:bg-slate-700',
     }
 
     const baseClasses = `
@@ -38,6 +39,7 @@ export const PrimaryButton = ({
             >
                 {!isLoading && action === 'add' && <FaPlus className="text-xs" />}
                 {!isLoading && action === 'edit' && <FaPen className="text-xs" />}
+                {!isLoading && action === 'back' && <FaArrowLeft className="text-xs" />}
                 {label}
             </Link>
         )
@@ -50,6 +52,7 @@ export const PrimaryButton = ({
         import: FaUpload,
         export: FaDownload,
         delete: FaTrash,
+        back: FaArrowLeft,
     };
 
     return (

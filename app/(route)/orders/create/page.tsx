@@ -10,6 +10,7 @@ const CreateOrderPage = () => {
         <Title
           title="Documento"
           subTitle="Registrar un nuevo documento"
+          actions={[{ label: "Regresar", type: "link", url: "/orders", action: "back" }]}
         />
 
         <div className='md:mx-8 py-4'>

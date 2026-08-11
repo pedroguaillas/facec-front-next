@@ -1,9 +1,9 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { ApiResponse, Company } from "@/types";
+import { ApiResponse, SriCompanyLookup } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const findCompanyByRuc = async (
     axiosAuth: AxiosInstance,
     ruc: string
-): Promise<ApiResponse<Company>> =>
-    handleApiRequest<Company>(() => axiosAuth.get(`admin/companies/sri/${ruc}`));
+): Promise<ApiResponse<SriCompanyLookup>> =>
+    handleApiRequest<SriCompanyLookup>(() => axiosAuth.get(`admin/companies/sri/${ruc}`));

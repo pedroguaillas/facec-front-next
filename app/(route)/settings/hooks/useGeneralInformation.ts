@@ -1,5 +1,6 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { ChangeEvent, useEffect, useState } from "react";
+import { downloadSignService, getCompany, updateCompany } from "../services/companyServices";
 
 export const useGeneralInformation = () => {
     const axiosAuth = useAxiosAuth();
@@ -13,9 +14,14 @@ export const useGeneralInformation = () => {
         retention_agent: false,
         pass_cert: '',
         logo: null as File | null,
+        logo_dir: null as string | null,
+        logo_url: null as string | null,
         cert: null as File | null,
-        sign_valid_to: ''
+        sign_valid_to: '',
+        has_cert: false,
     });
+
+    const [editingCert, setEditingCert] = useState(false);
 
     const optionType = [
         { label: 'GENERAL', value: '0' },
@@ -39,47 +45,66 @@ export const useGeneralInformation = () => {
         setForm(prev => ({ ...prev, [name]: files?.[0] }))
     }
 
+    const clearFile = (name: 'logo' | 'cert') => {
+        setForm(prev => ({ ...prev, [name]: null }))
+    }
+
+    const editCert = () => setEditingCert(true);
+
+    const cancelEditCert = () => {
+        setEditingCert(false);
+        setForm(prev => ({ ...prev, cert: null, pass_cert: '' }));
+    }
+
     const submit = async () => {
         const formData = new FormData();
         formData.append('rimpe', form.rimpe + '');
         formData.append('accounting', String(form.accounting));
         formData.append('retention_agent', form.retention_agent ? '1' : '0');
-        formData.append('pass_cert', form.pass_cert);
         formData.append('sign_valid_to', form.sign_valid_to);
 
         if (form.logo) {
             formData.append('logo', form.logo);
         }
 
-        if (form.cert) {
+        if (editingCert && form.cert) {
             formData.append('cert', form.cert);
+            formData.append('pass_cert', form.pass_cert);
         }
 
-        const response = await axiosAuth.put(`companies/${form.id}`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const { data } = await updateCompany(axiosAuth, formData);
 
-        if (response.status) {
+        if (data) {
             alert('Se ha editado los datos');
+            setEditingCert(false);
+            setForm(prev => ({ ...prev, cert: null, pass_cert: '', ...(data as unknown as Partial<typeof prev>) }));
         }
     }
 
     const downloadSign = async () => {
-        try {
-            const response = await axiosAuth.get('downloadsign');
-            const a = document.createElement('a') //Create <a>
-            a.href = 'data:text/xml;base64,' + response.data.cert //Image Base64 Goes here
-            a.download = `${form.company}.p12` //File name Here
-            a.click() //Downloaded file
-        } catch (error) {
-            console.log(error)
-        }
+        const { data } = await downloadSignService(axiosAuth);
+        if (!data) return;
+
+        const a = document.createElement('a') //Create <a>
+        a.href = 'data:text/xml;base64,' + data.cert //Image Base64 Goes here
+        a.download = `${form.company}.p12` //File name Here
+        a.click() //Downloaded file
     }
 
     useEffect(() => {
         const fetchCompany = async () => {
-            const response = await axiosAuth.get('companies');
-            setForm(response.data.company)
+            const { data } = await getCompany(axiosAuth);
+            if (!data) return;
+
+            setForm(prev => ({
+                ...prev,
+                ...(data as unknown as Partial<typeof prev>),
+                // Guard: backend a veces manda "company" como objeto anidado (relación/accessor
+                // homónimo, ver laravel_through_key) en vez del string de razón social.
+                company: typeof data.company === 'string' ? data.company : prev.company,
+            }))
+
+            setEditingCert(!data.has_cert);
         }
 
         fetchCompany()
@@ -115,5 +140,5 @@ export const useGeneralInformation = () => {
         fetchCertificate();
     }, [form.cert, form.pass_cert]);
 
-    return { optionType, form, handleChange, handleCheckbox, handleFile, submit, downloadSign }
+    return { optionType, form, editingCert, editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign }
 }

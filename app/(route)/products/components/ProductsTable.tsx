@@ -1,7 +1,7 @@
 "use client";
 
 import { useProducts } from "../context/ProductContext";
-import { Dialog, PrimaryButton, TableResponsive } from "@/components";
+import { Dialog, IconButton, TableResponsive } from "@/components";
 import { axiosAuth } from "@/lib/axios";
 import { deleteProduct } from "../services/productServices";
 
@@ -38,17 +38,17 @@ export const ProductsTable = () => {
                             <td className="text-right">{product.atts.iva}%</td>
                             <td className="w-1">
                                 <div className="flex gap-2">
-                                    <PrimaryButton
+                                    <IconButton
                                         type="link"
-                                        label=""
                                         action="edit"
-                                        url={`products/${product.id.toString()}`}
+                                        url={`/products/${product.id.toString()}`}
+                                        title="Editar"
                                     />
-                                    <PrimaryButton
+                                    <IconButton
                                         type="button"
-                                        label=""
                                         action="delete"
                                         onClick={() => setProductDeleteId(product.id)}
+                                        title="Eliminar"
                                     />
                                 </div>
                             </td>

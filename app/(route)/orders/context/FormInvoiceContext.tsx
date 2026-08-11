@@ -106,7 +106,17 @@ export const FormInvoiceProvider = ({ children }: Props) => {
           setInvoice({ ...order, id: order.id + '' });
           setPoints(points);
           setPayMethods(methodOfPayments);
-          setSelectCustom(customers[0]);
+          const customer = customers[0];
+          setSelectCustom(customer ? {
+            id: Number(customer.id),
+            atts: {
+              identication: customer.identication,
+              name: customer.name,
+              address: customer.address,
+              phone: customer.phone,
+              email: customer.email,
+            },
+          } : null);
           setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
           setProductOutputs(order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' })));
           setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
@@ -115,7 +125,7 @@ export const FormInvoiceProvider = ({ children }: Props) => {
         const { data } = await getCreateInvoice(axiosAuth);
         if (data) {
           const { points, methodOfPayments, pay_method, tourism, repayment } = data;
-          setInvoice((prev) => ({ ...prev, pay_method }));
+          setInvoice((prev) => ({ ...prev, pay_method: pay_method ?? prev.pay_method }));
           setPoints(points);
           setPayMethods(methodOfPayments);
           setTourism(tourism);

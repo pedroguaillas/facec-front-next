@@ -7,3 +7,6 @@ export const getCarriers = async (
     pageUrl: string,
 ): Promise<ApiResponse<GeneralPaginate<CarrierProps>>> =>
     handleApiRequest<GeneralPaginate<CarrierProps>>(() => axiosAuth.get(pageUrl));
+
+export const deleteCarrier = async (id: number, axiosAuth: AxiosInstance) =>
+    handleApiRequest(() => axiosAuth.delete(`carriers/${id}`));

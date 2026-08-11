@@ -13,3 +13,6 @@ export const getSupplier = async (
     axiosAuth: AxiosInstance,
 ): Promise<ApiResponse<Supplier>> =>
     handleApiRequest<Supplier>(() => axiosAuth.get(`providers/${id}/edit`));
+
+export const deleteSupplier = async (id: number, axiosAuth: AxiosInstance) =>
+    handleApiRequest(() => axiosAuth.delete(`providers/${id}`));

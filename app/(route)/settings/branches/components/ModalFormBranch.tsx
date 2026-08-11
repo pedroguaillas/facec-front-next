@@ -1,26 +1,32 @@
-import { Modal, PrimaryButton, SelectOption, TextInput } from "@/components"
+import { IconButton, Modal, PrimaryButton, Switch, TextInput } from "@/components"
 import { initialBranch } from "@/constants";
+import { handleApiRequest } from "@/helpers/apiHandler";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { Branch } from "@/types";
 import { ChangeEvent, useState } from "react";
 
 interface Props {
     fetchGetBraches: () => void;
+    editBranch?: Branch;
+    isFirstBranch?: boolean;
 }
 
-export const ModalFormBranch = ({ fetchGetBraches }: Props) => {
+export const ModalFormBranch = ({ fetchGetBraches, editBranch, isFirstBranch }: Props) => {
+
+    const isEdit = !!editBranch;
 
     const [isOpen, setIsOpen] = useState(false);
-    const [branch, setBranch] = useState<Branch>(initialBranch);
+    const [branch, setBranch] = useState<Branch>(editBranch ?? initialBranch);
     const [errors, setErrors] = useState<Partial<Record<keyof Branch, string>>>({});
     const axiosAuth = useAxiosAuth();
 
-    const toggle = () => setIsOpen(prevState => !prevState)
-
-    const optionType = [
-        { label: 'Matriz', value: 'matriz' },
-        { label: 'Sucursal', value: 'sucursal' },
-    ]
+    const toggle = () => {
+        if (!isOpen) {
+            setBranch(editBranch ?? initialBranch);
+            setErrors({});
+        }
+        setIsOpen(prevState => !prevState);
+    }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
@@ -33,40 +39,54 @@ export const ModalFormBranch = ({ fetchGetBraches }: Props) => {
         setBranch(prev => ({ ...prev, [name]: checked }))
     }
 
+    const handleTypeSwitch = (e: ChangeEvent<HTMLInputElement>) => {
+        setBranch(prev => ({ ...prev, type: e.target.checked ? 'matriz' : 'sucursal' }));
+    }
+
     const store = async () => {
-        try {
-            await axiosAuth.post('branches', branch);
-            toggle()
-            fetchGetBraches()
-        } catch (error) {
-            console.log(error)
+        const { errors: apiErrors } = isEdit
+            ? await handleApiRequest(() => axiosAuth.put(`branches/${branch.id}`, branch))
+            : await handleApiRequest(() => axiosAuth.post('branches', branch));
+
+        if (apiErrors) {
+            setErrors(apiErrors);
+            return;
         }
+
+        toggle()
+        fetchGetBraches()
     }
 
     return (
         <>
-            <div className='flex justify-end pt-4'>
-                <div>
-                    <PrimaryButton label='Agregar' type='button' action='add' onClick={toggle} />
+            {isEdit ? (
+                <IconButton type="button" action="edit" onClick={toggle} title="Editar" />
+            ) : (
+                <div className='flex justify-end pt-4'>
+                    <div>
+                        <PrimaryButton label='Agregar' type='button' action='add' onClick={toggle} />
+                    </div>
                 </div>
-            </div>
+            )}
 
             <Modal
                 isOpen={isOpen}
                 onClose={toggle}
-                title="Registrar establecimiento"
+                title={isEdit ? "Editar establecimiento" : "Registrar establecimiento"}
                 modalSize="sm"
             >
-                <TextInput type='text' label='Establecimiento *' value={branch.store + ''} error={errors.store} onChange={handleChange} name='store' maxLength={3} />
-                <TextInput type='text' label='Dirección *' value={branch.address} error={errors.address} onChange={handleChange} name='address' maxLength={300} />
+                <TextInput type='text' label='Establecimiento' value={branch.store + ''} error={errors.store} onChange={handleChange} name='store' maxLength={3} required/>
+                <TextInput type='text' label='Dirección' value={branch.address} error={errors.address} onChange={handleChange} name='address' maxLength={300} required/>
                 <TextInput type='text' label='Nombre ' value={branch.name ?? ''} error={errors.name} onChange={handleChange} name='name' maxLength={300} />
 
-                <SelectOption label="Tipo" name='type' options={optionType} selectedValue={branch.type} handleSelect={handleChange} />
+                <Switch name="type" label="Es Matriz" checked={branch.type === 'matriz'} disabled={branch.type === 'matriz'} onChange={handleTypeSwitch} />
 
-                <label className=" inline-flex gap-2 mt-2">
-                    <input type="checkbox" checked={!!branch.cf} onChange={handleCheckbox} name="cf" />
-                    Crear consumidor final?
-                </label>
+                {!isEdit && isFirstBranch && (
+                    <label className=" inline-flex gap-2 mt-2">
+                        <input type="checkbox" checked={!!branch.cf} onChange={handleCheckbox} name="cf" />
+                        Crear consumidor final?
+                    </label>
+                )}
 
                 <div className='flex justify-end py-2'>
                     <div>

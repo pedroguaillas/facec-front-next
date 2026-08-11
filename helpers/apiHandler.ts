@@ -24,7 +24,7 @@ export async function handleApiRequest<T>(
 
         // El unico error que capturamos es cuando no pasa la validación en el Backend
         if (error.response && error.response.status === 422) {
-            const originalErrors = error.response.data ?? {};
+            const originalErrors = error.response.data?.errors ?? {};
             const flattenedErrors: LaravelValidationErrors = Object.fromEntries(
                 Object.entries(originalErrors).map(([field, messages]) => [
                     field,

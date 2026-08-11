@@ -10,6 +10,7 @@ const PageShopEdit = () => {
                 <Title
                     title="Documento"
                     subTitle="Editar un documento"
+                    actions={[{ label: "Regresar", type: "link", url: "/shops", action: "back" }]}
                 />
 
                 <div className="md:mx-8 py-4">

@@ -19,4 +19,5 @@ interface Carrier {
     license_plate: string;
     phone?: string;
     email?: string;
+    branch_id?: number; // Utilizo para recuperar un carrier del SRI o base de datos
 }

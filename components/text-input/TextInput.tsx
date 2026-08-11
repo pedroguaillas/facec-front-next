@@ -11,6 +11,7 @@ interface Props {
     disabled?: boolean;
     className?: string;
     error?: string;
+    success?: string;
     min?: string;
     max?: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -27,6 +28,7 @@ export const TextInput = ({
     disabled,
     className,
     error,
+    success,
     onChange,
     min,
     max,
@@ -43,7 +45,9 @@ export const TextInput = ({
                     focus:outline-none
                     ${error
                         ? 'border-red-400 focus:border-red-500 bg-red-50/50 dark:bg-red-950/20'
-                        : 'border-[var(--border-strong)] focus:border-primary bg-[var(--background)]'
+                        : success
+                            ? 'border-emerald-400 focus:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20'
+                            : 'border-[var(--border-strong)] focus:border-primary bg-[var(--background)]'
                     }
                     dark:text-gray-300
                     disabled:opacity-50 disabled:cursor-not-allowed
@@ -62,6 +66,7 @@ export const TextInput = ({
                 autoComplete='off'
             />
             {error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
+            {!error && success && <p className="text-xs text-emerald-600 mt-0.5">{success}</p>}
         </div>
     );
 };

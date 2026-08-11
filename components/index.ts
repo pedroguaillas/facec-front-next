@@ -6,6 +6,8 @@ export * from './text-input/TextInput';
 export * from './select-option/SelectOption';
 export * from './switch/Switch';
 export * from './primary-button/PrimaryButton';
+export * from './icon-button/IconButton';
+export * from './file-drop-input/FileDropInput';
 export * from './title/Title';
 export * from './separate/Separate';
 export * from './legend-required/RequiredFields';

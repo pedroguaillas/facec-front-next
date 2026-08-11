@@ -1,4 +1,5 @@
 export * from './actions-title.d';
+export * from './admin.d';
 export * from './auth.d';
 export * from './api.d';
 export * from './branch.d';

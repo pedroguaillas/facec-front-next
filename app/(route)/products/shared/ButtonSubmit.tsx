@@ -37,6 +37,7 @@ export const ButtonSubmit = () => {
         if (data) {
             router.push("/products");
         } else if (errors) {
+            console.log(errors);
             setErrorProduct(errors);
         } else {
             console.log(error);

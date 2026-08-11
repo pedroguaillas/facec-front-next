@@ -7,6 +7,7 @@ const PageEditSupplier = () => {
             <Title
                 title="Proveedor"
                 subTitle="Editar un proveedor"
+                actions={[{ label: "Regresar", type: "link", url: "/suppliers", action: "back" }]}
             />
             <div className='md:mx-8 py-4'>
                 {/* Card */}

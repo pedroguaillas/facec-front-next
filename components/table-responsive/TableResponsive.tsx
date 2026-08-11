@@ -13,7 +13,7 @@ export const TableResponsive: React.FC<TableProps> = ({ children }) => (
         }}
     >
         <div className="w-full overflow-x-auto relative">
-            <table className="text-xs sm:text-sm table-auto w-full text-center text-gray-700 dark:text-gray-300 [&>thead>tr>th]:p-2.5 [&>tbody>tr>td]:p-2.5 [&>thead>tr>th]:font-medium [&>thead>tr>th]:text-xs [&>thead>tr>th]:uppercase [&>thead>tr>th]:tracking-wider [&>thead>tr>th]:opacity-60">
+            <table className="text-xs sm:text-sm table-auto w-full text-center text-gray-700 dark:text-gray-300 [&>thead>tr>th]:py-1.5 [&>thead>tr>th]:px-2.5 [&>tbody>tr>td]:py-1.5 [&>tbody>tr>td]:px-2.5 [&>thead>tr>th]:font-medium [&>thead>tr>th]:text-xs [&>thead>tr>th]:uppercase [&>thead>tr>th]:tracking-wider [&>thead>tr>th]:opacity-60">
                 {children}
             </table>
         </div>

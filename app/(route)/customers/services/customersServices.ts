@@ -14,3 +14,6 @@ export const getCustomer = async (
 ): Promise<ApiResponse<Customer>> =>
     handleApiRequest<Customer>(() => axiosAuth.get(`customers/${id}`));
 
+export const deleteCustomer = async (id: number, axiosAuth: AxiosInstance) =>
+    handleApiRequest(() => axiosAuth.delete(`customers/${id}`));
+

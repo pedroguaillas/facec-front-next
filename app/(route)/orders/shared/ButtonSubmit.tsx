@@ -8,6 +8,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
 import { Repayment } from '@/types';
+import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoiceServices';
 
 export const ButtonSubmit = () => {
 
@@ -67,7 +68,7 @@ export const ButtonSubmit = () => {
 
             setErrorProductOutputs(productErrors); // ← Necesitas este estado para manejar errores por producto
 
-            // 🔹 Errores dentro del array `products`
+            // 🔹 Errores dentro del array `repaymentErrors`
             const repaymentErrors: Record<string, Partial<Record<keyof Repayment, string>>> = {};
 
             parsed.error.errors.forEach((err) => {
@@ -105,17 +106,15 @@ export const ButtonSubmit = () => {
         }
 
         // 3. Enviar el formulario
-        try {
-            setIsPending(true);
-            if (params.id) {
-                await axiosAuth.put(`orders/${params.id}`, form);
-            } else {
-                await axiosAuth.post('orders', form);
-            }
-            router.push('/orders');
-        } catch (error) {
-            console.log('Error al guardar el formulario' + error);
+        setIsPending(true);
+
+        const {data, error} = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), form) : invoiceStoreServices(axiosAuth, form));
+        if(data) {
+            router.push(`/orders`);
+        }else if(error) {
+            console.error('Error al enviar el formulario:', error);
             setIsPending(false);
+            // Aquí podrías mostrar un mensaje de error al usuario si lo deseas
         }
     };
 

@@ -10,6 +10,7 @@ const PageCreateShop = () => {
                 <Title
                     title="Documento"
                     subTitle="Registrar un nuevo documento"
+                    actions={[{ label: "Regresar", type: "link", url: "/shops", action: "back" }]}
                 />
 
                 <div className='md:mx-8 py-4'>

@@ -20,3 +20,9 @@ export const updateCarrier = async (
     form: object
 ): Promise<ApiResponse<Carrier>> =>
     handleApiRequest<Carrier>(() => axiosAuth.put(`carriers/${id}`, form));
+
+export const resolveCarrier = async (
+    axiosAuth: AxiosInstance,
+    identication: string
+): Promise<ApiResponse<Carrier>> =>
+    handleApiRequest<Carrier>(() => axiosAuth.get(`carriers/resolve/${identication}`));

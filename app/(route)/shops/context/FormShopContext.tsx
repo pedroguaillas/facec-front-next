@@ -146,15 +146,25 @@ export const FormShopProvider = ({ children }: Props) => {
             if (typeof params?.id === 'string') {
                 const { data } = await getShop(axiosAuth, params.id);
                 if (data) {
+                    const provider = data.provider;
                     dispatch({
                         type: 'LOAD_SHOP',
                         payload: {
                             shop: data.shop,
-                            selectProvider: data.providers[0],
-                            applieWithholding: data.shopretentionitems.length > 0,
-                            taxInputs: data.taxes,
-                            taxes: data.shopretentionitems.map((item: Tax) => ({ ...item, id: nanoid() })),
-                            productOutputs: data.shopitems.map((item: ProductOutput) => ({
+                            selectProvider: provider ? {
+                                id: Number(provider.id),
+                                atts: {
+                                    identication: provider.identication,
+                                    name: provider.name,
+                                    address: provider.address,
+                                    phone: provider.phone,
+                                    email: provider.email,
+                                },
+                            } : null,
+                            applieWithholding: (data.shopretentionitems ?? []).length > 0,
+                            taxInputs: data.taxes ?? [],
+                            taxes: (data.shopretentionitems ?? []).map((item: Tax) => ({ ...item, id: nanoid() })),
+                            productOutputs: data.shop_items.map((item: ProductOutput) => ({
                                 ...item,
                                 id: item.id + '',
                                 total_iva: (Number(item.price) * Number(item.quantity)).toFixed(2),

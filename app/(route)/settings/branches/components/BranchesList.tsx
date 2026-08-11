@@ -3,7 +3,7 @@
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import React, { useCallback, useEffect, useState } from 'react'
 import { ModalFormBranch } from './ModalFormBranch';
-import Link from 'next/link';
+import { IconButton } from '@/components';
 import { Branch } from '@/types';
 
 export const BranchesList = () => {
@@ -12,7 +12,7 @@ export const BranchesList = () => {
 
     const fetchGetBraches = useCallback(async () => {
         const response = await axiosAuth.get('branches');
-        setBranches(response.data.branches)
+        setBranches(response.data)
     }, [axiosAuth])
 
     useEffect(() => {
@@ -21,7 +21,7 @@ export const BranchesList = () => {
 
     return (
         <>
-            <ModalFormBranch fetchGetBraches={fetchGetBraches} />
+            <ModalFormBranch fetchGetBraches={fetchGetBraches} isFirstBranch={branches.length === 0} />
             <div className="w-full overflow-x-auto py-4">
                 <table className="w-full">
                     <thead>
@@ -42,8 +42,11 @@ export const BranchesList = () => {
                                 <td>{branch.name}</td>
                                 <td>{branch.address}</td>
                                 <td className='text-center'>{branch.type}</td>
-                                <td className='text-blue-500 hover:underline text-right'>
-                                    <Link href={`/settings/branches/${branch.id}`}>Puntos de emisión</Link>
+                                <td>
+                                    <div className='flex justify-end gap-2'>
+                                        <IconButton type="link" action="view" url={`/settings/branches/${branch.id}`} title="Puntos de emisión" />
+                                        <ModalFormBranch fetchGetBraches={fetchGetBraches} editBranch={branch} />
+                                    </div>
                                 </td>
                             </tr>
                         ))}

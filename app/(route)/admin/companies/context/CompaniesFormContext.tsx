@@ -24,13 +24,26 @@ const initialCompany: Company = {
     id: '',
     ruc: '',
     company: '',
+    economic_activity: '',
     accounting: false,
+    micro_business: false,
     rimpe: 0,
-    retention_agent: 0,
-    sign_valid_to: new Date(),
+    retention_agent: null,
+    phone: null,
+    logo_dir: null,
+    cert_dir: null,
+    sign_valid_from: null,
+    sign_valid_to: null,
+    enviroment_type: 1,
+    active: true,
+    active_voucher: true,
+    decimal: 2,
+    expired: null,
     pay_method: 0,
     base5: false,
     base8: false,
+    tourism_from: null,
+    tourism_to: null,
     ice: false,
     inventory: false,
     printf: false,
@@ -54,7 +67,7 @@ export const CompaniesFormProvider = ({ id, children }: Props) => {
         const { data, error } = await getCompanyEdit(axiosAuth, id);
 
         if (data) {
-            setCompany(data);
+            setCompany({ ...data, id: `${data.id}` });
         } else if (error === CodeErrors.NETWORK_ERROR) {
             redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
         }

@@ -13,7 +13,11 @@ const PageEditProduct = async ({ params }: PageProps) => {
     return (
         <ProductFormProvider id={id}>
             <div className="dark:text-gray-300">
-                <Title title="Producto" subTitle="Registrar un nuevo producto" />
+                <Title
+                    title="Producto"
+                    subTitle="Editar un producto"
+                    actions={[{ label: "Regresar", type: "link", url: "/products", action: "back" }]}
+                />
                 <div className="md:mx-8 py-4">
                     <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
                         <RequiredFields />

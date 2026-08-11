@@ -1,6 +1,6 @@
 "use client";
 
-import { PrimaryButton, TableResponsive } from "@/components"
+import { IconButton, TableResponsive } from "@/components"
 import { useCompanies } from "../context/CompaniesContext"
 
 export const ListCompanies = () => {
@@ -26,7 +26,7 @@ export const ListCompanies = () => {
             <td>{company.ruc}</td>
             <td className="text-left">{company.company}</td>
             <td className="w-1">
-              <PrimaryButton type="link" label="" action="edit" url={`companies/${company.id}`} />
+              <IconButton type="link" action="edit" url={`/admin/companies/${company.id}`} title="Editar" />
             </td>
           </tr>
         ))}

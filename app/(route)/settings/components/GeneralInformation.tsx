@@ -1,11 +1,14 @@
 "use client";
 
-import { PrimaryButton, SelectOption, TextInput } from "@/components"
+import { FileDropInput, PrimaryButton, SelectOption, TextInput } from "@/components"
 import { useGeneralInformation } from "../hooks/useGeneralInformation";
+import { FaFileSignature, FaImage } from "react-icons/fa";
 
 export const GeneralInformation = () => {
 
-    const { optionType, form, handleChange, handleCheckbox, handleFile, submit, downloadSign } = useGeneralInformation();
+    const { optionType, form, editingCert, editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign } = useGeneralInformation();
+
+    const logoUrl = form.logo_url;
 
     const formatDateEcuador = (date: string) => {
         const expiresAt = new Date(date);
@@ -37,21 +40,55 @@ export const GeneralInformation = () => {
 
                 {/* Col 2 */}
                 <div className='w-full'>
-                    <div className='py-2 flex flex-col gap-2'>
-                        <label className=" inline-flex gap-2 mt-2">Logo</label>
-                        <input type="file" className="bg-gray-100 dark:bg-gray-700 w-fit" name="logo" onChange={handleFile} accept="image/*" />
-                    </div>
-                    <div className='py-2 lg:w-1/3'>
-                        <TextInput type='password' label='Contraseña de firma electrónica' value={form.pass_cert} onChange={handleChange} name='pass_cert' maxLength={50} />
-                    </div>
-                    <div className='py-2 flex flex-col gap-2'>
-                        <label className=" inline-flex gap-2 mt-2">Certificado de firma electrónica</label>
-                        <input type="file" className="bg-gray-100 dark:bg-gray-700 w-fit" name="cert" onChange={handleFile} accept=".p12,.pfx" />
-                        {form.sign_valid_to && <p><strong>Fecha de expiración:</strong> {formatDateEcuador(form.sign_valid_to)}</p>}
-                    </div>
-                    <div className='w-40'>
-                        <PrimaryButton label='Descargar firma' type='submit' action='export' onClick={downloadSign} />
-                    </div>
+                    <FileDropInput
+                        name="logo"
+                        label="Logo"
+                        accept="image/*"
+                        file={form.logo}
+                        icon={<FaImage />}
+                        imagePreview
+                        existingUrl={logoUrl}
+                        onChange={handleFile}
+                        onClear={() => clearFile('logo')}
+                    />
+                    {editingCert ? (
+                        <>
+                            <div className='py-2 lg:w-1/3'>
+                                <TextInput type='password' label='Contraseña de firma electrónica' value={form.pass_cert} onChange={handleChange} name='pass_cert' maxLength={50} />
+                            </div>
+                            <FileDropInput
+                                name="cert"
+                                label="Certificado de firma electrónica"
+                                accept=".p12,.pfx"
+                                file={form.cert}
+                                icon={<FaFileSignature />}
+                                existingLabel={form.sign_valid_to ? 'Certificado cargado' : undefined}
+                                onChange={handleFile}
+                                onClear={() => clearFile('cert')}
+                            />
+                            {form.sign_valid_to && <p className='text-sm'><strong>Fecha de expiración:</strong> {formatDateEcuador(form.sign_valid_to)}</p>}
+                            {form.has_cert && (
+                                <div className='w-32 mt-2'>
+                                    <PrimaryButton label='Cancelar' type='button' action='back' onClick={cancelEditCert} />
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <p className='text-sm py-2'><FaFileSignature className='inline mr-1' /> Certificado cargado</p>
+                            {form.sign_valid_to && <p className='text-sm'><strong>Fecha de expiración:</strong> {formatDateEcuador(form.sign_valid_to)}</p>}
+                            <div className='flex gap-2 mt-2'>
+                                <div className='w-40'>
+                                    <PrimaryButton label='Editar firma' type='button' action='edit' onClick={editCert} />
+                                </div>
+                                {form.sign_valid_to && new Date(form.sign_valid_to) > new Date() && (
+                                    <div className='w-40'>
+                                        <PrimaryButton label='Descargar firma' type='submit' action='export' onClick={downloadSign} />
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

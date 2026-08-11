@@ -11,6 +11,7 @@ const EditOrderPage = () => {
                 <Title
                     title="Documento"
                     subTitle="Editar documento"
+                    actions={[{ label: "Regresar", type: "link", url: "/orders", action: "back" }]}
                 />
 
                 <div className="md:mx-8 py-4">

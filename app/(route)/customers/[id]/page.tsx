@@ -7,6 +7,7 @@ const PageEditCustomer = () => {
             <Title
                 title="Cliente"
                 subTitle="Editar un cliente"
+                actions={[{ label: "Regresar", type: "link", url: "/customers", action: "back" }]}
             />
             <div className='md:mx-8 py-4'>
                 {/* Card */}

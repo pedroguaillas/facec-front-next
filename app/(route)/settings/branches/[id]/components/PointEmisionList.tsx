@@ -14,7 +14,7 @@ export const PointEmisionList = () => {
 
     const fetchGetEmisionPoints = useCallback(async () => {
         const response = await axiosAuth.get(`branches/${params.id}/points`);
-        setEmisionPoints(response.data.points);
+        setEmisionPoints(response.data);
     }, [axiosAuth, params]);
 
     useEffect(() => {
@@ -34,6 +34,7 @@ export const PointEmisionList = () => {
                             <th>Liquidación</th>
                             <th>Guia</th>
                             <th>N/C</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +49,15 @@ export const PointEmisionList = () => {
                                 <td>{emisionPoint.settlementonpurchase}</td>
                                 <td>{emisionPoint.referralguide}</td>
                                 <td>{emisionPoint.creditnote}</td>
+                                <td>
+                                    <div className='flex justify-end'>
+                                        <ModalFormEmisionPoint
+                                            branch_id={Number(params?.id)}
+                                            fetchGetEmisionPoints={fetchGetEmisionPoints}
+                                            editPoint={emisionPoint}
+                                        />
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                         <tr></tr>

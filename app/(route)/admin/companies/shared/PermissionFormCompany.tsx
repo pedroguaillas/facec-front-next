@@ -43,7 +43,7 @@ const PermissionFormCompany = () => {
                 {/* Col 1 */}
                 <div className='w-full space-y-4'>
 
-                    <h2 className='text-2xl font-bold my-6'>Ajustes de RUC {company.company}</h2>
+                    <h2 className='text-2xl font-bold my-6'>{company.company}</h2>
 
                     <Switch
                         name="accounting"
@@ -56,7 +56,7 @@ const PermissionFormCompany = () => {
                         <TextInput
                             name='retention_agent'
                             label='Es agente de retención?'
-                            value={company.retention_agent.toString()}
+                            value={(company.retention_agent ?? '').toString()}
                             onChange={handleChangeCheckbox}
                         />
                     </div>
