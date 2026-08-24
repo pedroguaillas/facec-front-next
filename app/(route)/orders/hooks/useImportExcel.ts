@@ -1,16 +1,39 @@
+import { useState } from "react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { storeLotServices } from "../services/invoicesServices";
 
-export const useImportExcel = () => {
+interface UseImportExcelOptions {
+    onSuccess?: () => void;
+}
+
+export const useImportExcel = ({ onSuccess }: UseImportExcelOptions = {}) => {
     const axiosAuth = useAxiosAuth();
+    const [isPending, setIsPending] = useState(false);
+    const [message, setMessage] = useState<string | undefined>();
 
     const sendLote = async (xlsm: File) => {
         const formData = new FormData();
         formData.append("lot", xlsm);
         formData.append("point_id", "1");
 
-        await storeLotServices(axiosAuth, formData);
-        // window.location.reload(); // recarga toda la página
+        setMessage(undefined);
+        setIsPending(true);
+        const { error, errors } = await storeLotServices(axiosAuth, formData);
+        setIsPending(false);
+
+        if (error) {
+            setMessage(error);
+            return;
+        }
+
+        if (errors) {
+            setMessage(Object.values(errors)[0]);
+            return;
+        }
+
+        // Sin error/errors = subida OK, aunque el backend no devuelva "data"
+        // (p. ej. si la carga se procesa en cola y responde vacío).
+        onSuccess?.();
     };
 
     const handleLote = (e: React.ChangeEvent<HTMLInputElement> | DragEvent) => {
@@ -26,7 +49,11 @@ export const useImportExcel = () => {
 
         const file = files[0];
         sendLote(file);
+
+        if (!("dataTransfer" in e)) {
+            e.target.value = "";
+        }
     };
 
-    return { handleLote };
+    return { handleLote, isPending, message };
 };

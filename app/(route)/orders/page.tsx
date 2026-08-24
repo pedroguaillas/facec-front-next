@@ -3,7 +3,7 @@
 import { InvoicesProvider, useInvoices } from "./context/InvoicesContext";
 import InvoicesTable from "./components/InvoicesTable";
 import InvoiceFilters from "./components/InvoiceFilters";
-import { Paginate, Title } from "@/components";
+import { Alert, Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
 import { useImportExcel } from "./hooks/useImportExcel";
 import { useSession } from "next-auth/react";
@@ -11,7 +11,6 @@ import Head from "next/head";
 
 const InvoicesPage = () => {
 
-    const { handleLote } = useImportExcel();
     const { data: session } = useSession();
     // Define esta función antes de usarla
     const importOrders = () => {
@@ -38,6 +37,20 @@ const InvoicesPage = () => {
         return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
     };
 
+    // Al terminar la carga del lote se refresca la tabla con fetchInvoices,
+    // reemplazando el antiguo window.location.reload().
+    const ImportLoteInput = () => {
+        const { fetchInvoices } = useInvoices();
+        const { handleLote, message } = useImportExcel({ onSuccess: () => fetchInvoices() });
+
+        return (
+            <>
+                {message && <Alert message={message} />}
+                <input type="file" onChange={handleLote} className="hidden" accept=".xlsx" />
+            </>
+        );
+    };
+
     return (
         <>
             <Head>
@@ -55,7 +68,7 @@ const InvoicesPage = () => {
                         <InvoiceFilters />
                         <InvoicesTable />
                         <ProductsPagination />
-                        <input type="file" onChange={handleLote} className="hidden" accept=".xlsx" />
+                        <ImportLoteInput />
                     </div>
                 </div>
             </InvoicesProvider>

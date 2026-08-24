@@ -75,10 +75,10 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {
                 label: renderSwitch[order.atts.state.replace(" ", "_")],
-                onClick: () => {
+                onClick: async () => {
                     const state = order.atts.state.replace(" ", "_");
                     const isCancel = state === "AUTORIZADO";
-                    handleApiCall(
+                    await handleApiCall(
                         isCancel ? "cancel" : "process",
                         order.id,
                         axiosAuth,
