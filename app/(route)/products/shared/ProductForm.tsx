@@ -13,6 +13,11 @@ export const ProductForm = () => {
         handleChange, handleSelect, onChangeCheckbox, handleTotal
     } = useProductForm();
 
+    // Servicio no admite IVA 5% (categoría ferretería exclusiva de Producto)
+    const ivaTaxOptions = product.type_product === 2
+        ? ivaTaxes.filter((tax: { value: number | string }) => Number(tax.value) !== 5)
+        : ivaTaxes;
+
     return (
         <>
             <strong className='font-bold'>Datos generales</strong>
@@ -25,7 +30,7 @@ export const ProductForm = () => {
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='Código' value={product.code} error={errorProduct.code} onChange={handleChange} name='code' maxLength={25} required />
                     </div>
-                    {(transport || product.iva === 5) && (
+                    {(transport || product.iva === 5 || (product.type_product === 2 && sriCategories.some(sc => sc.type === 'transporte'))) && (
                         <div className='w-full'>
                             <div className='lg:w-2/3'>
                                 <SelectSriCategory
@@ -77,7 +82,7 @@ export const ProductForm = () => {
                 {/* Col 1 */}
                 <div className='w-full'>
                     <div className='lg:w-2/3'>
-                        <SelectOption label="Imp. al IVA" name='iva' options={ivaTaxes} selectedValue={product.iva} handleSelect={handleSelect} />
+                        <SelectOption label="Imp. al IVA" name='iva' options={ivaTaxOptions} selectedValue={product.iva} handleSelect={handleSelect} />
                     </div>
                 </div>
 

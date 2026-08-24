@@ -11,6 +11,7 @@ export const CarrierForm = () => {
     const optionType = [
         { label: 'Cédula', value: 'cédula' },
         { label: 'RUC', value: 'ruc' },
+        { label: 'Pasaporte', value: 'pasaporte' },
     ]
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -27,7 +28,7 @@ export const CarrierForm = () => {
 
                 <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={carrier.type_identification} handleSelect={handleChange} />
 
-                <TextInput type='text' label='Identificación' value={carrier.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={13} required />
+                <TextInput type='text' label='Identificación' value={carrier.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={carrier.type_identification === 'cédula' ? 10 : 13} required />
 
                 <TextInput type='text' label='Nombre' value={carrier.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} required />
 

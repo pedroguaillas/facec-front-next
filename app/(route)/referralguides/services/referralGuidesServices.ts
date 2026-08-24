@@ -19,3 +19,14 @@ export const getReferralGuide = async (
     axiosAuth: AxiosInstance,
     id: string
 ) => handleApiRequest<ReferrralGuideForView>(() => axiosAuth.get(`referralguides/${id}`));
+
+export const referralGuideStoreServices = async (
+    axiosAuth: AxiosInstance,
+    form: object
+) => handleApiRequest<ReferralGuideCreateProps>(() => axiosAuth.post('referralguides', form));
+
+export const referralGuideUpdateServices = async (
+    axiosAuth: AxiosInstance,
+    id: string,
+    form: object
+) => handleApiRequest<ReferralGuideCreateProps>(() => axiosAuth.put(`referralguides/${id}`, form));

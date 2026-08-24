@@ -9,6 +9,7 @@ import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
 import { useState } from 'react';
 import { Repayment } from '@/types';
 import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoiceServices';
+import { calculateInvoiceTotals } from '@/helpers/invoiceTotalsHelper';
 
 export const ButtonSubmit = () => {
 
@@ -22,8 +23,12 @@ export const ButtonSubmit = () => {
         e.preventDefault();
 
         // 1. Creación del formulario
+        // Los totales de la factura siempre se recalculan desde los items actuales
+        // para evitar enviar valores desincronizados (p. ej. si el header quedó
+        // con totales viejos y los items ya cambiaron).
         const form = {
             ...invoice,
+            ...calculateInvoiceTotals(productOutputs),
             products: productOutputs,
             send: send,
             aditionals: aditionalInformation.map(aditional => ({

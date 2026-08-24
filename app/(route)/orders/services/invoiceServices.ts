@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { AditionalInformation, Customer, EmisionPoint, OrderCreateProps, OrderProps, PayMethod, ProductOutput } from "@/types";
+import { AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput } from "@/types";
 import { AxiosInstance } from "axios";
 
 type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[] }

@@ -18,7 +18,14 @@ export const useProductForm = () => {
 
     const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = event.target;
-        setProduct((prevState) => ({ ...prevState, [name]: Number(value) }))
+        const numValue = Number(value);
+        setProduct((prevState) => {
+            // Servicio no admite IVA 5% (categoría ferretería exclusiva de Producto)
+            if (name === 'type_product' && numValue === 2 && prevState.iva === 5) {
+                return { ...prevState, [name]: numValue, iva: 4 };
+            }
+            return { ...prevState, [name]: numValue };
+        })
         setErrorProduct(prev => ({ ...prev, [name]: '' }))
     }
 

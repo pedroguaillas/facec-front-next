@@ -24,8 +24,7 @@ const SelectModalSriCategory = ({ show, onClose, selectSriCategory }: Props) => 
     const matchesType =
       (product.iva === 5 && sriCategory.type === 'ferreteria') ||
       (transport && sriCategory.type === 'transporte') ||
-      // Si ambos son true, mostramos ambos tipos
-      (product.iva === 5 && transport);
+      (product.type_product === 2 && sriCategory.type === 'transporte');
 
     return matchesSearch && matchesType;
   });

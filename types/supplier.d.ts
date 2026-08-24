@@ -11,7 +11,7 @@ export interface SupplierProps {
 
 interface Supplier {
     id: string,
-    type_identification: 'cédula' | 'ruc';
+    type_identification: 'cédula' | 'ruc' | 'pasaporte';
     identication: string;
     name: string;
     address?: string;

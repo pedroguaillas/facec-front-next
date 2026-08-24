@@ -42,15 +42,21 @@ export const useSupplierForm = () => {
         }
 
         if (params?.id !== undefined) {
-            await updateSupplier(params.id + '', axiosAuth, supplier);
+            const response = await updateSupplier(params.id + '', axiosAuth, supplier);
+            if (response.errors) {
+                setErrors(response.errors);
+                return;
+            }
             router.push('/suppliers');
             return;
         }
 
-        const res = await storeSupplier(axiosAuth, supplier);
-        if (res) {
-            router.push('/suppliers');
+        const response = await storeSupplier(axiosAuth, supplier);
+        if (response.errors) {
+            setErrors(response.errors);
+            return;
         }
+        router.push('/suppliers');
     }
 
     useEffect(() => {

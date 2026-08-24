@@ -7,6 +7,7 @@ import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { PrimaryButton } from '@/components';
 import { ProductOutput } from '@/types';
 import { useState } from 'react';
+import { referralGuideStoreServices, referralGuideUpdateServices } from '../services/referralGuidesServices';
 
 export const ButtonSubmit = () => {
 	const { referralGuide, productOutputs, selectPoint, setErrors, setErrorProductOutputs } = useFormReferralGuide();
@@ -14,7 +15,7 @@ export const ButtonSubmit = () => {
 	const router = useRouter();
 	const params = useParams();
 	const [isSaving, setIsSaving] = useState(false);
-	
+
 	const handleSubmit = async () => {
 		// 1. Creación del formulario
 		const form = {
@@ -55,24 +56,21 @@ export const ButtonSubmit = () => {
 		}
 
 		// 3. Enviar formulario
-		try {
-			setIsSaving(true);
-			if (typeof params?.id === 'string') {
-				const res = await axiosAuth.put(`/referralguides/${params.id}`, parsed.data)
-				if (res.status === 200) {
-					router.push(`/referralguides`);
-				}
-			} else {
-				const res = await axiosAuth.post('/referralguides', form)
-				if (res.status === 200) {
-					router.push(`/referralguides`);
-				}
-			}
-		} catch (error) {
-			console.log('Error al guardar el formulario', error);
+		setIsSaving(true);
+		const { data, error } = await (
+			params?.id
+				? referralGuideUpdateServices(axiosAuth, params.id.toString(), parsed.data)
+				: referralGuideStoreServices(axiosAuth, form)
+		);
+
+		if (data) {
+			router.push(`/referralguides`);
+		} else if (error) {
+			console.error('Error al enviar el formulario:', error);
 			setIsSaving(false);
 		}
 	};
+
 	return (
 		<div className='flex justify-end mt-4'>
 			<div>

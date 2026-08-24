@@ -4,6 +4,7 @@ import { createContext, useState, useContext, useEffect, ReactNode, SetStateActi
 import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput } from "@/types/order";
 import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
+import { calculateInvoiceTotals } from "@/helpers/invoiceTotalsHelper";
 import { CustomerProps, EmisionPoint, Repayment } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getDate } from "@/helpers/dateHelper";
@@ -103,7 +104,6 @@ export const FormInvoiceProvider = ({ children }: Props) => {
         const { data } = await getInvoice(axiosAuth, params.id as string);
         if (data) {
           const { customers, methodOfPayments, order, order_aditionals, order_items, points } = data;
-          setInvoice({ ...order, id: order.id + '' });
           setPoints(points);
           setPayMethods(methodOfPayments);
           const customer = customers[0];
@@ -118,8 +118,12 @@ export const FormInvoiceProvider = ({ children }: Props) => {
             },
           } : null);
           setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
-          setProductOutputs(order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' })));
+          const items = order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' }));
+          setProductOutputs(items);
           setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
+          // El header de la venta puede venir desincronizado de los items (ediciones previas
+          // incompletas); se recalculan los totales al cargar para reflejar los items reales.
+          setInvoice(prev => ({ ...prev, ...order, id: order.id + '', ...calculateInvoiceTotals(items) }));
         }
       } else {
         const { data } = await getCreateInvoice(axiosAuth);
