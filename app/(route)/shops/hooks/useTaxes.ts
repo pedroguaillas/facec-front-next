@@ -60,6 +60,22 @@ export const useTaxes = () => {
             porcentage: retention.porcentage,
             editable_porcentage: retention.porcentage === null,
         };
+
+        // Recalculamos el value con el nuevo porcentaje
+        const { porcentage, base } = newTaxes[index];
+
+        if (porcentage !== null && porcentage !== '' && base !== '') {
+            newTaxes[index] = {
+                ...newTaxes[index],
+                value: Number((Number(porcentage) * Number(base) * 0.01).toFixed(2))
+            };
+        } else {
+            newTaxes[index] = {
+                ...newTaxes[index],
+                value: 0
+            };
+        }
+
         setTaxes(newTaxes);
 
         // 💥 Aquí quitamos el error específico
