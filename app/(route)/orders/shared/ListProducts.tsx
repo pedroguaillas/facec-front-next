@@ -34,16 +34,16 @@ export const ListProducts = () => {
 
             {/* Table responsive */}
             <div className="w-full overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[360px]">
                     <thead>
-                        <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500">
-                            <th className="w-20 sm:w-24">Cant</th>
+                        <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:whitespace-nowrap [&>th]:dark:border-gray-500">
+                            <th className="min-w-20 sm:min-w-24">Cant</th>
                             <th>Producto/Servicio</th>
-                            <th className="w-20 sm:w-24">Precio</th>
-                            <th className="w-20 sm:w-24">Descuento</th>
-                            {isTaxBreakdown ? <th className="w-24">IVA</th> : null}
-                            <th className="w-20 sm:w-24">Subtotal</th>
-                            {isActiveIce ? <th className="w-20 sm:w-24">ICE</th> : null}
+                            <th className="min-w-20 sm:min-w-24">Precio</th>
+                            <th className="min-w-20 sm:min-w-24">Descuento</th>
+                            {isTaxBreakdown ? <th className="min-w-24">IVA</th> : null}
+                            <th className="min-w-20 sm:min-w-24">Subtotal</th>
+                            {isActiveIce ? <th className="min-w-20 sm:min-w-24">ICE</th> : null}
                             <th></th>
                         </tr>
                     </thead>

@@ -17,4 +17,4 @@ interface DownloadSignResponse { cert: string }
 
 export const downloadSignService = async (
     axiosAuth: AxiosInstance,
-) => handleApiRequest<DownloadSignResponse>(() => axiosAuth.get('downloadsign'));
+) => handleApiRequest<DownloadSignResponse>(() => axiosAuth.get('companies/download-cert'));

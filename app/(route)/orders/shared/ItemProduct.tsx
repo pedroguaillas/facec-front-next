@@ -13,7 +13,7 @@ interface Props {
     removeItem: (index: number) => void;
 }
 
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputBase = "w-full min-w-16 border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
 const inputError = "border-red-400";
 const inputNormal = "border-[var(--border-strong)]";
 
