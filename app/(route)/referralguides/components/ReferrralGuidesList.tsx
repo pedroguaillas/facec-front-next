@@ -4,6 +4,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
+import { getStateBadgeClasses } from "@/helpers/stateBadge";
 
 const ReferrralGuidesList = () => {
     const { referralGuides } = useReferralGuides();
@@ -42,12 +43,7 @@ const ReferrralGuidesList = () => {
                         <td className="text-left">{referralGuide.customer.name}</td>
                         <td>
                             <span
-                                className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block
-                                            ${referralGuide.atts?.state === 'AUTORIZADO' ? 'bg-green-700 text-white' : ''}
-                                            ${["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(referralGuide.atts?.state)
-                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900'
-                                        : ''}
-                                        `}
+                                className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(referralGuide.atts?.state || "CREADO")}`}
                             >
                                 {referralGuide.atts?.state || "CREADO"}
 

@@ -6,6 +6,7 @@ import { TableResponsive } from "@/components"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
+import { getStateBadgeClasses } from "@/helpers/stateBadge";
 
 export const ShopsTable = () => {
 
@@ -61,12 +62,7 @@ export const ShopsTable = () => {
                         <td className="text-center">
                             <div className="inline-flex relative justify-center items-center">
                                 <span
-                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block
-                                            ${shop.atts?.state_retencion === 'AUTORIZADO' ? 'bg-green-700 text-white' : ''}
-                                            ${["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion)
-                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900'
-                                            : ''}
-                                        `}
+                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(shop.atts?.state_retencion)}`}
                                 >
                                     {shop.atts?.state_retencion}
 

@@ -8,7 +8,8 @@ export type states =
 	| 'DEVUELTA'
 	| 'AUTORIZADO'
 	| 'NO AUTORIZADO'
-	| 'ANULADO';
+	| 'ANULADO'
+	| 'PENDIENTE DE ANULAR';
 
 interface EmisionPoint {
 	id: number;

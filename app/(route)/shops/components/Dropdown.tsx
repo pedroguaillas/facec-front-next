@@ -22,6 +22,7 @@ const renderSwitch: Record<string, string> = {
     DEVUELTA: "Volver a procesar",
     AUTORIZADO: "Anular",
     NO_AUTORIZADO: "Volver a procesar",
+    "PENDIENTE_DE_ANULAR": "Anular",
 };
 
 // 🔹 Función genérica para llamadas a la API
@@ -30,9 +31,10 @@ const handleApiCall = async (
     axiosAuth: AxiosInstance,
     fetchInvoices: () => void,
     alertMessage?: string,
+    method: "get" | "post" = "get",
 ): Promise<void> => {
     try {
-        const response = await axiosAuth.get(endpoint);
+        const response = await axiosAuth[method](endpoint);
         if (response.status >= 200) {
             fetchInvoices();
         } else if (alertMessage) {
@@ -51,12 +53,13 @@ const processAction = (
     axiosAuth: AxiosInstance,
     fetchInvoices: () => void,
 ): Promise<void> => {
-    if (state === "AUTORIZADO") {
+    if (state === "AUTORIZADO" || state === "PENDIENTE_DE_ANULAR") {
         return handleApiCall(
             `${basePath}/${id}/cancel`,
             axiosAuth,
             fetchInvoices,
             "Para anular el comprobante en este sistema, primero debe anularlo en el SRI",
+            "post",
         );
     }
     return handleApiCall(`${basePath}/${id}/process`, axiosAuth, fetchInvoices);
@@ -85,10 +88,10 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
         ];
 
         if (shop.atts.state_retencion && shop.atts.state_retencion !== "ANULADO") {
+            const state = shop.atts.state_retencion.replace(/ /g, "_");
             options.splice(1, 0, {
-                label: renderSwitch[shop.atts.state_retencion.replace(" ", "_")],
-                onClick: () =>
-                    processAction("retentions", shop.atts.state_retencion.replace(" ", "_"), shop.id, axiosAuth, fetchShops),
+                label: renderSwitch[state],
+                onClick: () => processAction("retentions", state, shop.id, axiosAuth, fetchShops),
             });
         }
 

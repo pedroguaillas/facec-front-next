@@ -4,6 +4,7 @@ import { useInvoices } from "../context/InvoicesContext";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
+import { getStateBadgeClasses } from "@/helpers/stateBadge";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
@@ -55,12 +56,7 @@ const InvoicesTable = () => {
                         <td className="text-center">
                             <div className="inline-flex relative justify-center items-center">
                                 <span
-                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block
-                                            ${order.atts?.state === 'AUTORIZADO' ? 'bg-green-700 text-white' : ''}
-                                            ${["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state)
-                                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900'
-                                            : ''}
-                                        `}
+                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(order.atts?.state || "CREADO")}`}
                                 >
                                     {order.atts?.state || "CREADO"}
 
