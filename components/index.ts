@@ -18,6 +18,7 @@ export * from './dialog/Dialog';
 export * from './table-responsive/TableResponsive';
 export * from './paginate/Paginate';
 export * from './pdf-viewer/PDFViewer';
+export * from './install-prompt/InstallPrompt';
 
 // IU
 export * from './ui/header/Header';

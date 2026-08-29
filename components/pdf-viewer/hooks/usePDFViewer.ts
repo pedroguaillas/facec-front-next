@@ -11,6 +11,8 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isMobile, setIsMobile] = useState<boolean>(false);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+    const [canShareFile, setCanShareFile] = useState<boolean>(false);
     const axiosAuth = useAxiosAuth();
 
     const isIOS = () =>
@@ -47,9 +49,22 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
                     responseType: 'blob',
                 });
 
-                const blob = response.data;
+                // Se fuerza el mimetype: si el backend no envía
+                // "Content-Type: application/pdf", navegadores/WebViews
+                // antiguos (tablets Android viejas) no reconocen el blob
+                // como PDF y muestran una pantalla genérica de "archivo
+                // desconocido" en vez de previsualizarlo.
+                const blob = new Blob([response.data], { type: 'application/pdf' });
                 const url = URL.createObjectURL(blob);
+                setPdfBlob(blob);
                 setPdfUrl(url);
+
+                const file = new File([blob], `${pdf.name}.pdf`, { type: 'application/pdf' });
+                setCanShareFile(
+                    typeof navigator !== "undefined" &&
+                    typeof navigator.canShare === "function" &&
+                    navigator.canShare({ files: [file] })
+                );
             } catch (error) {
                 console.error('Error al obtener el PDF:', error);
             }
@@ -58,7 +73,30 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
         if (pdf) {
             fetchPdf();
         }
+
+        return () => {
+            if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+        };
     }, [pdf, axiosAuth]);
+
+    const downloadPdf = () => {
+        if (!pdfUrl) return;
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `${pdf.name}.pdf`;
+        link.click();
+    };
+
+    const sharePdf = async () => {
+        if (!pdfBlob) return;
+        try {
+            const file = new File([pdfBlob], `${pdf.name}.pdf`, { type: 'application/pdf' });
+            await navigator.share({ files: [file], title: pdf.name });
+        } catch (error) {
+            // El usuario canceló el share sheet o el navegador lo rechazó
+            console.error('Error al compartir el PDF:', error);
+        }
+    };
 
     useEffect(() => {
         if (!pdfUrl) return;
@@ -71,18 +109,15 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
             } else {
                 const newTab = window.open(pdfUrl, '_blank');
                 if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-                    window.location.href = pdfUrl; // Fallback si bloqueado
+                    downloadPdf(); // Fallback si bloqueado: descarga directa
                 }
             }
         } else if (!canDisplayPDF()) {
-            const link = document.createElement('a');
-            link.href = pdfUrl;
-            link.download = `${pdf.name}.pdf`;
-            link.click();
+            downloadPdf();
         } else {
             setIsOpen(true);
         }
     }, [pdfUrl, pdf]);
 
-    return { isOpen, isMobile, pdfUrl, toggle };
+    return { isOpen, isMobile, pdfUrl, toggle, downloadPdf, sharePdf, canShareFile };
 };

@@ -4,7 +4,7 @@ import React from 'react';
 
 export const PDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) => {
 
-    const { isOpen, isMobile, pdfUrl, toggle } = usePDFViewer({ pdf });
+    const { isOpen, isMobile, pdfUrl, toggle, downloadPdf, sharePdf, canShareFile } = usePDFViewer({ pdf });
 
     // Evitar renderizar el modal si se redirige
     if (isMobile) {
@@ -21,8 +21,8 @@ export const PDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) => 
                             title="PDF Viewer"
                             className="w-full h-full border-none rounded-md shadow-md"
                         />
-                        {isMobile && (
-                            <div className="py-2 text-center">
+                        <div className="py-2 text-center flex justify-center gap-4">
+                            {isMobile && (
                                 <a
                                     href={pdfUrl}
                                     target="_blank"
@@ -31,8 +31,24 @@ export const PDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) => 
                                 >
                                     Abrir PDF en nueva pestaña
                                 </a>
-                            </div>
-                        )}
+                            )}
+                            <button
+                                type="button"
+                                onClick={downloadPdf}
+                                className="text-blue-600 underline"
+                            >
+                                Descargar PDF
+                            </button>
+                            {canShareFile && (
+                                <button
+                                    type="button"
+                                    onClick={sharePdf}
+                                    className="text-blue-600 underline"
+                                >
+                                    Compartir
+                                </button>
+                            )}
+                        </div>
                     </>
                 ) : (
                     <p>Cargando PDF...</p>

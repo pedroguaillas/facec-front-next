@@ -72,8 +72,11 @@ Definida en `types/order.d.ts:21-50`.
 
 ### `AditionalInformation`
 
-`types/order.d.ts:57-61`: `{ id, name, description }`. Límite de 15 registros
-impuesto en frontend (`AditionalInformation.tsx:15-18`, con `alert()`).
+`types/order.d.ts:57-61`: `{ id, name, description }`. Límite de 13 registros
+impuesto en frontend (`AditionalInformation.tsx:15-18`, con `alert()`). El SRI
+permite 15 campos de información adicional por comprobante, pero el backend
+reserva 2 (RUC Proveedor y Calificación Artesanal), dejando 13 disponibles
+para el usuario.
 
 ### `OrderProps` (fila del listado)
 

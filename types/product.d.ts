@@ -30,15 +30,6 @@ interface Product {
     price1: string | number,
 }
 
-interface ProductCsv {
-    code: string;
-    type_product: string;
-    name: string;
-    price1: string;
-    iva: string;
-    stock: string | null;
-}
-
 interface SriCategory {
     code: string;
     type: string;

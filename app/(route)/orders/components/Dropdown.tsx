@@ -1,4 +1,5 @@
 import { downloadXml } from "@/services/downloadXmlServices";
+import { canShareFiles, sharePdf } from "@/services/sharePdfService";
 import { useInvoices } from "../context/InvoicesContext";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
 import { useEffect, useRef, useState } from "react";
@@ -71,6 +72,18 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                     `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
                 ),
         });
+
+        if (canShareFiles()) {
+            options.push({
+                label: "Compartir",
+                onClick: () =>
+                    sharePdf(
+                        `orders/${order.id}/pdf`,
+                        axiosAuth,
+                        `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
+                    ),
+            });
+        }
 
         if (order.atts.state !== "ANULADO") {
             options.splice(1, 0, {

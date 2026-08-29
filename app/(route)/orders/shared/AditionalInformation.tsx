@@ -12,7 +12,7 @@ export const AditionalInformation = () => {
   const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
 
   const addItem = () => {
-    if (aditionalInformation.length >= 15) {
+    if (aditionalInformation.length >= 13) {
       alert('No se puede registrar mas información adicional')
       return
     }

@@ -5,6 +5,8 @@ import { ProductsFilter, ProductsTable } from './components';
 import { Paginate, Title } from '@/components';
 import { ActionsTitle } from '@/types';
 import { useImportExcel } from './hooks/useImportExcel';
+import { exportProducts } from './services/productServices';
+import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 
 const ProductsPagination = () => {
     const { meta, links, fetchProducts } = useProducts();
@@ -18,13 +20,19 @@ const ProductsPagination = () => {
 };
 
 const OrdersPage = () => {
+    const axiosAuth = useAxiosAuth();
 
     const importProducts = () => {
         document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
     };
 
+    const handleExportProducts = () => {
+        exportProducts(axiosAuth);
+    };
+
     const multipleActions: ActionsTitle[] = [
         { label: "Importar", type: "button", action: 'import', onClick: importProducts },
+        { label: "Exportar", type: "button", action: 'export', onClick: handleExportProducts },
         { label: "", type: "link", url: "products/create", action: "add" },
     ];
 
