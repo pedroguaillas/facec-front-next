@@ -46,7 +46,15 @@ export const ButtonSubmit = () => {
     };
 
     return (
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+            <div className="w-28">
+                <PrimaryButton
+                    label="Regresar"
+                    type="link"
+                    action="back"
+                    url="/products"
+                />
+            </div>
             <div className="w-28">
                 <PrimaryButton
                     label="Guardar"

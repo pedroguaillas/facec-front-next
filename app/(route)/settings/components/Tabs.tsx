@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 interface Props {
-    activeTab?: 'general' | 'establecimientos';
+    activeTab?: 'general' | 'establecimientos' | 'seguridad';
 }
 
 export const Tabs = ({ activeTab = 'general' }: Props) => {
@@ -24,6 +24,15 @@ export const Tabs = ({ activeTab = 'general' }: Props) => {
                     href={'/settings/branches'}
             >
                 Establecimientos
+            </Link>
+            <Link
+                className={`px-4 py-2 font-medium ${activeTab === "seguridad"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : "text-gray-500 hover:text-blue-600"
+                    }`}
+                    href={'/settings/security'}
+            >
+                Seguridad
             </Link>
         </div>
     )

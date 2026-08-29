@@ -22,6 +22,14 @@ const PermissionFormCompany = () => {
         await updateSetting(updatedCompany);
     }
 
+    const handleChangeRetentionAgent = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const updatedCompany = { ...company, [name]: value === '' ? null : Number(value) };
+        setCompany(updatedCompany);
+
+        await updateSetting(updatedCompany);
+    }
+
     const updateSetting = async (updatedCompany: Company) => {
         if (isUpdating) return;
 
@@ -54,10 +62,11 @@ const PermissionFormCompany = () => {
 
                     <div className='lg:w-2/3'>
                         <TextInput
+                            type='number'
                             name='retention_agent'
                             label='Es agente de retención?'
                             value={(company.retention_agent ?? '').toString()}
-                            onChange={handleChangeCheckbox}
+                            onChange={handleChangeRetentionAgent}
                         />
                     </div>
 

@@ -3,6 +3,7 @@
 
 import { PrimaryButton, TextInput } from "@/components";
 import { getSession, signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -76,6 +77,9 @@ export default function LoginPage() {
           />
         </div>
       </form>
+      <Link href="/forgot-password" className="block mt-4 text-center text-sm text-primary hover:underline">
+        ¿Olvidaste tu contraseña?
+      </Link>
     </>
   );
 }
