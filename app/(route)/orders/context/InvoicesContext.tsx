@@ -4,6 +4,7 @@ import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { OrderProps } from "@/types/order";
 import { Links, Meta } from "@/types";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 interface InvoicesContextType {
     invoices: OrderProps[];
@@ -52,6 +53,17 @@ export const InvoicesProvider = ({ children }: Props) => {
     useEffect(() => {
         fetchInvoices();
     }, [fetchInvoices]);
+
+    useEffect(() => {
+        const hasPending = invoices.some((invoice) => isPendingVoucherState(invoice.atts.state));
+        if (!hasPending) return;
+
+        const interval = setInterval(() => {
+            fetchInvoices();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [invoices, fetchInvoices]);
 
     return (
         <InvoicesContext.Provider

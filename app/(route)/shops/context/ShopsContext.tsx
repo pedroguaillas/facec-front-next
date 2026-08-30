@@ -5,6 +5,7 @@ import { getShops } from "../services/shopsServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { Links, Meta, ShopProps } from "@/types";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 interface ShopsContextType {
     shops: ShopProps[];
@@ -51,6 +52,20 @@ export const ShopsProvider = ({ children }: Props) => {
     useEffect(() => {
         fetchShops();
     }, [fetchShops]);
+
+    useEffect(() => {
+        const hasPending = shops.some(
+            (shop) => (shop.atts.voucher_type === 3 && isPendingVoucherState(shop.atts.state))
+                || isPendingVoucherState(shop.atts.state_retencion),
+        );
+        if (!hasPending) return;
+
+        const interval = setInterval(() => {
+            fetchShops();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [shops, fetchShops]);
 
     return (
         <ShopsContext.Provider value={{

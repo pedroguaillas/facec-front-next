@@ -1,10 +1,11 @@
 import { TableResponsive } from "@/components"
 import { useReferralGuides } from "../context/ReferralGuidesContext"
-import { FaInfoCircle } from "react-icons/fa";
+import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
 import { getStateBadgeClasses } from "@/helpers/stateBadge";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 const ReferrralGuidesList = () => {
     const { referralGuides } = useReferralGuides();
@@ -45,6 +46,9 @@ const ReferrralGuidesList = () => {
                             <span
                                 className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(referralGuide.atts?.state || "CREADO")}`}
                             >
+                                {isPendingVoucherState(referralGuide.atts?.state) && (
+                                    <FaSpinner className="inline-block mr-1 animate-spin" />
+                                )}
                                 {referralGuide.atts?.state || "CREADO"}
 
                                 {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(referralGuide.atts?.state) && (

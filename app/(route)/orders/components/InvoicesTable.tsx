@@ -1,10 +1,11 @@
 import { TableResponsive } from "@/components/table-responsive/TableResponsive";
-import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMailBulk, FaSpinner } from "react-icons/fa";
 import { useInvoices } from "../context/InvoicesContext";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
 import { getStateBadgeClasses } from "@/helpers/stateBadge";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
@@ -58,6 +59,9 @@ const InvoicesTable = () => {
                                 <span
                                     className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(order.atts?.state || "CREADO")}`}
                                 >
+                                    {isPendingVoucherState(order.atts?.state) && (
+                                        <FaSpinner className="inline-block mr-1 animate-spin" />
+                                    )}
                                     {order.atts?.state || "CREADO"}
 
                                     {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state) && (

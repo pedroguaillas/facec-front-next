@@ -3,6 +3,7 @@ import { getReferralGuides } from "../services/referralGuidesServices";
 import { Links, Meta, ReferralGuideProps } from "@/types"
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 interface ReferralGuidesContextType {
     referralGuides: ReferralGuideProps[],
@@ -42,6 +43,17 @@ export const ReferralGuidesProvider = ({ children }: Props) => {
     useEffect(() => {
         fetchReferralGuides();
     }, [fetchReferralGuides]);
+
+    useEffect(() => {
+        const hasPending = referralGuides.some((referralGuide) => isPendingVoucherState(referralGuide.atts.state));
+        if (!hasPending) return;
+
+        const interval = setInterval(() => {
+            fetchReferralGuides();
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [referralGuides, fetchReferralGuides]);
 
     return (
         <ReferralGuideContext.Provider value={{

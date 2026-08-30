@@ -5,11 +5,12 @@ import { ProductProps } from "@/types";
 
 interface Props {
     handleSelect: (product: ProductProps) => void;
+    onlyProducts?: boolean;
 }
 
-const ModalSelectProduct = ({ handleSelect }: Props) => {
+const ModalSelectProduct = ({ handleSelect, onlyProducts = false }: Props) => {
 
-    const { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal } = useModalSelectProduct(handleSelect);
+    const { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal } = useModalSelectProduct(handleSelect, onlyProducts);
 
     const ProductsPagination = () => {
 

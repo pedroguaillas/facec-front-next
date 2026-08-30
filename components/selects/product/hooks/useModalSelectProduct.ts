@@ -1,9 +1,13 @@
 import { initialLinks, initialMeta } from "@/constants/initialValues";
-import { GeneralPaginate, Links, Meta, ProductProps } from "@/types";
+import { Links, Meta, ProductProps } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { getProducts } from "@/services/productServices";
 
-export const useModalSelectProduct = (handleSelect: (product: ProductProps) => void) => {
+// type_product: 1 = producto, 2 = servicio
+const TYPE_PRODUCT = 1;
+
+export const useModalSelectProduct = (handleSelect: (product: ProductProps) => void, onlyProducts: boolean = false) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta>({ ...initialMeta });
@@ -29,19 +33,18 @@ export const useModalSelectProduct = (handleSelect: (product: ProductProps) => v
             if (!page) return;
 
             const pageNumber = page.split("=")[1];
-            try {
-                const res = await axiosAuth.get<GeneralPaginate<ProductProps>>(`products?page=${pageNumber}`, {
-                    params: { search, paginate: 10 },
-                });
-                const { data, meta, links } = res.data;
-                setSuggestions(data);
-                setMeta(meta);
-                setLinks(links);
-            } catch (error) {
-                console.error(error);
+            let pageUrl = `products?page=${pageNumber}&paginate=10`;
+            if (search) pageUrl += `&search=${search}`;
+            if (onlyProducts) pageUrl += `&type=${TYPE_PRODUCT}`;
+
+            const { data } = await getProducts(axiosAuth, pageUrl);
+            if (data) {
+                setSuggestions(data.data);
+                setMeta(data.meta);
+                setLinks(data.links);
             }
         },
-        [search, axiosAuth],
+        [search, onlyProducts, axiosAuth],
     );
 
     // handleSelectLocal es necesario porque toca resetear los valores iniciales

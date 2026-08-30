@@ -1,12 +1,13 @@
 "use client";
 
-import { FaCheckCircle, FaInfoCircle, FaMailBulk } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaMailBulk, FaSpinner } from "react-icons/fa";
 import { useShops } from "../context/ShopsContext"
 import { TableResponsive } from "@/components"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
 import Link from "next/link";
 import { getStateBadgeClasses } from "@/helpers/stateBadge";
+import { isPendingVoucherState } from "@/helpers/voucherPolling";
 
 export const ShopsTable = () => {
 
@@ -64,6 +65,9 @@ export const ShopsTable = () => {
                                 <span
                                     className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(shop.atts?.state_retencion)}`}
                                 >
+                                    {isPendingVoucherState(shop.atts?.state_retencion) && (
+                                        <FaSpinner className="inline-block mr-1 animate-spin" />
+                                    )}
                                     {shop.atts?.state_retencion}
 
                                     {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion) && (

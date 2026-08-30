@@ -11,9 +11,10 @@ interface Props {
     error?: string;
     index: number;
     selectProduct: (index: number, product: ProductProps) => void;
+    onlyProducts?: boolean;
 }
 
-export const SelectProduct = ({ label, error, index, selectProduct }: Props) => {
+export const SelectProduct = ({ label, error, index, selectProduct, onlyProducts = false }: Props) => {
 
     const [displayValue, setDisplayValue] = useState(label ?? "");
 
@@ -22,7 +23,7 @@ export const SelectProduct = ({ label, error, index, selectProduct }: Props) => 
         selectProduct(index, product);
     }
 
-    const { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal: modalSelect } = useModalSelectProduct(handleSelect);
+    const { isOpen, search, meta, links, suggestions, setSearch, toggle, fetchProduct, handleSelectLocal: modalSelect } = useModalSelectProduct(handleSelect, onlyProducts);
 
     useEffect(() => {
         if (label) setDisplayValue(label);

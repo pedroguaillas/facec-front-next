@@ -35,7 +35,7 @@ export const ItemProduct = ({
 				/>
 			</td>
 			<td>
-				<SelectProduct index={index} label={productOutput.name} selectProduct={selectProduct} error={error?.product_id} />
+				<SelectProduct index={index} label={productOutput.name} selectProduct={selectProduct} error={error?.product_id} onlyProducts />
 			</td>
 
 			<td className='w-1'>
