@@ -201,14 +201,10 @@ se ve en el HTML —`required` en `CustomerForm.tsx:75`— es solo una
 validación del navegador (HTML5 `required`), no está reforzada en el
 schema Zod ni en el tipo `Customer`).
 
-No se encontró en el código ninguna lógica para "consumidor final"
-(identificación `9999999999` o `9999999999999`) dentro del módulo Clientes.
-La única referencia relacionada en todo el repo está en el módulo de
-**pedidos** (`app/(route)/orders/shared/Totals.tsx:112`), que compara
-`selectCustom?.atts.identication === '9999999999999'` para mostrar un aviso
-de límite de $50 en la factura — es una regla de negocio de Pedidos, no de
-Clientes, y no hay una opción "Consumidor Final" en el `<select>` de tipo de
-identificación de este formulario.
+"Consumidor Final" tampoco se agrega como opción del `<select>` de tipo de
+identificación de este formulario (se crea una única vez desde otro flujo,
+ver más abajo). Pero **sí existe bloqueo de edición** para ese cliente en el
+listado (ver §5, "Bloqueo de edición de Consumidor Final").
 
 ### 4. Sin flags que muestren/oculten campos dinámicamente
 
@@ -218,6 +214,22 @@ otros valores. Todos los campos (`type_identification`, `identication`,
 `name`, `address`, `phone`, `email`) están siempre visibles; lo único que
 cambia dinámicamente es el `maxLength` del campo `identication` (punto 2) y
 el disparo del autocompletado (punto 1).
+
+### 5. Bloqueo de edición de Consumidor Final
+
+Constante `CONSUMIDOR_FINAL_IDENTICATION = '9999999999999'`
+(`constants/customers.ts`), compartida con el aviso de límite $50 en Ventas
+(`docs/ventas.md` §3.6).
+
+- **Listado** (`CustomersTable.tsx`): el botón/ícono de editar no se
+  renderiza para la fila cuyo `customer.atts.identication ===
+  CONSUMIDOR_FINAL_IDENTICATION` — solo queda disponible el botón eliminar.
+- **Edición directa por URL** (`hooks/useCustomerForm.ts`): al cargar
+  `/customers/{id}`, si `getCustomer` devuelve un cliente con esa
+  identificación, se hace `redirect('/error?message=...')` (misma página de
+  error usada en `products`/`companies`) antes de poblar el formulario —
+  evita editar el registro navegando directo a la URL, sin depender de que
+  el botón de la lista esté oculto.
 
 ## Envío del formulario (`CustomerForm.tsx:20-44`, vía `useActionState`)
 
@@ -290,20 +302,22 @@ en edición, no cambia el label según el modo).
    si pasa, `storeCustomer` o `updateCustomer` según exista `params.id`;
    errores 422 del backend se mapean 1 a 1 sobre los mismos campos del
    formulario.
+9. El cliente "Consumidor Final" (`identication === '9999999999999'`, ver
+   §5) no puede editarse: sin botón en el listado, y bloqueado por
+   `redirect` si se navega directo a `/customers/{id}`.
 
 ## ⚠️ Observaciones
 
 > Los dos puntos siguientes (tipo incompleto y regex de pasaporte) fueron
 > corregidos: `types/customer.d.ts`, `schemas/customer.schema.ts`.
 
-- **No existe manejo de "Consumidor Final" en Clientes** (esto es
-  intencional, no un bug — confirmado con negocio): la constante
-  `'9999999999999'` (13 nueves) solo aparece en
-  `app/(route)/orders/shared/Totals.tsx:112` para un aviso de límite de
-  factura, no en la creación/edición de clientes. Si el negocio espera un
-  flujo explícito de "Crear consumidor final" en este módulo (hay un botón
-  con ese texto en `app/(route)/settings/branches/components/ModalFormBranch.tsx:87`,
-  de otro módulo — configuración de sucursales), no está implementado aquí.
+- **Consumidor Final no se crea/edita desde este módulo** (intencional,
+  confirmado con negocio): se crea una única vez desde otro flujo (hay un
+  botón "Crear consumidor final?" en
+  `app/(route)/settings/branches/components/ModalFormBranch.tsx:87`, de
+  configuración de sucursales). Lo que sí vive en este módulo desde esta
+  auditoría es el **bloqueo de edición** (§5): botón oculto en la lista +
+  `redirect` a `/error` si se entra directo a `/customers/{id}`.
 
 - **`axiosAuth` inconsistente en `CustomersTable.tsx`**: importa la
   instancia global `axiosAuth` de `lib/axios.ts` directamente

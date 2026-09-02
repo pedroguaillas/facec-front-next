@@ -1,7 +1,9 @@
 export interface ProductProps {
     id: number,
+    aux_cod?: string | null,
     atts: {
         code: string,
+        aux_cod?: string | null,
         type_product: number,
         name: string,
         price1: number,

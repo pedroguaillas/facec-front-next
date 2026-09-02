@@ -30,7 +30,10 @@ export const ProductForm = () => {
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='Código' value={product.code} error={errorProduct.code} onChange={handleChange} name='code' maxLength={25} required />
                     </div>
-                    {(transport || product.iva === 5 || (product.type_product === 2 && sriCategories.some(sc => sc.type === 'transporte'))) && (
+                    {(
+                        (product.type_product === 1 && product.iva === 5 && sriCategories.some(sc => sc.type === 'ferreteria')) ||
+                        (product.type_product === 2 && transport && sriCategories.some(sc => sc.type === 'transporte'))
+                    ) && (
                         <div className='w-full'>
                             <div className='lg:w-2/3'>
                                 <SelectSriCategory

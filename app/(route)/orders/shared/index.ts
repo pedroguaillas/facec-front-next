@@ -6,5 +6,6 @@ export * from './ItemAditionalInformation';
 export * from './ItemProduct';
 export * from './ListProducts';
 export * from './PayMethods';
+export * from './Plate';
 export * from './Repayments';
 export * from './Totals';

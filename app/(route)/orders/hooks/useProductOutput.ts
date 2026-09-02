@@ -61,6 +61,7 @@ export const useProductOutput = () => {
         const updated: ProductOutput = {
             ...productOutputs[index],
             product_id: product.id,
+            aux_cod: product.atts.aux_cod,
             price: product.atts.price1,
             quantity: 1,
             discount: 0,

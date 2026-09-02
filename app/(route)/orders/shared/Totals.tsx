@@ -3,6 +3,7 @@
 import { TableResponsive } from "@/components";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { useFormInvoice } from "../context/FormInvoiceContext";
+import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
 
 const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
 
@@ -109,7 +110,7 @@ export const Totals = () => {
                     </tr>
                 </tfoot>
             </TableResponsive>
-            {selectCustom?.atts.identication === '9999999999999' && invoice.total > 50 && <p className="text-sm text-red-500 text-right pt-2">Límite $50 si es Consumidor Final</p>}
+            {selectCustom?.atts.identication === CONSUMIDOR_FINAL_IDENTICATION && invoice.total > 50 && <p className="text-sm text-red-500 text-right pt-2">Límite $50 si es Consumidor Final</p>}
             <ButtonSubmit />
         </div>
     );

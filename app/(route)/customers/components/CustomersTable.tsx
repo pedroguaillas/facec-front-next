@@ -4,6 +4,7 @@ import { Dialog, IconButton, TableResponsive } from "@/components";
 import { useCustomers } from "../context/CustomersContext";
 import { axiosAuth } from "@/lib/axios";
 import { deleteCustomer } from "../services/customersServices";
+import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
 
 export const CustomersTable = () => {
 
@@ -39,7 +40,9 @@ export const CustomersTable = () => {
               <td className="text-left">{customer.atts.address}</td>
               <td className="w-1">
                 <div className="flex gap-2">
-                  <IconButton type="link" action="edit" url={`/customers/${customer.id}`} title="Editar" />
+                  {customer.atts.identication !== CONSUMIDOR_FINAL_IDENTICATION && (
+                    <IconButton type="link" action="edit" url={`/customers/${customer.id}`} title="Editar" />
+                  )}
                   <IconButton type="button" action="delete" onClick={() => setCustomerDeleteId(customer.id)} title="Eliminar" />
                 </div>
               </td>

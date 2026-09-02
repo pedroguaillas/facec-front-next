@@ -50,21 +50,35 @@ Componentes involucrados: `ProductForm.tsx` (visibilidad del selector),
 `SelectSriCategory.tsx` (botón + input de búsqueda) y
 `SelectModalSriCategory.tsx` (modal con filtro y listado).
 
+**Regla de negocio (fuente de verdad, confirmada con negocio 2026-09-01):**
+
+| `type_product` | Condición adicional      | Categoría SRI permitida | ¿Obligatoria? |
+|-----------------|---------------------------|---------------------------|----------------|
+| `1` (Producto)  | `iva === 5`                | `type === 'ferreteria'`   | Sí             |
+| `2` (Servicio)  | `transport === true` (flag global empresa) | `type === 'transporte'` | No             |
+| cualquier otro caso | —                      | (no se muestra selector)  | —              |
+
+`ferreteria` y `transporte` son mutuamente excluyentes: dependen de
+`type_product`, que es un valor único por producto, así que un mismo
+registro nunca debe ofrecer ambos tipos a la vez. Servicio **nunca** puede
+tener `iva === 5` (ver sección "Exclusión de IVA 5% para Servicio" más
+abajo), por lo que la fila 1 de la tabla en la práctica solo aplica a
+Producto.
+
 ### 1. Visibilidad del selector (`ProductForm.tsx`)
 
-El bloque `SelectSriCategory` se muestra si se cumple **alguna** de estas
-condiciones:
+```ts
+{(
+    (product.type_product === 1 && product.iva === 5 && sriCategories.some(sc => sc.type === 'ferreteria')) ||
+    (product.type_product === 2 && transport && sriCategories.some(sc => sc.type === 'transporte'))
+) && (
+    <SelectSriCategory ... />
+)}
+```
 
-| Condición                                                                 | Caso de negocio                                              |
-|----------------------------------------------------------------------------|----------------------------------------------------------------|
-| `transport === true`                                                       | Empresa tiene habilitado transporte (flag global del backend) |
-| `product.iva === 5`                                                        | Producto con tarifa IVA 5% (requiere categoría tipo `ferreteria`) |
-| `product.type_product === 2 && sriCategories.some(sc => sc.type === 'transporte')` | Producto tipo **Servicio** y el catálogo trae categorías tipo `transporte` |
-
-> La tercera condición fue agregada para cubrir el caso: *"al registrar un
-> producto tipo Servicio, si existen `sriCategories` de tipo `transporte`,
-> deben poder seleccionarse"*, independientemente del flag `transport` de la
-> empresa.
+El bloque `SelectSriCategory` solo se muestra si además de cumplirse la
+condición de negocio, el catálogo `sriCategories` trae al menos una
+categoría del tipo correspondiente.
 
 ### 2. Filtro dentro del modal (`SelectModalSriCategory.tsx`)
 
@@ -73,27 +87,18 @@ y por tipo, con esta lógica combinada (`matchesType`):
 
 ```ts
 const matchesType =
-  (product.iva === 5 && sriCategory.type === 'ferreteria') ||
-  (transport && sriCategory.type === 'transporte') ||
-  (product.type_product === 2 && sriCategory.type === 'transporte');
+  (product.type_product === 1 && product.iva === 5 && sriCategory.type === 'ferreteria') ||
+  (product.type_product === 2 && transport && sriCategory.type === 'transporte');
 ```
 
-Resumen de reglas:
-
-- **Producto + IVA 5%** → solo categorías `type === 'ferreteria'`.
-- **Empresa con transporte habilitado (`transport`)** → categorías
-  `type === 'transporte'` (sin importar `type_product`).
-- **Servicio (`type_product === 2`) con categorías `transporte` disponibles**
-  → categorías `type === 'transporte'` (sin importar el flag `transport`).
-
-> Se eliminó la rama `(product.iva === 5 && transport)` que mostraba ambos
-> tipos de categoría a la vez. Por regla de negocio `ferreteria` aplica
-> exclusivamente a `type_product === 1` (Producto) y `transporte` a
-> `type_product === 2` (Servicio); dado que `type_product` es un valor único
-> por producto, un mismo registro nunca debe mostrar ambos tipos
-> simultáneamente. La rama era código muerto o, en el peor caso, incorrecta
-> (podía filtrar categorías `transporte` para un registro tipo Producto solo
-> porque la empresa tiene `transport` habilitado como flag global).
+> **Bug corregido (2026-09-01):** antes existía una rama suelta
+> `transport && sriCategory.type === 'transporte'` sin exigir
+> `type_product === 2`. Efecto: un producto tipo **Producto (1)** con la
+> empresa configurada con `transport: true` podía mostrar y dejar
+> seleccionar categorías `transporte`, que son exclusivas de Servicio.
+> Se corrigió exigiendo `type_product === 2` en la misma rama que revisa
+> `transport`, y se agregó `type_product === 1` explícito a la rama de
+> `ferreteria` por simetría/defensividad.
 
 ### 3. Selección
 
@@ -101,22 +106,28 @@ Resumen de reglas:
 `selectSriCategory(sriCategory)` que hace `setProduct({ ...prev, aux_cod: sriCategory.code })`
 y muestra la descripción en el input de búsqueda como label.
 
-### ⚠️ Nota de validación pendiente
-
-El schema Zod (`schemas/product.schema.ts`) solo exige `aux_cod` cuando
-`iva === 5`:
+### 4. Validación de envío (`schemas/product.schema.ts`)
 
 ```ts
 .refine(
-  (data) => data.iva !== 5 || (data.aux_cod && data.aux_cod.trim() !== ""),
-  { path: ['aux_cod'], message: 'Código auxiliar requerido si el IVA es 5%' }
+  (data) => !(data.type_product === 1 && data.iva === 5) || (data.aux_cod && data.aux_cod.trim() !== ""),
+  { path: ['aux_cod'], message: 'Código auxiliar requerido si el producto tiene IVA 5%' }
 );
 ```
 
-No existe una regla equivalente que obligue a seleccionar `aux_cod` cuando
-`type_product === 2` y aplica transporte. Es decir, el campo se **muestra**
-pero no se **exige** en ese escenario — a validar con negocio si debe ser
-obligatorio.
+`aux_cod` (categoría SRI) es **obligatorio únicamente** para Producto (1)
+con IVA 5%. Servicio (2) nunca lo exige, tenga o no `transport` activo ni
+categoría seleccionada.
+
+> **Bug corregido (2026-09-01):** la condición anterior era
+> `data.iva !== 5 || (aux_cod...)`, sin revisar `type_product`. Con datos
+> heredados/editados donde un registro `type_product === 2` conservaba
+> `iva === 5` (estado que la UI ya no permite generar desde cero, pero que
+> podía existir en un registro previamente guardado como Producto y luego
+> editado a Servicio sin pasar por `handleSelect`), el formulario bloqueaba
+> el guardado de un Servicio exigiendo una categoría SRI que ni siquiera se
+> mostraba en pantalla (por la regla de visibilidad de la sección 1). Se
+> corrigió acotando el `refine` a `type_product === 1 && iva === 5`.
 
 ## Tipo de producto (`type_product`)
 
@@ -175,12 +186,16 @@ select.
 
 ## Resumen de reglas de negocio confirmadas
 
-1. `type_product` producto + `iva === 5` → mostrar y filtrar categorías SRI
-   `ferreteria`.
-2. `type_product` servicio + existen categorías `transporte` en el catálogo
-   → mostrar y filtrar categorías SRI `transporte`.
-3. Empresa con `transport` habilitado (flag global) → mostrar y filtrar
-   categorías `transporte`, sin importar el tipo de producto.
-4. `ferreteria` y `transporte` no deben mostrarse combinadas para un mismo
+1. `type_product === 1` (Producto) + `iva === 5` → mostrar, filtrar y
+   **exigir** categoría SRI `ferreteria`.
+2. `type_product === 2` (Servicio) + `transport === true` (flag global de la
+   empresa) → mostrar y filtrar categoría SRI `transporte`; **nunca
+   obligatoria**.
+3. `ferreteria` y `transporte` no deben mostrarse combinadas para un mismo
    producto: son mutuamente excluyentes según `type_product` (1 = Producto
-   → ferreteria, 2 = Servicio → transporte).
+   → ferreteria, 2 = Servicio → transporte). El flag global `transport` de
+   la empresa **solo** habilita `transporte` si además `type_product === 2`;
+   no aplica por sí solo a un Producto.
+4. Servicio no admite `iva === 5` — se filtra del select y `handleSelect`
+   la resetea a `4` si se cambia `type_product` a Servicio con `iva === 5`
+   seleccionado (`useProductForm.ts`).

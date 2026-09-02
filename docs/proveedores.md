@@ -96,9 +96,16 @@ const optionType = [
 
 - **Edición** (`[id]/page.tsx`): `useSupplierForm.ts:56-68` dispara un
   `useEffect` que llama a `getSupplier(params.id, axiosAuth)`
-  (`GET providers/{id}/edit`), llena `supplier` con la respuesta y activa el
+  (`GET providers/{id}`), llena `supplier` con la respuesta y activa el
   flag `skiFetch = true` para evitar el auto-resuelto (ver siguiente
   sección).
+
+  > **Bug corregido:** `getSupplier` (`suppliersServices.ts`) llamaba a
+  > `providers/{id}/edit`, sufijo `/edit` que no existe en el backend
+  > (`404 The route api/providers/{id}/edit could not be found`). Es el
+  > único servicio de todo el repo que usaba ese sufijo — el resto
+  > (`products/{id}`, `customers/{id}`, etc.) golpea el recurso plano. Se
+  > corrigió a `providers/{id}`.
 
 ## Lógica condicional importante
 

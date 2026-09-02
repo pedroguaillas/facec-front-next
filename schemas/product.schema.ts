@@ -20,9 +20,11 @@ export const productSchema = z.object({
     .refine(val => val >= 0, { message: "Precio debe ser mayor o igual a 0" }),
 })
   .refine(
-    (data) => data.iva !== 5 || (data.aux_cod && data.aux_cod.trim() !== ""),
+    // Código auxiliar (categoría SRI) solo obligatorio para Producto (1) con IVA 5%.
+    // Servicio (2) nunca lo requiere, aunque tenga transporte activo.
+    (data) => !(data.type_product === 1 && data.iva === 5) || (data.aux_cod && data.aux_cod.trim() !== ""),
     {
       path: ['aux_cod'],
-      message: 'Código auxiliar requerido si el IVA es 5%',
+      message: 'Código auxiliar requerido si el producto tiene IVA 5%',
     }
   );

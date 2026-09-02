@@ -1,4 +1,4 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, Totals } from "../shared";
+import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, Plate, Totals } from "../shared";
 import { FormInvoiceProvider } from "../context/FormInvoiceContext";
 import { Separate, Title, RequiredFields } from "@/components";
 
@@ -26,6 +26,7 @@ const EditOrderPage = () => {
                         <Separate />
                         <div className='flex flex-col sm:flex-row justify-between pt-2 gap-2'>
                             <div className='mb-2'>
+                                <Plate />
                                 <PayMethods />
                                 <AditionalInformation />
                             </div>

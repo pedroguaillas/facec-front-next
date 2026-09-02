@@ -59,7 +59,7 @@ interface TaxInput {
 
 interface Tax {
     id: string;
-    code: '' | number,
+    code: string,
     tax_code: string,
     base: '' | number,
     porcentage: '' | number | null,

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const taxSchema = z.object({
     id: z.string(), // o number si usas timestamp
-    code: z.coerce.number().min(1, "Seleccione el tipo de impuesto"),
+    code: z.string().min(1, "Seleccione el tipo de impuesto"),
     tax_code: z.string().min(1, { message: 'Seleccione una retención' }),
 
     porcentage: z

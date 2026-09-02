@@ -59,7 +59,6 @@ const processAction = (
             axiosAuth,
             fetchInvoices,
             "Para anular el comprobante en este sistema, primero debe anularlo en el SRI",
-            "post",
         );
     }
     return handleApiCall(`${basePath}/${id}/process`, axiosAuth, fetchInvoices);

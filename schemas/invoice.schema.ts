@@ -2,6 +2,7 @@ import { aditionalInformationSchema } from './aditional-information.schema';
 import { productOutputSchema } from './product-output.schema';
 import { z } from 'zod';
 import { repaymentSchema } from './repayment.schema';
+import { TRANSPORT_AUX_COD_PREFIX } from '@/constants';
 
 export const invoiceSchema = z
   .object({
@@ -21,6 +22,7 @@ export const invoiceSchema = z
       .refine(val => val >= 0, { message: "Descuento debe ser mayor o igual a 0" }),
     pay_method: z.number(),
     guia: z.string().optional(),
+    plate: z.string().optional(),
     // Para notas de crédito
     date_order: z.string().optional(),
     serie_order: z.string().optional(),
@@ -116,5 +118,15 @@ export const invoiceSchema = z
     {
       path: ['pay_method'],
       message: 'Monto desde $500, debe seleccionar otro forma de pago',
+    }
+  )
+  // Placa obligatoria si algún item es un servicio de transporte (aux_cod H49200...)
+  .refine(
+    (data) =>
+      !data.products.some((p) => p.aux_cod?.startsWith(TRANSPORT_AUX_COD_PREFIX)) ||
+      (!!data.plate && data.plate.trim() !== ''),
+    {
+      path: ['plate'],
+      message: 'La placa es obligatoria para servicios de transporte',
     }
   );

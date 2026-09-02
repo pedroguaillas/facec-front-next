@@ -163,7 +163,7 @@ export const FormShopProvider = ({ children }: Props) => {
                             } : null,
                             applieWithholding: (data.shopretentionitems ?? []).length > 0,
                             taxInputs: data.taxes ?? [],
-                            taxes: (data.shopretentionitems ?? []).map((item: Tax) => ({ ...item, id: nanoid() })),
+                            taxes: (data.shopretentionitems ?? []).map((item: Tax) => ({ ...item, id: nanoid(), code: String(item.code) })),
                             productOutputs: data.shop_items.map((item: ProductOutput) => ({
                                 ...item,
                                 id: item.id + '',

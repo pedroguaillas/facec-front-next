@@ -499,6 +499,16 @@ en ese cambio.
 - **Usar el enum `VoucherType` en todas partes.** Persisten literales crudos
   (`Dropdown.tsx:189`, `useFile.ts` `tv === 1`) y el mapa duplicado de
   prefijos en `ShopsTable.tsx:25-30`.
+- ~~**Tipar y castear los códigos de IVA de forma consistente.**~~ Corregido:
+  `Tax.code` era `'' | number` y viajaba como número al backend cuando venía
+  de una compra existente (`data.shopretentionitems` sin castear en
+  `FormShopContext.tsx`), causando 422 `"The taxes.0.code field must be a
+  string."` al editar. Ahora `Tax.code` es `string` (`types/shop.d.ts`), se
+  fuerza `code: String(item.code)` al cargar `shopretentionitems`
+  (`FormShopContext.tsx`), y `taxSchema.code` valida `z.string()` en vez de
+  `z.coerce.number()` (`schemas/tax.schema.ts`). Las filas nuevas ya
+  llegaban como string desde el `<select>` de `ItemTax.tsx`, así que solo
+  afectaba compras **editadas** con retenciones ya guardadas.
 - **Usar actualizaciones funcionales en `useTaxes`.** `updateItem`,
   `selectRetention` y `deleteItem` leen `taxes` del closure del render en vez
   de `setTaxes(prev => ...)`, lo que abre la puerta a estado obsoleto si se

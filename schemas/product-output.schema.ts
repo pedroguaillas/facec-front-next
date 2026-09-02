@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const productOutputSchema = z.object({
   // id: z.string(), // o number si usas timestamp
   product_id: z.coerce.number().min(1, "Seleccione un producto"),
+  aux_cod: z.string().nullable().optional(),
 
   quantity: z
     .union([

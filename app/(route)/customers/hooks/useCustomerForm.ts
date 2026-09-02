@@ -1,9 +1,10 @@
 import { findCustomerByIdentification } from "@/services/customerServices";
 import { initialCustomer } from "@/constants/initialValues";
+import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
 import { getCustomer } from "../services/customersServices";
 import { ChangeEvent, useEffect, useState } from "react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { Customer } from "@/types";
 
 export const useCustomerForm = () => {
@@ -27,6 +28,9 @@ export const useCustomerForm = () => {
 
                 const { data } = await getCustomer(axiosAuth, params.id);
                 if (data) {
+                    if (data.identication === CONSUMIDOR_FINAL_IDENTICATION) {
+                        redirect(`/error?message=${encodeURIComponent('No se puede editar el cliente Consumidor Final.')}`);
+                    }
                     setSkiFetch(true);
                     setCustomer(data);
                 }

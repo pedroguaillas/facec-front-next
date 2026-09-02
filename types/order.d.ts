@@ -47,6 +47,7 @@ interface OrderCreateProps {
     date_order?: string;
     serie_order?: string;
     reason?: string;
+    plate?: string;
 }
 
 interface PayMethod {
@@ -63,6 +64,7 @@ interface AditionalInformation {
 interface ProductOutput {
     id: string;
     product_id: number;
+    aux_cod?: string | null;
     price: number | string;
     quantity: number | string;
     stock: number;

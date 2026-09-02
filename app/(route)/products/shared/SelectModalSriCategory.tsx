@@ -20,11 +20,10 @@ const SelectModalSriCategory = ({ show, onClose, selectSriCategory }: Props) => 
   const filterSriCategories = sriCategories.filter((sriCategory: SriCategory) => {
     const matchesSearch = sriCategory.code.includes(search) || sriCategory.description.toLowerCase().includes(search.toLowerCase());
 
-    // ✅ Lógica del tipo según flags
+    // ✅ Lógica del tipo según flags: Producto(1)+IVA 5% -> ferreteria; Servicio(2)+transport -> transporte
     const matchesType =
-      (product.iva === 5 && sriCategory.type === 'ferreteria') ||
-      (transport && sriCategory.type === 'transporte') ||
-      (product.type_product === 2 && sriCategory.type === 'transporte');
+      (product.type_product === 1 && product.iva === 5 && sriCategory.type === 'ferreteria') ||
+      (product.type_product === 2 && transport && sriCategory.type === 'transporte');
 
     return matchesSearch && matchesType;
   });

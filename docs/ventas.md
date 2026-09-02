@@ -33,6 +33,7 @@ Definida en `types/order.d.ts:21-50`.
 | `pay_method`       | `number`           | Catálogo `payMethods` |
 | `guia`             | `string?`          | Guía de remisión, solo factura, requiere permiso `guia_in_invoice` |
 | `date_order`, `serie_order`, `reason` | `string?` | Solo para Nota de Crédito (referencia a la factura original) |
+| `plate`            | `string?`          | Placa del vehículo; obligatoria solo si algún ítem es un servicio de transporte (ver §3.10) |
 
 ### `ProductOutput` (línea de detalle / ítem)
 
@@ -42,6 +43,7 @@ Definida en `types/order.d.ts:21-50`.
 |--------------|------------------------|-------|
 | `id`         | `string`               | `nanoid()` en frontend |
 | `product_id` | `number`               | Seleccionado desde `SelectProduct` |
+| `aux_cod`    | `string?`               | Código auxiliar SRI del producto seleccionado (copiado desde `product.atts.aux_cod` en `selectProduct`); usado para detectar servicios de transporte (§3.10) |
 | `price`      | `number \| string`     | Precio unitario sin impuestos |
 | `quantity`   | `number \| string`     |  |
 | `stock`      | `number`                | Se fija en `1` al seleccionar producto (no se valida contra stock real) |
@@ -321,14 +323,16 @@ un valor mayor a 0"* (`product-output.schema.ts:39`).
 `Totals.tsx:112`:
 
 ```tsx
-{selectCustom?.atts.identication === '9999999999999' && invoice.total > 50 &&
+{selectCustom?.atts.identication === CONSUMIDOR_FINAL_IDENTICATION && invoice.total > 50 &&
   <p className="text-sm text-red-500 text-right pt-2">Límite $50 si es Consumidor Final</p>}
 ```
 
 Solo es un **mensaje visual de advertencia** (identifica al cliente genérico
-"Consumidor Final" por su identificación fija `9999999999999`); no bloquea
-el envío del formulario ni existe validación equivalente en el schema Zod
-ni en `ButtonSubmit.tsx`.
+"Consumidor Final" por su identificación fija, constante
+`CONSUMIDOR_FINAL_IDENTICATION = '9999999999999'` en `constants/customers.ts`);
+no bloquea el envío del formulario ni existe validación equivalente en el
+schema Zod ni en `ButtonSubmit.tsx`. La misma constante también bloquea la
+edición de ese cliente desde el módulo Clientes (ver `docs/clientes.md`).
 
 ### 3.7 Serie / punto de emisión (`useSelectPoint.ts`)
 
@@ -380,6 +384,31 @@ a una acción disponible vía `GET orders/{id}/{endpoint}`:
 Adicional: "Enviar correo" exige `state === 'AUTORIZADO'` y que el cliente
 tenga `email` (`Dropdown.tsx:102-110`), validado con `alert()` en el
 navegador.
+
+### 3.10 Placa obligatoria para servicios de transporte
+
+Constante `TRANSPORT_AUX_COD_PREFIX = 'H49200'` (`constants/sriCategories.ts`).
+
+- Al seleccionar un producto (`useProductOutput.selectProduct`,
+  `hooks/useProductOutput.ts`), se copia `aux_cod: product.atts.aux_cod` al
+  `ProductOutput` de la línea.
+- `app/(route)/orders/shared/Plate.tsx` renderiza un `TextInput` "Placa"
+  (obligatorio) justo antes de `<PayMethods />` (en `create/page.tsx` y
+  `[id]/page.tsx`), solo si:
+  ```ts
+  const hasTransportItem = productOutputs.some(item => item.aux_cod?.startsWith(TRANSPORT_AUX_COD_PREFIX));
+  if (!hasTransportItem && !invoice.plate) return null;
+  ```
+  El `|| invoice.plate` cubre el caso de edición: si la respuesta de
+  `getInvoice` no re-envía `aux_cod` en `order_items` pero el pedido ya tiene
+  `plate` guardada, el campo se muestra igual para poder verla/editarla.
+- Validación (`schemas/invoice.schema.ts`, último `.refine()`): `plate` es
+  obligatoria si `data.products.some(p => p.aux_cod?.startsWith(TRANSPORT_AUX_COD_PREFIX))`.
+  `schemas/product-output.schema.ts` declara `aux_cod` opcional solo para que
+  viaje a través del `.safeParse` (el refine de nivel factura lee `aux_cod`
+  desde `data.products`).
+- Sin cambios en `ButtonSubmit.tsx`: `plate` viaja automático dentro del
+  spread `...invoice` del payload.
 
 ## 4. Envío del formulario (`ButtonSubmit.tsx`)
 
@@ -441,6 +470,9 @@ navegador.
     dispara una advertencia visual, no bloquea el envío.
 12. El descuento del encabezado (`Totals.tsx`) puede editarse manualmente e
     independiente de los descuentos por línea de producto.
+13. Placa obligatoria (`invoice.plate`) si algún ítem tiene `aux_cod` que
+    empieza con `TRANSPORT_AUX_COD_PREFIX` (`'H49200'`); campo oculto en
+    cualquier otro caso (§3.10).
 
 ## ⚠️ Observaciones
 
