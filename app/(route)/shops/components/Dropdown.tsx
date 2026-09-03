@@ -131,7 +131,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             return;
         }
         try {
-            const response = await axiosAuth.get(`retentions/mail/${shop.id}`);
+            const response = await axiosAuth.get(`retentions/${shop.id}/mail`);
             if (response.status >= 200) {
                 fetchShops();
             }
