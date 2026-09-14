@@ -4,6 +4,7 @@ import { TableResponsive } from "@/components";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
+import { limitDecimals } from "@/helpers/numberHelper";
 
 const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
 
@@ -11,7 +12,7 @@ export const Totals = () => {
     const { invoice, selectCustom, setInvoice, formErrors } = useFormInvoice();
 
     const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
+        const value = limitDecimals(e.target.value, 2);
 
         if (value === '') {
             setInvoice(prev => ({
@@ -80,6 +81,7 @@ export const Totals = () => {
                                 onChange={handleDiscountChange}
                                 min={0}
                                 max={invoice.sub_total}
+                                step="0.01"
                                 className={`${inputBase} w-20 ${formErrors.discount ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
                             />
                         </td>

@@ -4,7 +4,7 @@ import { createContext, useState, useContext, useEffect, ReactNode, SetStateActi
 import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput } from "@/types/order";
 import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
-import { calculateInvoiceTotals } from "@/helpers/invoiceTotalsHelper";
+import { calculateInvoiceTotals, calculateLineTotal, hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { CustomerProps, EmisionPoint, Repayment } from "@/types";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getDate } from "@/helpers/dateHelper";
@@ -27,7 +27,6 @@ interface InvoicesContextType {
   aditionalInformation: AditionalInformation[];
   errorAditionalInformation: Record<string, Partial<Record<keyof AditionalInformation, string>>>;
   formErrors: Partial<Record<keyof OrderCreateProps, string>>;
-  isTaxBreakdown: boolean;
   isActiveIce: boolean;
   setInvoice: Dispatch<SetStateAction<OrderCreateProps>>; // Exposed for manual fetch
   setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
@@ -39,7 +38,6 @@ interface InvoicesContextType {
   setAditionalInformation: Dispatch<SetStateAction<AditionalInformation[]>>;
   setErrorAditionalInformation: Dispatch<SetStateAction<Record<string, Partial<Record<keyof AditionalInformation, string>>>>>;
   setFormErrors: Dispatch<SetStateAction<Partial<Record<keyof OrderCreateProps, string>>>>;
-  setIsTaxBreakdown: Dispatch<SetStateAction<boolean>>;
   setIsActiveIce: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -90,7 +88,6 @@ export const FormInvoiceProvider = ({ children }: Props) => {
   const [repayment, setRepayment] = useState(false);
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [errorRepayments, setErrorRepayments] = useState<Record<string, Partial<Record<keyof Repayment, string>>>>({});
-  const [isTaxBreakdown, setIsTaxBreakdown] = useState(false);
   const [isActiveIce, setIsActiveIce] = useState(false);
   const { status } = useSession();
   const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
@@ -118,9 +115,11 @@ export const FormInvoiceProvider = ({ children }: Props) => {
             },
           } : null);
           setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
-          const items = order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '' }));
+          // Normalizamos total_iva al cargar: puede venir persistido con una fórmula
+          // vieja y quedar desincronizado de lo que la fila realmente calcula ahora.
+          const items = order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '', total_iva: calculateLineTotal(item) }));
           setProductOutputs(items);
-          setIsActiveIce(order_items.some((item: ProductOutput) => item.ice !== undefined));
+          setIsActiveIce(order_items.some((item: ProductOutput) => hasIceApplied(item.ice)));
           // El header de la venta puede venir desincronizado de los items (ediciones previas
           // incompletas); se recalculan los totales al cargar para reflejar los items reales.
           setInvoice(prev => ({ ...prev, ...order, id: order.id + '', ...calculateInvoiceTotals(items) }));
@@ -143,8 +142,8 @@ export const FormInvoiceProvider = ({ children }: Props) => {
 
   return (
     <FormInvoiceContext.Provider value={{
-      invoice, selectPoint, selectCustom, payMethods, points, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isTaxBreakdown, isActiveIce,
-      setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setRepayments, setErrorRepayments, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsTaxBreakdown, setIsActiveIce
+      invoice, selectPoint, selectCustom, payMethods, points, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isActiveIce,
+      setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setRepayments, setErrorRepayments, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsActiveIce
     }}>
       {children}
     </FormInvoiceContext.Provider>

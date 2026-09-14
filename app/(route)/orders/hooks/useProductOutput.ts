@@ -2,7 +2,7 @@ import { useFormInvoice } from "../context/FormInvoiceContext";
 import { productOutputSchema } from "@/schemas/product-output.schema";
 import { initialProductItem } from "@/constants/initialValues";
 import { fields, ProductOutput, ProductProps } from "@/types";
-import { calculateInvoiceTotals } from "@/helpers/invoiceTotalsHelper";
+import { calculateInvoiceTotals, calculateLineTotal } from "@/helpers/invoiceTotalsHelper";
 import { nanoid } from "nanoid";
 
 export const useProductOutput = () => {
@@ -41,15 +41,12 @@ export const useProductOutput = () => {
             }));
         }
 
-        let { quantity, price, discount } = updated
-        const { percentage } = updated
-        quantity = quantity === '' ? 0 : Number(quantity);
-        price = price === '' ? 0 : Number(price);
-        discount = discount === '' ? 0 : Number(discount);
         if (field === 'total_iva') {
+            let { quantity, percentage } = updated
+            quantity = quantity === '' ? 0 : Number(quantity);
             updated.price = parseFloat((Number(value) / quantity / (1 + (percentage / 100))).toFixed(6))
         } else if (field !== 'ice') {
-            updated.total_iva = parseFloat((price * quantity - discount).toFixed(2));
+            updated.total_iva = calculateLineTotal(updated);
         }
 
         const prods = productOutputs.map((item, i) => i === index ? updated : item);
@@ -62,11 +59,12 @@ export const useProductOutput = () => {
             ...productOutputs[index],
             product_id: product.id,
             aux_cod: product.atts.aux_cod,
+            name: product.atts.name,
             price: product.atts.price1,
             quantity: 1,
             discount: 0,
             stock: 1,
-            total_iva: product.atts.price1.toFixed(2),
+            total_iva: (product.atts.price1 * (1 + product.iva.percentage / 100)).toFixed(2),
             //   TODO Agregar Si es turismo
             iva: product.iva.code,
             percentage: product.iva.percentage,
@@ -101,18 +99,5 @@ export const useProductOutput = () => {
         setInvoice(prevState => ({ ...prevState, ...calculateInvoiceTotals(productOutpus) }));
     };
 
-    //Desglose del valor total
-    // const breakdown = useCallback((breakdown: boolean) => {
-    const breakdown = (breakdown: boolean) => {
-        const updatedProds = productOutputs.map(item => {
-            const base = (Number(item.price) * Number(item.quantity)) - Number(item.discount);
-            return {
-                ...item,
-                total_iva: parseFloat((!breakdown ? base : base * (1 + item.percentage / 100)).toFixed(2)),
-            };
-        });
-        setProductOutputs(updatedProds);
-    };
-
-    return { productOutputs, addItem, updateItem, selectProduct, breakdown, removeItem }
+    return { productOutputs, addItem, updateItem, selectProduct, removeItem }
 }

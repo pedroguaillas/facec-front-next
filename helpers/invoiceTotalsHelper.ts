@@ -17,6 +17,23 @@ export interface InvoiceTotals {
     total: number;
 }
 
+// El backend manda ice=0 hasta para items que no aplican ICE, así que "!== undefined"
+// no alcanza (mostraba la columna en todas las filas). '' es el valor recién activado
+// por selectProduct (producto con ICE, monto aún sin tipear) y debe seguir mostrándose.
+export const hasIceApplied = (ice: ProductOutput['ice']) =>
+    ice !== undefined && (ice === '' || Number(ice) !== 0);
+
+// Total de línea (precio*cant-descuento) + IVA. Misma fórmula usada al editar un item
+// y al normalizar items recién cargados desde el backend (evita que un total_iva
+// persistido con una fórmula vieja quede desincronizado de lo que muestra la fila).
+export const calculateLineTotal = (item: Pick<ProductOutput, 'price' | 'quantity' | 'discount' | 'percentage'>) => {
+    const price = item.price === '' ? 0 : Number(item.price);
+    const quantity = item.quantity === '' ? 0 : Number(item.quantity);
+    const discount = item.discount === '' ? 0 : Number(item.discount);
+    const base = price * quantity - discount;
+    return parseFloat((base * (1 + item.percentage / 100)).toFixed(2));
+};
+
 // Fuente única de verdad: totales de la factura siempre derivados de los items actuales.
 export const calculateInvoiceTotals = (productOutputs: ProductOutput[]): InvoiceTotals => {
     let no_iva = 0;
