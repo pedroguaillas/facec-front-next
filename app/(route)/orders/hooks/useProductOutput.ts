@@ -42,8 +42,8 @@ export const useProductOutput = () => {
         }
 
         if (field === 'total_iva') {
-            let { quantity, percentage } = updated
-            quantity = quantity === '' ? 0 : Number(quantity);
+            const { percentage } = updated
+            const quantity = updated.quantity === '' ? 0 : Number(updated.quantity);
             updated.price = parseFloat((Number(value) / quantity / (1 + (percentage / 100))).toFixed(6))
         } else if (field !== 'ice') {
             updated.total_iva = calculateLineTotal(updated);
