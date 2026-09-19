@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { OrderProps } from "@/types/order";
 import { Links, Meta } from "@/types";
 import { isPendingVoucherState } from "@/helpers/voucherPolling";
+import { ORDER_SERIE_PREFIX } from "@/constants";
 
 interface InvoicesContextType {
     invoices: OrderProps[];
@@ -55,7 +56,11 @@ export const InvoicesProvider = ({ children }: Props) => {
     }, [fetchInvoices]);
 
     useEffect(() => {
-        const hasPending = invoices.some((invoice) => isPendingVoucherState(invoice.atts.state));
+        const hasPending = invoices.some((invoice) => {
+            const seriePrefix = invoice.atts.serie?.trim().split(" ")[0] ?? "";
+            const isElectronic = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
+            return isPendingVoucherState(invoice.atts.state, isElectronic);
+        });
         if (!hasPending) return;
 
         const interval = setInterval(() => {

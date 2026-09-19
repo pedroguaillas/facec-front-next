@@ -8,17 +8,18 @@ import { useParams } from "next/navigation";
 import { CustomerProps } from '@/types';
 import React from 'react';
 import { useSession } from 'next-auth/react';
+import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
 
 export const GeneralInformation = () => {
 
-    const { invoice, formErrors, points, selectPoint, selectCustom, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useFormInvoice();
+    const { invoice, formErrors, points, voucherTypes, selectPoint, selectCustom, setInvoice, setFormErrors, setSelectCustom, setSelectPoint } = useFormInvoice();
     const params = useParams();
     const { data: session } = useSession();
 
-    const invoiceTypes = [
-        { value: 1, label: 'Factura' },
-        { value: 4, label: 'Nota de Crédito' },
-    ];
+    const optionVoucherTypes = voucherTypes.map((vt) => ({ value: vt.id, label: vt.name }));
+    const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(invoice.voucher_type_id));
+    const isFactura = selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.FACTURA;
+    const isNotaCredito = selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
 
     const optionPoints = points.map((point) => ({
         value: point.id,
@@ -43,7 +44,7 @@ export const GeneralInformation = () => {
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedPoint = points.find(point => point.id === Number(event.target.value));
         setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
-        setFormErrors(prev => ({ ...prev, serie: '' }));
+        setFormErrors(prev => ({ ...prev, point_id: '' }));
     }
 
     const handleSelectCustomer = (customer: CustomerProps) => {
@@ -67,10 +68,9 @@ export const GeneralInformation = () => {
                     </div> */}
                     {points.length > 1 && !params.id && (
                         <div className="flex flex-col lg:w-2/3">
-                            <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.serie} handleSelect={handleSelectPoint} required />
+                            <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={formErrors.point_id} handleSelect={handleSelectPoint} required />
                         </div>
                     )}
-                    <div className='py-2'><span className='font-bold'>N° de serie: </span>{invoice.serie}</div>
                     <div className='flex flex-col lg:w-2/3'>
                         <LabelComponent name='name' label='Cliente' required />
                         <SelectCustomer label={selectCustom?.atts.name ?? ''} error={formErrors.customer_id} selectCustomer={handleSelectCustomer} />
@@ -80,16 +80,16 @@ export const GeneralInformation = () => {
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className="flex flex-col lg:w-2/3">
-                        <SelectOption label="Tipo de comprobante" name='voucher_type' options={invoiceTypes} selectedValue={invoice.voucher_type} handleSelect={handleChange} />
+                        <SelectOption label="Tipo de comprobante" name='voucher_type_id' options={optionVoucherTypes} selectedValue={invoice.voucher_type_id} handleSelect={handleChange} />
                     </div>
                     {/* Solo en el caso de facturas */}
-                    {Number(invoice.voucher_type) === 1 && session?.user.permissions.guia_in_invoice && (
+                    {isFactura && session?.user.permissions.guia_in_invoice && (
                         <div className='lg:w-2/3'>
                             <TextInput label='Guia de Remisión' value={invoice.guia ?? ''} error={formErrors.guia} onChange={handleChange} maxLength={17} name='guia' />
                         </div>
                     )}
                     {/* En el caso de Notas de Crédito */}
-                    {Number(invoice.voucher_type) === 4 && (
+                    {isNotaCredito && (
                         <>
                             <div className='lg:w-2/3'>
                                 <TextInput type='date' label='Emisión factura' value={invoice.date_order ?? ''} error={formErrors.date_order} onChange={handleChange} name='date_order' min={getMinDateNC()} max={getDate()} required />

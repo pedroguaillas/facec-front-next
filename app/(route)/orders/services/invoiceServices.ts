@@ -1,8 +1,8 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput } from "@/types";
+import { AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types";
 import { AxiosInstance } from "axios";
 
-type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[] }
+type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[], voucherTypes: VoucherType[] }
 interface ResCreateInvoice extends ResInvoice { pay_method: number, tourism: boolean, repayment: boolean };
 interface ResUpdateInvoice extends ResInvoice { customers: Customer[], order: OrderCreateProps, order_aditionals: AditionalInformation[], order_items: ProductOutput[] };
 

@@ -20,7 +20,7 @@ interface Props {
 const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-center bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
 const inputError = "border-red-400";
 const inputNormal = "border-[var(--border-strong)]";
-const stepperBtn = "w-9 h-9 shrink-0 rounded-md border border-[var(--border-strong)] text-lg leading-none cursor-pointer hover:border-primary";
+const stepperBtn = "w-11 h-11 shrink-0 rounded-md border border-[var(--border-strong)] text-lg leading-none cursor-pointer hover:border-primary";
 
 export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
@@ -67,6 +67,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                                 onChange={(e) => updateItem(index, 'quantity', limitDecimals(e.target.value, 6))}
                                 value={productOutput.quantity ?? ''}
                                 type="number"
+                                inputMode="decimal"
                                 step="0.000001"
                                 className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
                             />
@@ -87,6 +88,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                             onChange={(e) => updateItem(index, 'price', limitDecimals(e.target.value, 6))}
                             value={productOutput.price ?? ''}
                             type="number"
+                            inputMode="decimal"
                             step="0.000001"
                             className={`${inputBase} text-left ${error?.price ? inputError : inputNormal}`}
                         />
@@ -99,6 +101,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                             onChange={(e) => updateItem(index, 'discount', limitDecimals(e.target.value, 2))}
                             value={productOutput.discount ?? ''}
                             type="number"
+                            inputMode="decimal"
                             step="0.01"
                             className={`${inputBase} text-left ${error?.discount ? inputError : inputNormal}`}
                         />
@@ -112,6 +115,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                                 onChange={(e) => updateItem(index, 'ice', e.target.value)}
                                 value={productOutput.ice}
                                 type="number"
+                                inputMode="decimal"
                                 className={`${inputBase} text-left ${error?.ice ? inputError : inputNormal}`}
                             />
                             {error?.ice && <p className="text-xs text-red-500 mt-1">{error.ice}</p>}
@@ -130,6 +134,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                             onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}
                             value={productOutput.total_iva ?? ''}
                             type="number"
+                            inputMode="decimal"
                             step="0.01"
                             className={`${inputBase} w-28 text-right ${error?.total_iva ? inputError : inputNormal}`}
                         />

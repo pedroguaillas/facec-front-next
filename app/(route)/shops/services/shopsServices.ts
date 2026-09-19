@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { EmisionPoint, GeneralPaginate, ProductOutput, ShopCreateProps, ShopProps, Supplier, Tax, TaxInput } from "@/types";
+import { EmisionPoint, GeneralPaginate, ProductOutput, ShopCreateProps, ShopProps, ShopVoucherType, Supplier, Tax, TaxInput } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getShops = async (
@@ -7,7 +7,7 @@ export const getShops = async (
     pageUrl: string,
 ) => handleApiRequest<GeneralPaginate<ShopProps>>(() => axiosAuth.get(pageUrl));
 
-interface ResCreateShop { points: EmisionPoint[], taxes: TaxInput[] }
+interface ResCreateShop { points: EmisionPoint[], taxes: TaxInput[], voucherTypes: ShopVoucherType[] }
 
 export const getCreateShop = async (
     axiosAuth: AxiosInstance,
@@ -18,7 +18,7 @@ export const shopStoreService = async (
     form: object
 ) => handleApiRequest<ShopCreateProps>(() => axiosAuth.post('shops', form));
 
-interface ResUpdateShop { shop: ShopCreateProps, provider: Supplier, shopretentionitems: Tax[], taxes: TaxInput[], shop_items: ProductOutput[] }
+interface ResUpdateShop { shop: ShopCreateProps, provider: Supplier, shopretentionitems: Tax[], taxes: TaxInput[], shop_items: ProductOutput[], voucherTypes: ShopVoucherType[] }
 
 export const getShop = async (
     axiosAuth: AxiosInstance,

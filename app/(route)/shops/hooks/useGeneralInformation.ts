@@ -1,19 +1,16 @@
-import { initialProductItem, VoucherType } from "@/constants";
+import { initialProductItem } from "@/constants";
 import { useFormShop } from "../context/FormShopContext";
+import { useShopVoucherType } from "./useShopVoucherType";
 import { SupplierProps } from "@/types";
 import { useEffect } from "react";
 import { nanoid } from "nanoid";
 
 export const useGeneralInformation = () => {
 
-    const { shop, errorShop, setShop, setErrorShop, setProductOutputs } = useFormShop();
+    const { errorShop, voucherTypes, setShop, setErrorShop, setProductOutputs } = useFormShop();
+    const { isLiquidacion, isFactura } = useShopVoucherType();
 
-    const invoiceTypes = [
-        { value: 1, label: 'Factura' },
-        { value: 2, label: 'Nota Venta' },
-        { value: 3, label: 'Liquidación en Compra' },
-        { value: 5, label: 'Nota Débito' }
-    ];
+    const invoiceTypes = voucherTypes.map((vt) => ({ value: vt.id, label: vt.name }));
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = event.target;
@@ -33,7 +30,7 @@ export const useGeneralInformation = () => {
     }
 
     useEffect(() => {
-        if (Number(shop.voucher_type) === VoucherType.LIQUIDATION) {
+        if (isLiquidacion) {
             setProductOutputs((prevState) => {
                 if (prevState.length === 0) {
                     return [{ ...initialProductItem, id: nanoid() }];
@@ -41,7 +38,7 @@ export const useGeneralInformation = () => {
                 return prevState;
             });
         }
-    }, [shop.voucher_type, setProductOutputs]);
+    }, [isLiquidacion, setProductOutputs]);
 
-    return { invoiceTypes, handleChange, handleSelectProvider }
+    return { invoiceTypes, isLiquidacion, isFactura, handleChange, handleSelectProvider }
 }

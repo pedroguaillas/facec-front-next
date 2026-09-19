@@ -1,17 +1,18 @@
 import { z } from 'zod';
 import { taxSchema } from './tax.schema';
 import { productOutputSchema } from './product-output.schema';
-import { VoucherType } from '@/constants';
+import { SHOP_VOUCHER_TYPE_ID } from '@/constants';
 import { emptyStringToNull, parseLocalDate } from './general.schema';
 
 export const shopSchema = z
   .object({
     date: z.string().min(1, { message: 'Escriba una fecha correcta' }),
     provider_id: z.number().min(1, { message: 'Seleccione el proveedor' }),
-    serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
-      message: 'Corrija a este formato: 001-001-000000001',
-    }),
-    voucher_type: z.coerce.number(), // 1 = Factura, 3 = Liquidación en compra, 4 = Nota de crédito
+    // Liquidación de Compra: el número lo asigna el backend al guardar (va
+    // null, validado abajo). El resto lo tipea el usuario copiándolo del
+    // documento del proveedor, por eso sigue siendo obligatorio.
+    serie: z.string().nullable(),
+    voucher_type_id: z.coerce.number(), // ids vienen de voucherTypes (backend): 5 Factura, 6 Nota de Venta, 7 Liquidación de Compra, 8 Nota de Débito
     authorization: z.string().optional(),
     serie_retencion: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
     date_retention: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
@@ -26,8 +27,17 @@ export const shopSchema = z
     taxes: z.array(taxSchema).optional(),
   })
   .refine((data) => {
-    // ✅ Solo requerido si es LIQUIDATION
-    if (data.voucher_type === VoucherType.LIQUIDATION) {
+    // Factura, Nota de Venta y Nota de Débito requieren la serie tipeada por
+    // el usuario (documento externo); Liquidación va null (la asigna el backend).
+    if (data.voucher_type_id === SHOP_VOUCHER_TYPE_ID.LIQUIDACION_COMPRA) return true;
+    return !!data.serie && /^\d{3}-\d{3}-\d{9}$/.test(data.serie);
+  }, {
+    message: 'Corrija a este formato: 001-001-000000001',
+    path: ['serie'],
+  })
+  .refine((data) => {
+    // ✅ Solo requerido si es Liquidación de Compra
+    if (data.voucher_type_id === SHOP_VOUCHER_TYPE_ID.LIQUIDACION_COMPRA) {
       return data.products && data.products.length > 0;
     }
     return true;
@@ -37,7 +47,7 @@ export const shopSchema = z
   })
   .refine((data) => {
     // Si NO es liquidación, authorization es requerida y mínima de 10 caracteres
-    if (data.voucher_type !== VoucherType.LIQUIDATION) {
+    if (data.voucher_type_id !== SHOP_VOUCHER_TYPE_ID.LIQUIDACION_COMPRA) {
       return data.authorization && data.authorization.length >= 10;
     }
     return true;

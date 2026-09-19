@@ -1,9 +1,9 @@
 "use client";
 
 import { useFormShop } from "../context/FormShopContext";
+import { useShopVoucherType } from "../hooks/useShopVoucherType";
 import { TableResponsive } from "@/components"
 import { SubmitButton } from "./SubmitButton";
-import { VoucherType } from "@/constants";
 import { ChangeEvent } from "react";
 
 const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
@@ -11,6 +11,7 @@ const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[v
 export const Totals = () => {
 
     const { shop, setShop, errorShop, setErrorShop } = useFormShop();
+    const { isLiquidacion, isNotaVenta } = useShopVoucherType();
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -34,14 +35,18 @@ export const Totals = () => {
         setErrorShop((prev) => ({ ...prev, [name]: '' }));
     };
 
+    // Nota de Venta no maneja IVA (por eso tampoco admite retención de IVA):
+    // solo se muestra el subtotal 0%, sin filas de IVA.
     const subtotalRows = [
         { name: 'base0', label: 'Subtotal 0%', value: shop.base0, error: errorShop.base0 },
-        { name: 'base5', label: 'Subtotal 5%', value: shop.base5, error: errorShop.base5 },
-        // { name: 'base12', label: 'Subtotal 12%', value: shop.base12, error: errorShop.base12 },
-        { name: 'base15', label: 'Subtotal 15%', value: shop.base15, error: errorShop.base15 },
+        ...(isNotaVenta ? [] : [
+            { name: 'base5', label: 'Subtotal 5%', value: shop.base5, error: errorShop.base5 },
+            // { name: 'base12', label: 'Subtotal 12%', value: shop.base12, error: errorShop.base12 },
+            { name: 'base15', label: 'Subtotal 15%', value: shop.base15, error: errorShop.base15 },
+        ]),
     ];
 
-    const ivaRows = [
+    const ivaRows = isNotaVenta ? [] : [
         { label: 'IVA 5%', value: shop.base5 * 0.05 },
         // { label: 'IVA 12%', value: shop.base12 * 0.12 },
         { label: 'IVA 15%', value: shop.base15 * 0.15 },
@@ -61,9 +66,9 @@ export const Totals = () => {
                         {subtotalRows.map(({ name, label, value, error }) => (
                             <tr key={label}>
                                 <td className="border border-[var(--border)] text-left">{label}</td>
-                                {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
+                                {isLiquidacion &&
                                     <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>}
-                                {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
+                                {!isLiquidacion && (
                                     <td className="text-right border border-[var(--border)]">
                                         <input
                                             type="number"
@@ -83,23 +88,25 @@ export const Totals = () => {
                                 <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>
                             </tr>
                         ))}
-                        <tr>
-                            <td className="border border-[var(--border)] text-left">No objeto de IVA ($)</td>
-                            {Number(shop.voucher_type) === VoucherType.LIQUIDATION &&
-                                <td className="text-right border border-[var(--border)]">{shop.no_iva.toFixed(2)}</td>}
-                            {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
-                                <td className="text-right border border-[var(--border)]">
-                                    <input
-                                        type="number"
-                                        value={shop.no_iva}
-                                        name="no_iva"
-                                        onChange={handleChange}
-                                        min={0}
-                                        className={`${inputBase} ${errorShop.no_iva ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
-                                    />
-                                </td>
-                            )}
-                        </tr>
+                        {!isNotaVenta && (
+                            <tr>
+                                <td className="border border-[var(--border)] text-left">No objeto de IVA ($)</td>
+                                {isLiquidacion &&
+                                    <td className="text-right border border-[var(--border)]">{shop.no_iva.toFixed(2)}</td>}
+                                {!isLiquidacion && (
+                                    <td className="text-right border border-[var(--border)]">
+                                        <input
+                                            type="number"
+                                            value={shop.no_iva}
+                                            name="no_iva"
+                                            onChange={handleChange}
+                                            min={0}
+                                            className={`${inputBase} ${errorShop.no_iva ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
+                                        />
+                                    </td>
+                                )}
+                            </tr>
+                        )}
                         {shop.ice > 0 && (
                             <tr>
                                 <td className="border border-[var(--border)] text-left">Monto ICE</td>

@@ -10,10 +10,11 @@ import { useState } from 'react';
 import { Repayment } from '@/types';
 import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoiceServices';
 import { calculateInvoiceTotals } from '@/helpers/invoiceTotalsHelper';
+import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
 
 export const ButtonSubmit = () => {
 
-    const { invoice, selectPoint, productOutputs, aditionalInformation, repayments, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
+    const { invoice, selectPoint, productOutputs, aditionalInformation, repayments, voucherTypes, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
@@ -40,7 +41,8 @@ export const ButtonSubmit = () => {
             repayments
         };
 
-        if (Number(form.voucher_type) === 4 && form.reason) {
+        const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(form.voucher_type_id));
+        if (selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO && form.reason) {
             form.reason = form.reason.trim();
         }
 

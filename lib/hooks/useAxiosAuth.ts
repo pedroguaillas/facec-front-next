@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
 import { axiosAuth } from "../axios";
 
@@ -20,7 +20,14 @@ const useAxiosAuth = () => {
 
     const responseIntercept = axiosAuth.interceptors.response.use(
       (response) => response,
-      (error) => Promise.reject(error),
+      (error) => {
+        // Token del backend inválido/expirado: la sesión de NextAuth puede
+        // seguir "autenticada" aunque el token de Laravel ya no sirva.
+        if (error.response?.status === 401) {
+          signOut({ callbackUrl: "/login" });
+        }
+        return Promise.reject(error);
+      },
     );
 
     return () => {

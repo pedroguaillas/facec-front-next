@@ -25,7 +25,7 @@ const color: Record<IconButtonAction, string> = {
 
 export const IconButton = ({ action, type, url = "/", onClick, title }: IconButtonProps) => {
     const Icon = icons[action];
-    const baseClasses = `inline-flex items-center justify-center p-2 rounded-full transition-colors duration-150 cursor-pointer ${color[action]}`;
+    const baseClasses = `inline-flex items-center justify-center min-w-11 min-h-11 rounded-full transition-colors duration-150 cursor-pointer ${color[action]}`;
 
     if (type === "link")
         return (

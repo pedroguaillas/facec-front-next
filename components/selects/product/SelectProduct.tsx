@@ -71,29 +71,31 @@ export const SelectProduct = ({ label, error, index, selectProduct, onlyProducts
                     className="w-full mb-2 border rounded-lg px-3 py-2 text-sm bg-[var(--background)] border-[var(--border-strong)] focus:border-primary focus:outline-none dark:text-gray-300"
                 />
 
-                <TableResponsive>
-                    <thead>
-                        <tr>
-                            <th className="hidden sm:block">#</th>
-                            <th>Código</th>
-                            <th className="text-left">Producto/Servicio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {suggestions.map((product, indexItem) => (
-                            <tr
-                                key={product.id}
-                                onClick={() => modalSelect(product)}
-                                className={`hover:bg-primary/10 dark:hover:bg-primary/20 cursor-pointer transition-colors
-                                ${indexItem % 2 === 0 ? 'bg-[var(--background)]' : ''}`}
-                            >
-                                <td className="hidden sm:block">{indexItem + 1}</td>
-                                <td>{product.atts.code}</td>
-                                <td className="text-left">{product.atts.name}</td>
+                <div className="min-h-[260px] sm:min-h-[420px]">
+                    <TableResponsive>
+                        <thead>
+                            <tr>
+                                <th className="hidden sm:block">#</th>
+                                <th>Código</th>
+                                <th className="text-left">Producto/Servicio</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </TableResponsive>
+                        </thead>
+                        <tbody>
+                            {suggestions.map((product, indexItem) => (
+                                <tr
+                                    key={product.id}
+                                    onClick={() => modalSelect(product)}
+                                    className={`hover:bg-primary/10 dark:hover:bg-primary/20 cursor-pointer transition-colors
+                                    ${indexItem % 2 === 0 ? 'bg-[var(--background)]' : ''}`}
+                                >
+                                    <td className="hidden sm:block">{indexItem + 1}</td>
+                                    <td>{product.atts.code}</td>
+                                    <td className="text-left">{product.atts.name}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </TableResponsive>
+                </div>
 
                 <div className="flex justify-center">
                     <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />

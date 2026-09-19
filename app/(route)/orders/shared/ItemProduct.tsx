@@ -49,6 +49,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     onChange={(e) => updateItem(index, 'quantity', limitDecimals(e.target.value, 6))}
                     value={productOutput.quantity ?? ''}
                     type="number"
+                    inputMode="decimal"
                     step="0.000001"
                     className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
                 />
@@ -58,6 +59,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     onChange={(e) => updateItem(index, 'price', limitDecimals(e.target.value, 6))}
                     value={productOutput.price ?? ''}
                     type="number"
+                    inputMode="decimal"
                     step="0.000001"
                     className={`${inputBase} ${error?.price ? inputError : inputNormal}`}
                 />
@@ -67,6 +69,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     onChange={(e) => updateItem(index, 'discount', limitDecimals(e.target.value, 2))}
                     value={productOutput.discount ?? ''}
                     type="number"
+                    inputMode="decimal"
                     step="0.01"
                     className={`${inputBase} ${error?.discount ? inputError : inputNormal}`}
                 />
@@ -78,6 +81,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}
                     value={productOutput.total_iva ?? ''}
                     type="number"
+                    inputMode="decimal"
                     step="0.01"
                     className={`${inputBase} ${error?.total_iva ? inputError : inputNormal}`}
                 />
@@ -89,6 +93,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                             onChange={(e) => updateItem(index, 'ice', e.target.value)}
                             value={productOutput.ice}
                             type="number"
+                            inputMode="decimal"
                             className={`${inputBase} ${error?.ice ? inputError : inputNormal}`}
                         />
                     ) : null}

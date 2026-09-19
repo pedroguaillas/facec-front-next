@@ -8,10 +8,9 @@ export const invoiceSchema = z
   .object({
     // date: z.string().min(1, { message: 'Escriba una fecha correcta' }),
     customer_id: z.number().min(1, { message: 'Seleccione el cliente' }),
-    serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
-      message: 'Seleccione el punto de emisión',
-    }),
-    voucher_type: z.coerce.number(), // 1 = Factura, 4 = Nota de crédito
+    // El número de secuencia real lo asigna el backend al guardar, no se genera en el frontend.
+    point_id: z.number({ required_error: 'Seleccione el punto de emisión' }).min(1, { message: 'Seleccione el punto de emisión' }),
+    voucher_type_id: z.coerce.number(), // ids vienen de voucherTypes (backend): 1 Factura, 2 Nota de Crédito, 3 Nota de Venta, 4 Proforma
     total: z.number(),
     discount: z.union([
       z.string()
@@ -52,7 +51,7 @@ export const invoiceSchema = z
   })
   .refine(
     (data) =>
-      data.voucher_type !== 1 || // Si no es factura, todo bien
+      data.voucher_type_id !== 1 || // Si no es factura, todo bien
       (data.guia === undefined || data.guia === '' || /^\d{3}-\d{3}-\d{9}$/.test(data.guia)), // Si es factura: opcional, pero válido si existe
     {
       path: ['guia'],
@@ -86,7 +85,7 @@ export const invoiceSchema = z
   // 1. Emisión de factura (date_order) obligatoria si es Nota de Crédito
   .refine(
     (data) =>
-      data.voucher_type !== 4 || !!data.date_order,
+      data.voucher_type_id !== 2 || !!data.date_order,
     {
       path: ['date_order'],
       message: 'Es obligatorio la "Emisión factura" para Nota de Crédito',
@@ -96,7 +95,7 @@ export const invoiceSchema = z
   // 2. Serie de factura con formato si es Nota de Crédito
   .refine(
     (data) =>
-      data.voucher_type !== 4 || (!!data.serie_order && /^\d{3}-\d{3}-\d{9}$/.test(data.serie_order)),
+      data.voucher_type_id !== 2 || (!!data.serie_order && /^\d{3}-\d{3}-\d{9}$/.test(data.serie_order)),
     {
       path: ['serie_order'],
       message: 'Es obligatorio la "Serie factura" con formato: 000-000-000000000',
@@ -106,7 +105,7 @@ export const invoiceSchema = z
   // 3. Motivo debe existir y tener al menos 3 caracteres
   .refine(
     (data) =>
-      data.voucher_type !== 4 || (!!data.reason && data.reason.length >= 3),
+      data.voucher_type_id !== 2 || (!!data.reason && data.reason.length >= 3),
     {
       path: ['reason'],
       message: 'Es obligatorio el "Motivo" y debe contener al menos 3 caracteres',

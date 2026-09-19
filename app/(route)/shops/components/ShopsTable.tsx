@@ -24,13 +24,6 @@ export const ShopsTable = () => {
         });
     };
 
-    const calPrefix: Record<number, string> = {
-        1: 'FAC',
-        2: 'N/V',
-        3: 'L/C',
-        5: 'N/D',
-    }
-
     return (
         <TableResponsive>
             <thead>
@@ -56,7 +49,7 @@ export const ShopsTable = () => {
                         <td>{shop.atts.date}</td>
                         <td>
                             <Link className="hover:underline cursor-pointer text-blue-500" href={`/shops/${shop.id}`}>
-                                {`${calPrefix[shop.atts.voucher_type]} ${shop.atts.serie}`}
+                                {shop.atts.serie}
                             </Link>
                         </td>
                         <td className="text-left">{shop.provider.name}</td>

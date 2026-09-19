@@ -8,7 +8,6 @@ interface OrderProps {
         serie: string;
         state: states;
         total: number;
-        voucher_type: 1, 4;
         xml: string | null;
     }
     customer: {
@@ -18,9 +17,15 @@ interface OrderProps {
     id: number
 }
 
+interface VoucherType {
+    id: number;
+    slug: string;
+    name: string;
+    abbreviation: string;
+}
+
 interface OrderCreateProps {
     id?: string;
-    serie: string;
     date: string;
     expiration_days: number; //Eliminar
     no_iva: number,
@@ -41,7 +46,8 @@ interface OrderCreateProps {
     customer_id: number,
     received: number, //Ver
     doc_realeted: number, //Ver
-    voucher_type: 1 | 4,
+    voucher_type_id: number,
+    point_id?: number,
     pay_method: number,
     guia?: string;
     date_order?: string;

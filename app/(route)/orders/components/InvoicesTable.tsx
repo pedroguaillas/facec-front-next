@@ -6,16 +6,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { getStateBadgeClasses } from "@/helpers/stateBadge";
 import { isPendingVoucherState } from "@/helpers/voucherPolling";
+import { ORDER_SERIE_PREFIX } from "@/constants";
 
 const InvoicesTable = () => {
     const { invoices } = useInvoices();
     const [dropdown, setDropdown] = useState<boolean[]>([]);
-
-    const calPrefix: Record<number, string> = {
-        1: 'FAC',
-        4: 'N/C',
-        5: 'N/D',
-    }
 
     // ✅ Cierra todos los dropdowns excepto el seleccionado
     const handleDrops = (index: number | null) => {
@@ -45,21 +40,24 @@ const InvoicesTable = () => {
                 </tr>
             </thead>
             <tbody>
-                {invoices.map((order, index) => (
+                {invoices.map((order, index) => {
+                    const seriePrefix = order.atts.serie?.trim().split(" ")[0] ?? "";
+                    const isElectronic = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
+                    return (
                     <tr key={order.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
                         <td>{order.atts.date}</td>
                         <td>
                             <Link className="hover:underline cursor-pointer text-blue-500" href={`/orders/${order.id}`}>
-                                {`${calPrefix[order.atts.voucher_type]} ${order.atts.serie}`}
+                                {order.atts?.serie}
                             </Link>
                         </td>
                         <td className="text-left uppercase">{order.customer?.name}</td>
                         <td className="text-center">
                             <div className="inline-flex relative justify-center items-center">
                                 <span
-                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(order.atts?.state || "CREADO")}`}
+                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(order.atts?.state || "CREADO", isElectronic)}`}
                                 >
-                                    {isPendingVoucherState(order.atts?.state) && (
+                                    {isPendingVoucherState(order.atts?.state, isElectronic) && (
                                         <FaSpinner className="inline-block mr-1 animate-spin" />
                                     )}
                                     {order.atts?.state || "CREADO"}
@@ -88,7 +86,8 @@ const InvoicesTable = () => {
                             <Dropdown isOpen={dropdown[index]} index={index} order={order} only={invoices.length === 1 || index > invoices.length - 5} setIsOpen={handleDrops} />
                         </td>
                     </tr>
-                ))}
+                    );
+                })}
             </tbody>
         </TableResponsive>
     );

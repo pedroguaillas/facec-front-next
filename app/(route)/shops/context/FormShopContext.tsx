@@ -1,9 +1,10 @@
 "use client";
 
 import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef } from "react";
-import { EmisionPoint, ProductOutput, ShopCreateProps, SupplierProps, Tax, TaxInput } from "@/types";
+import { EmisionPoint, ProductOutput, ShopCreateProps, ShopVoucherType, SupplierProps, Tax, TaxInput } from "@/types";
 import { getCreateShop, getShop } from "../services/shopsServices";
 import { initialTax } from "@/constants/initialValues";
+import { SHOP_VOUCHER_TYPE_ID } from "@/constants/shopVoucherTypeSlugs";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
@@ -16,6 +17,7 @@ type FormShopState = {
     shop: ShopCreateProps;
     selectProvider: SupplierProps | null;
     points: EmisionPoint[];
+    voucherTypes: ShopVoucherType[];
     selectPoint: EmisionPoint | null;
     errorShop: Partial<Record<keyof ShopCreateProps, string>>;
     applieWithholding: boolean;
@@ -38,8 +40,8 @@ type FormShopAction =
     | { type: 'SET_ERROR_TAXES'; payload: Record<string, Partial<Record<keyof Tax, string>>> }
     | { type: 'SET_PRODUCT_OUTPUTS'; payload: ProductOutput[] }
     | { type: 'SET_TAXES'; payload: Tax[] }
-    | { type: 'LOAD_SHOP'; payload: Pick<FormShopState, 'shop' | 'selectProvider' | 'applieWithholding' | 'taxInputs' | 'taxes' | 'productOutputs'> }
-    | { type: 'LOAD_CREATE'; payload: Pick<FormShopState, 'points' | 'taxInputs'> };
+    | { type: 'LOAD_SHOP'; payload: Pick<FormShopState, 'shop' | 'selectProvider' | 'applieWithholding' | 'taxInputs' | 'taxes' | 'productOutputs' | 'voucherTypes'> }
+    | { type: 'LOAD_CREATE'; payload: Pick<FormShopState, 'points' | 'taxInputs' | 'voucherTypes'> };
 
 // ─── Reducer ─────────────────────────────────────────────────────────────────
 
@@ -64,11 +66,11 @@ function formShopReducer(state: FormShopState, action: FormShopAction): FormShop
 // ─── Initial state ────────────────────────────────────────────────────────────
 
 const initialShop: ShopCreateProps = {
-    serie: '001-010-000000001',
+    serie: null,
     date: getDate(),
     authorization: '',
     expiration_days: 0,
-    voucher_type: 1,
+    voucher_type_id: SHOP_VOUCHER_TYPE_ID.FACTURA,
     no_iva: 0,
     base0: 0,
     base5: 0,
@@ -93,6 +95,7 @@ const initialState: FormShopState = {
     shop: initialShop,
     selectProvider: null,
     points: [],
+    voucherTypes: [],
     selectPoint: null,
     errorShop: {},
     applieWithholding: false,
@@ -109,6 +112,7 @@ interface ShopContextType {
     selectProvider: SupplierProps | null;
     errorShop: Partial<Record<keyof ShopCreateProps, string>>;
     points: EmisionPoint[];
+    voucherTypes: ShopVoucherType[];
     selectPoint: EmisionPoint | null;
     applieWithholding: boolean;
     taxInputs: TaxInput[];
@@ -169,13 +173,14 @@ export const FormShopProvider = ({ children }: Props) => {
                                 id: item.id + '',
                                 total_iva: (Number(item.price) * Number(item.quantity)).toFixed(2),
                             })),
+                            voucherTypes: data.voucherTypes ?? [],
                         },
                     });
                 }
             } else {
                 const { data } = await getCreateShop(axiosAuth);
                 if (data) {
-                    dispatch({ type: 'LOAD_CREATE', payload: { points: data.points, taxInputs: data.taxes } });
+                    dispatch({ type: 'LOAD_CREATE', payload: { points: data.points, taxInputs: data.taxes, voucherTypes: data.voucherTypes ?? [] } });
                 }
             }
         };

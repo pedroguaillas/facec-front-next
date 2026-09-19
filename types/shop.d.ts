@@ -1,10 +1,16 @@
 import { states } from "./general"
 
+interface ShopVoucherType {
+    id: number,
+    slug: string,
+    name: string,
+    abbreviation: string,
+}
+
 interface ShopProps {
     id: number,
     atts: {
         date: string,
-        voucher_type: number,
         serie: string,
         total: number | string,
         serie_retencion: string | null,
@@ -24,11 +30,11 @@ interface ShopProps {
 }
 
 interface ShopCreateProps {
-    serie: string,
+    serie: string | null,
     date: string,
     authorization: string,
     expiration_days: number,
-    voucher_type: number,
+    voucher_type_id: number,
     no_iva: number,
     base0: number,
     base5: number,

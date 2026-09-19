@@ -77,6 +77,7 @@ export const Totals = () => {
                         <td className="text-right border border-[var(--border)]">
                             <input
                                 type="number"
+                                inputMode="decimal"
                                 value={invoice.discount}
                                 onChange={handleDiscountChange}
                                 min={0}

@@ -2,13 +2,15 @@
 
 import { SelectOption } from "@/components"
 import { useFormInvoice } from "../context/FormInvoiceContext";
+import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
 
 export const PayMethods = () => {
 
-    const { invoice, formErrors, payMethods, setInvoice } = useFormInvoice();
+    const { invoice, formErrors, payMethods, voucherTypes, setInvoice } = useFormInvoice();
 
-    // Si es Nota de Crédito no mostrar la fora de pago
-    if (Number(invoice.voucher_type) === 4) return null;
+    // Solo se pide forma de pago en Factura (Nota de Crédito, Nota de Venta y Proforma no la piden)
+    const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(invoice.voucher_type_id));
+    if (selectedVoucherType?.slug !== ORDER_VOUCHER_TYPE_SLUG.FACTURA) return null;
 
     const optionPayMethods = payMethods.map(pay => {
         return { value: pay.code, label: pay.description }

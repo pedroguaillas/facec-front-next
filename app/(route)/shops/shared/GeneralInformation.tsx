@@ -4,12 +4,11 @@ import { useGeneralInformation } from "../hooks/useGeneralInformation";
 import { LabelComponent, SelectOption, SelectProvider, TextInput } from "@/components"
 import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useFormShop } from "../context/FormShopContext";
-import { VoucherType } from "@/constants";
 import { ImportXml } from "./ImportXml";
 
 export const GeneralInformation = () => {
 
-    const { invoiceTypes, handleChange, handleSelectProvider } = useGeneralInformation();
+    const { invoiceTypes, isLiquidacion, isFactura, handleChange, handleSelectProvider } = useGeneralInformation();
     const { shop, errorShop, selectProvider, points, selectPoint, setSelectPoint, setErrorShop } = useFormShop();
 
     const optionPoints = points.map((point) => ({
@@ -35,7 +34,7 @@ export const GeneralInformation = () => {
                     <div className='lg:w-2/3'>
                         <TextInput type='date' label='Fecha emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} required />
                     </div>
-                    {Number(shop.voucher_type) === VoucherType.LIQUIDATION && points.length > 1 && (
+                    {isLiquidacion && points.length > 1 && (
                         <>
                             <div className="flex flex-col lg:w-2/3">
                                 <SelectOption label="Punto Emi" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errorShop.serie} handleSelect={handleSelectPoint} required />
@@ -43,16 +42,14 @@ export const GeneralInformation = () => {
                         </>
                     )}
 
-                    {Number(shop.voucher_type) === VoucherType.LIQUIDATION && <div className='py-2'><span>N° de serie: </span>{shop.serie}</div>}
-
-                    {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (<div className='lg:w-2/3'>
-                        <TextInput type='text' label='N° de serie' value={shop.serie} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} required />
+                    {!isLiquidacion && (<div className='lg:w-2/3'>
+                        <TextInput type='text' label='N° de serie' value={shop.serie ?? ''} error={errorShop.serie} onChange={handleChange} name='serie' maxLength={17} required />
                     </div>)}
                     <div className='flex flex-col lg:w-2/3'>
                         <LabelComponent name="provider_id" label="Proveedor" required />
                         <SelectProvider selectProvider={handleSelectProvider} label={selectProvider?.atts.name} error={errorShop.provider_id} />
                     </div>
-                    {Number(shop.voucher_type) !== VoucherType.LIQUIDATION && (
+                    {!isLiquidacion && (
                         <div className='lg:w-2/3'>
                             <TextInput type='text' label='Autorización' value={shop.authorization} error={errorShop.authorization} onChange={handleChange} name='authorization' maxLength={49} required />
                         </div>
@@ -62,8 +59,8 @@ export const GeneralInformation = () => {
                 {/* Col 2 */}
                 <div className='w-full'>
                     <div className='flex gap-2 items-end'>
-                        <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={shop.voucher_type} error={errorShop.voucher_type} handleSelect={handleChange} name='voucher_type' />
-                        {Number(shop.voucher_type) === VoucherType.INVOICE && <ImportXml />}
+                        <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={shop.voucher_type_id} error={errorShop.voucher_type_id} handleSelect={handleChange} name='voucher_type_id' />
+                        {isFactura && <ImportXml />}
                     </div>
                 </div>
             </div>

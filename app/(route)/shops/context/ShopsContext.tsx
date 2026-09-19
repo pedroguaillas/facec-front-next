@@ -6,6 +6,7 @@ import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { useSession } from "next-auth/react";
 import { Links, Meta, ShopProps } from "@/types";
 import { isPendingVoucherState } from "@/helpers/voucherPolling";
+import { SHOP_SERIE_PREFIX } from "@/constants";
 
 interface ShopsContextType {
     shops: ShopProps[];
@@ -54,10 +55,11 @@ export const ShopsProvider = ({ children }: Props) => {
     }, [fetchShops]);
 
     useEffect(() => {
-        const hasPending = shops.some(
-            (shop) => (shop.atts.voucher_type === 3 && isPendingVoucherState(shop.atts.state))
-                || isPendingVoucherState(shop.atts.state_retencion),
-        );
+        const hasPending = shops.some((shop) => {
+            const seriePrefix = shop.atts.serie?.trim().split(" ")[0] ?? "";
+            const isLiquidacion = seriePrefix === SHOP_SERIE_PREFIX.LIQUIDACION_COMPRA;
+            return isPendingVoucherState(shop.atts.state, isLiquidacion) || isPendingVoucherState(shop.atts.state_retencion);
+        });
         if (!hasPending) return;
 
         const interval = setInterval(() => {

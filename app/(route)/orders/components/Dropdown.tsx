@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { OrderProps } from "@/types/order";
 import { PDFViewer } from "@/components";
 import { AxiosInstance } from "axios";
+import { ORDER_SERIE_PREFIX } from "@/constants";
 
 interface Props {
     isOpen: boolean;
@@ -54,39 +55,20 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const { data: session } = useSession();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
 
+    // La lista (GET orders) no manda voucher_type por fila; el tipo se lee del
+    // prefijo que el backend ya arma en `serie` (ej. "FAC 001-001-000000001").
+    // Factura y Nota de Crédito son comprobantes electrónicos (van al SRI):
+    // solo esos llevan Procesar/Descargar Xml. Nota de Venta y Proforma no.
+    const seriePrefix = order.atts.serie?.trim().split(" ")[0] ?? "";
+    const isElectronicVoucher = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
+    const isProforma = seriePrefix === ORDER_SERIE_PREFIX.PROFORMA;
+
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
 
-        if (session?.user.permissions.printf) {
-            options.push({ label: "Imprimir", onClick: printfPdf });
-        }
-        options.push({ label: "Enviar correo", onClick: sendMail });
-
-        options.push({
-            label: "Descargar Xml",
-            onClick: () =>
-                downloadXml(
-                    `orders/${order.id}/xml`,
-                    axiosAuth,
-                    `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
-                ),
-        });
-
-        if (canShareFiles()) {
+        if (isElectronicVoucher && order.atts.state !== "ANULADO") {
             options.push({
-                label: "Compartir",
-                onClick: () =>
-                    sharePdf(
-                        `orders/${order.id}/pdf`,
-                        axiosAuth,
-                        `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
-                    ),
-            });
-        }
-
-        if (order.atts.state !== "ANULADO") {
-            options.splice(1, 0, {
                 label: renderSwitch[order.atts.state.replace(" ", "_")],
                 onClick: async () => {
                     const state = order.atts.state.replace(" ", "_");
@@ -102,13 +84,41 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
             });
         }
 
+        if (session?.user.permissions.printf) {
+            options.push({ label: "Imprimir", onClick: printfPdf });
+        }
+        options.push({ label: "Enviar correo", onClick: sendMail });
+
+        if (isElectronicVoucher) {
+            options.push({
+                label: "Descargar Xml",
+                onClick: () =>
+                    downloadXml(`orders/${order.id}/xml`, axiosAuth, order.atts.serie),
+            });
+        }
+
+        if (isProforma) {
+            options.push({
+                label: "Convertir en Factura",
+                onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices),
+            });
+        }
+
+        if (canShareFiles()) {
+            options.push({
+                label: "Compartir",
+                onClick: () =>
+                    sharePdf(`orders/${order.id}/pdf`, axiosAuth, order.atts.serie),
+            });
+        }
+
         return options;
     };
 
     const showOrderPdf = async () => {
         setPdf({
             route: `orders/${order.id}/pdf`,
-            name: `${order.atts.voucher_type == 1 ? "Factura" : "NC"} ${order.atts.serie}`,
+            name: order.atts.serie,
         });
     };
 

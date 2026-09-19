@@ -5,6 +5,7 @@ import { AxiosInstance } from "axios";
 import type { ShopProps } from "@/types/shop";
 import { PDFViewer } from "@/components";
 import { downloadXml } from "@/services/downloadXmlServices";
+import { SHOP_SERIE_PREFIX } from "@/constants";
 
 interface Props {
     isOpen: boolean;
@@ -69,6 +70,11 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchShops } = useShops();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
+
+    // La lista (GET shops) no manda voucher_type confiable por fila; se lee del
+    // prefijo que el backend ya arma en `serie` (ej. "L/C 001-010-000000005").
+    const seriePrefix = shop.atts.serie?.trim().split(" ")[0] ?? "";
+    const isLiquidacion = seriePrefix === SHOP_SERIE_PREFIX.LIQUIDACION_COMPRA;
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
@@ -188,7 +194,10 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                                 ))}
                             </>
                         )}
-                        {shop.atts.voucher_type === 3 && (
+                        {shop.atts.state_retencion && isLiquidacion && (
+                            <div className="my-1 border-t border-[var(--border)]" />
+                        )}
+                        {isLiquidacion && (
                             <>
                                 <span className="p-1 font-bold">Liquidación en compra</span>
                                 {getLCOptions().map((option, indexOption) => (

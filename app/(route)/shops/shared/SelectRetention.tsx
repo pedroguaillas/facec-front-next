@@ -10,9 +10,10 @@ interface Props {
     index: number;
     tax: Tax;
     error?: string;
+    disabled?: boolean;
 }
 
-export const SelectRetention = ({ index, tax, error }: Props) => {
+export const SelectRetention = ({ index, tax, error, disabled = false }: Props) => {
 
     const [label, setlabel] = useState(tax.tax_name || '');
     const [modal, setModal] = useState<boolean>(false);
@@ -33,7 +34,7 @@ export const SelectRetention = ({ index, tax, error }: Props) => {
             <button
                 type="button"
                 onClick={toggle}
-                disabled={tax.code === ''}
+                disabled={tax.code === '' || disabled}
                 className={`
                     w-full flex items-center justify-between
                     border rounded-md px-2 py-1.5 text-sm text-left

@@ -1,20 +1,23 @@
 import { useCallback, useEffect } from "react";
 import { useFormShop } from "../context/FormShopContext";
-import { VoucherType } from "@/constants";
+import { useShopVoucherType } from "./useShopVoucherType";
 
 export const useSelectPoint = () => {
     const { shop, points, applieWithholding, selectPoint, setShop, setSelectPoint, setProductOutputs } = useFormShop();
+    const { isLiquidacion } = useShopVoucherType();
 
     // 4to Selección manual del Punto del Emisión
     const handleSelectPoint = useCallback(() => {
-        if (!selectPoint || !shop.voucher_type) return;
+        if (!selectPoint || !shop.voucher_type_id) return;
 
         const baseSerie = `${selectPoint.store}-${selectPoint.point}-`;
 
         const updates: Partial<typeof shop> = {};
 
-        if (Number(shop.voucher_type) === VoucherType.LIQUIDATION) {
-            updates.serie = `${baseSerie}${String(selectPoint.settlementonpurchase).padStart(9, '0')}`;
+        // Liquidación de Compra es la única que va al SRI: el número real lo
+        // asigna el backend al guardar, no se genera/adivina en el frontend.
+        if (isLiquidacion) {
+            updates.serie = null;
         } else {
             setProductOutputs([])
         }
@@ -24,7 +27,7 @@ export const useSelectPoint = () => {
         }
 
         setShop((prev) => ({ ...prev, ...updates }));
-    }, [selectPoint, shop.voucher_type, setShop, applieWithholding, setProductOutputs]);
+    }, [selectPoint, shop.voucher_type_id, isLiquidacion, setShop, applieWithholding, setProductOutputs]);
 
     useEffect(() => {
         // 3ro en ejecutar

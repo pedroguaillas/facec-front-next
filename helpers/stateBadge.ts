@@ -1,4 +1,7 @@
-export const getStateBadgeClasses = (state?: string | null): string => {
+// isElectronic=false es para comprobantes sin flujo SRI (Nota de Venta, Proforma):
+// ahí "CREADO" ya es el estado final (no hay Procesar/Autorizar pendiente), así
+// que se pinta verde en vez del amarillo "pendiente de acción" de electrónicos.
+export const getStateBadgeClasses = (state?: string | null, isElectronic: boolean = true): string => {
     switch (state) {
         case "AUTORIZADO":
             return "bg-green-700 text-white";
@@ -7,6 +10,8 @@ export const getStateBadgeClasses = (state?: string | null): string => {
         case "PENDIENTE DE ANULAR":
             return "bg-[#ff6347] text-white";
         case "CREADO":
+            if (!isElectronic) return "bg-green-700 text-white";
+            return "bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900";
         case "FIRMADO":
             return "bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900";
         case "RECIBIDA":

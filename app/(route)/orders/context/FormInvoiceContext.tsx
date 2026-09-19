@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState, useContext, useEffect, ReactNode, SetStateAction, Dispatch } from "react";
-import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput } from "@/types/order";
+import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types/order";
 import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
 import { calculateInvoiceTotals, calculateLineTotal, hasIceApplied } from "@/helpers/invoiceTotalsHelper";
@@ -16,6 +16,7 @@ interface InvoicesContextType {
   invoice: OrderCreateProps;
   payMethods: PayMethod[];
   points: EmisionPoint[];
+  voucherTypes: VoucherType[];
   selectPoint: EmisionPoint | null;
   selectCustom: CustomerProps | null;
   tourism: boolean;
@@ -48,7 +49,6 @@ interface Props {
 }
 
 const initialInvoice: OrderCreateProps = {
-  serie: 'Cree un punto de emisión',
   date: getDate(),
   expiration_days: 0,
   no_iva: 0,
@@ -69,7 +69,7 @@ const initialInvoice: OrderCreateProps = {
   customer_id: 0,
   received: 0,
   doc_realeted: 0,
-  voucher_type: 1,
+  voucher_type_id: 1,
   pay_method: 20,
 };
 
@@ -81,6 +81,7 @@ export const FormInvoiceProvider = ({ children }: Props) => {
   const [errorProductOutputs, setErrorProductOutputs] = useState<Record<string, Partial<Record<keyof ProductOutput, string>>>>({});
   const [payMethods, setPayMethods] = useState<PayMethod[]>([]);
   const [points, setPoints] = useState<EmisionPoint[]>([]);
+  const [voucherTypes, setVoucherTypes] = useState<VoucherType[]>([]);
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
   const [errorAditionalInformation, setErrorAditionalInformation] = useState<Record<string, Partial<Record<keyof AditionalInformation, string>>>>({});
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof OrderCreateProps, string>>>({});
@@ -100,9 +101,10 @@ export const FormInvoiceProvider = ({ children }: Props) => {
       if (typeof params?.id === 'string') {
         const { data } = await getInvoice(axiosAuth, params.id as string);
         if (data) {
-          const { customers, methodOfPayments, order, order_aditionals, order_items, points } = data;
+          const { customers, methodOfPayments, order, order_aditionals, order_items, points, voucherTypes } = data;
           setPoints(points);
           setPayMethods(methodOfPayments);
+          setVoucherTypes(voucherTypes ?? []);
           const customer = customers[0];
           setSelectCustom(customer ? {
             id: Number(customer.id),
@@ -127,10 +129,11 @@ export const FormInvoiceProvider = ({ children }: Props) => {
       } else {
         const { data } = await getCreateInvoice(axiosAuth);
         if (data) {
-          const { points, methodOfPayments, pay_method, tourism, repayment } = data;
+          const { points, methodOfPayments, pay_method, tourism, repayment, voucherTypes } = data;
           setInvoice((prev) => ({ ...prev, pay_method: pay_method ?? prev.pay_method }));
           setPoints(points);
           setPayMethods(methodOfPayments);
+          setVoucherTypes(voucherTypes ?? []);
           setTourism(tourism);
           setRepayment(repayment);
           setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
@@ -142,7 +145,7 @@ export const FormInvoiceProvider = ({ children }: Props) => {
 
   return (
     <FormInvoiceContext.Provider value={{
-      invoice, selectPoint, selectCustom, payMethods, points, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isActiveIce,
+      invoice, selectPoint, selectCustom, payMethods, points, voucherTypes, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isActiveIce,
       setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setRepayments, setErrorRepayments, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsActiveIce
     }}>
       {children}

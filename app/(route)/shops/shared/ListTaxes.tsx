@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormShop } from '../context/FormShopContext';
+import { useShopVoucherType } from '../hooks/useShopVoucherType';
 import { PrimaryButton } from '@/components';
 import { useTaxes } from '../hooks/useTaxes';
 import { ItemTax } from './ItemTax';
@@ -9,6 +10,7 @@ export const ListTaxes = () => {
 
     const { applieWithholding, taxes, errorTaxes } = useFormShop();
     const { addItem } = useTaxes();
+    const { isNotaVenta } = useShopVoucherType();
 
     if (!applieWithholding) return null;
 
@@ -49,11 +51,14 @@ export const ListTaxes = () => {
                 </table>
             </div>
 
-            <div className="flex justify-end mt-2">
-                <div className="w-28">
-                    <PrimaryButton onClick={addItem} label="Añadir" action="add" type="button" />
+            {/* Nota de Venta solo admite la retención de renta 332, ya autorellenada */}
+            {!isNotaVenta && (
+                <div className="flex justify-end mt-2">
+                    <div className="w-28">
+                        <PrimaryButton onClick={addItem} label="Añadir" action="add" type="button" />
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     )
 }

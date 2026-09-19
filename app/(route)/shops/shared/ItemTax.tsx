@@ -1,5 +1,6 @@
 import { Tax } from "@/types"
 import { useTaxes } from "../hooks/useTaxes";
+import { useShopVoucherType } from "../hooks/useShopVoucherType";
 import { FaTrash } from "react-icons/fa";
 import { SelectRetention } from "./SelectRetention";
 
@@ -17,6 +18,7 @@ const inputNormal = "border-[var(--border-strong)]";
 export const ItemTax = ({ index, tax, error }: Props) => {
 
     const { updateItem, deleteItem } = useTaxes();
+    const { isNotaVenta } = useShopVoucherType();
 
     return (
         <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
@@ -24,6 +26,7 @@ export const ItemTax = ({ index, tax, error }: Props) => {
                 <select
                     value={tax.code}
                     onChange={(e) => updateItem(index, 'code', e.target.value)}
+                    disabled={isNotaVenta}
                     className={`${selectBase} ${error?.code ? inputError : inputNormal}`}
                 >
                     <option value="">Seleccione</option>
@@ -32,7 +35,7 @@ export const ItemTax = ({ index, tax, error }: Props) => {
                 </select>
             </td>
             <td className="p-1.5">
-                <SelectRetention index={index} tax={tax} error={error?.tax_code} />
+                <SelectRetention index={index} tax={tax} error={error?.tax_code} disabled={isNotaVenta} />
             </td>
             <td className="p-1.5 text-right">
                 {tax.editable_porcentage ? (

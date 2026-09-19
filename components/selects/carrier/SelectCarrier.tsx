@@ -69,27 +69,29 @@ export const SelectCarrier = ({ label, error, selectCarrier }: Props) => {
                     className="w-full mb-2 border rounded-lg px-3 py-2 text-sm bg-[var(--background)] border-[var(--border-strong)] focus:border-primary focus:outline-none dark:text-gray-300"
                 />
 
-                <TableResponsive>
-                    <thead>
-                        <tr>
-                            <th>Identificación</th>
-                            <th className="text-left">Nombre</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {suggestions.map((carrier, indexItem) => (
-                            <tr
-                                key={carrier.id}
-                                onClick={() => modalSelect(carrier)}
-                                className={`hover:bg-primary/10 dark:hover:bg-primary/20 cursor-pointer transition-colors
-                                ${indexItem % 2 === 0 ? 'bg-[var(--background)]' : ''}`}
-                            >
-                                <td>{carrier.atts.identication}</td>
-                                <td className="text-left">{carrier.atts.name}</td>
+                <div className="min-h-[260px] sm:min-h-[420px]">
+                    <TableResponsive>
+                        <thead>
+                            <tr>
+                                <th>Identificación</th>
+                                <th className="text-left">Nombre</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </TableResponsive>
+                        </thead>
+                        <tbody>
+                            {suggestions.map((carrier, indexItem) => (
+                                <tr
+                                    key={carrier.id}
+                                    onClick={() => modalSelect(carrier)}
+                                    className={`hover:bg-primary/10 dark:hover:bg-primary/20 cursor-pointer transition-colors
+                                    ${indexItem % 2 === 0 ? 'bg-[var(--background)]' : ''}`}
+                                >
+                                    <td>{carrier.atts.identication}</td>
+                                    <td className="text-left">{carrier.atts.name}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </TableResponsive>
+                </div>
 
                 <div className="flex justify-center">
                     <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />
