@@ -14,6 +14,10 @@ export const shopSchema = z
     serie: z.string().nullable(),
     voucher_type_id: z.coerce.number(), // ids vienen de voucherTypes (backend): 5 Factura, 6 Nota de Venta, 7 Liquidación de Compra, 8 Nota de Débito
     authorization: z.string().optional(),
+    payment_type: z.enum(['CONTADO', 'CREDITO', 'ANTICIPO']),
+    due_date: z.string().optional(),
+    source_type: z.enum(['bank_account', 'cash_register_session']).optional(),
+    source_id: z.number().optional(),
     serie_retencion: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
     date_retention: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
     no_iva: z.number(),
@@ -85,4 +89,18 @@ export const shopSchema = z
   }, {
     message: 'La fecha de retención debe ser mayor o igual a la fecha del comprobante y no puede ser mayor a hoy.',
     path: ['date_retention'],
+  })
+  // Crédito: se necesita la fecha de vencimiento (due_date), se manda directo al backend
+  .refine((data) => data.payment_type !== 'CREDITO' || !!data.due_date, {
+    message: 'Ingrese el plazo',
+    path: ['due_date'],
+  })
+  // Contado: genera movimiento real en Treasury, requiere origen
+  .refine((data) => data.payment_type !== 'CONTADO' || !!data.source_type, {
+    message: 'Seleccione una cuenta bancaria o caja',
+    path: ['source_type'],
+  })
+  .refine((data) => data.payment_type !== 'CONTADO' || (data.source_id ?? 0) > 0, {
+    message: 'Seleccione una cuenta bancaria o caja',
+    path: ['source_id'],
   });

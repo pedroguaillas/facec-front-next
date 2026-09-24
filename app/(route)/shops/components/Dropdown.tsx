@@ -6,6 +6,7 @@ import type { ShopProps } from "@/types/shop";
 import { PDFViewer } from "@/components";
 import { downloadXml } from "@/services/downloadXmlServices";
 import { SHOP_SERIE_PREFIX } from "@/constants";
+import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
 
 interface Props {
     isOpen: boolean;
@@ -70,6 +71,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchShops } = useShops();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     // La lista (GET shops) no manda voucher_type confiable por fila; se lee del
     // prefijo que el backend ya arma en `serie` (ej. "L/C 001-010-000000005").
@@ -177,6 +179,16 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                 ${only ? "-mt-24" : "-mt-4"}`}
                 >
                     <div className="py-1">
+                        <button
+                            onClick={() => {
+                                setIsOpen(index); // Close dropdown after selection
+                                setIsPaymentModalOpen(true);
+                            }}
+                            className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                        >
+                            Registrar pago
+                        </button>
+                        <div className="my-1 border-t border-[var(--border)]" />
                         {shop.atts.state_retencion && (
                             <>
                                 <span className="py-1">Retención</span>
@@ -218,6 +230,16 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                 </div>
             )}
             {pdf && <PDFViewer pdf={pdf} />}
+            {isPaymentModalOpen && (
+                <RegisterPaymentModal
+                    shopId={shop.id}
+                    onClose={() => setIsPaymentModalOpen(false)}
+                    onSaved={() => {
+                        setIsPaymentModalOpen(false);
+                        fetchShops();
+                    }}
+                />
+            )}
         </div>
     );
 };

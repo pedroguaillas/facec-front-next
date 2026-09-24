@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types";
+import { AccountLedgerEntry, AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types";
 import { AxiosInstance } from "axios";
 
 type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[], voucherTypes: VoucherType[] }
@@ -25,3 +25,9 @@ export const invoiceUpdateServices = async (
     id: string,
     form: object
 ) => handleApiRequest<OrderCreateProps>(() => axiosAuth.put(`orders/${id}`, form));
+
+export const registerOrderPayment = async (
+    axiosAuth: AxiosInstance,
+    id: number,
+    data: object
+) => handleApiRequest<AccountLedgerEntry>(() => axiosAuth.post(`orders/${id}/payments`, data));

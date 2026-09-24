@@ -1,4 +1,5 @@
-import { states } from "./general";
+import { states, PaymentType } from "./general";
+import { MovementSourceType } from "./movement";
 
 interface OrderProps {
     atts: {
@@ -27,7 +28,11 @@ interface VoucherType {
 interface OrderCreateProps {
     id?: string;
     date: string;
-    expiration_days: number; //Eliminar
+    payment_type: PaymentType;
+    due_date?: string; // Requerido si payment_type = CREDITO (YYYY-MM-DD)
+    source_type?: MovementSourceType; // Requerido si payment_type = CONTADO
+    source_id?: number; // Requerido si payment_type = CONTADO
+    paid?: number; // Solo lectura: viene del backend al editar
     no_iva: number,
     base0: number,
     base5: number,

@@ -1,6 +1,6 @@
 import { RequiredFields, Separate, Title } from "@/components";
 import { FormShopProvider } from "../context/FormShopContext";
-import { GeneralInformation, ListProducts, ListTaxes, RetentionInformation, Totals } from "../shared";
+import { GeneralInformation, ListProducts, ListTaxes, PaymentInformation, RetentionInformation, Totals } from "../shared";
 
 const PageShopEdit = () => {
     return (
@@ -20,6 +20,7 @@ const PageShopEdit = () => {
                         <RequiredFields />
                         <Separate />
                         <GeneralInformation />
+                        <PaymentInformation />
                         <ListProducts />
                         <Separate />
                         <RetentionInformation />

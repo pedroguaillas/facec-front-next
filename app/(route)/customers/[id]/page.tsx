@@ -1,7 +1,14 @@
-import { RequiredFields, Separate, Title } from "@/components"
+"use client";
+
+import { useParams } from "next/navigation";
+import { AccountLedgerSection, RequiredFields, Separate, Title } from "@/components"
 import { CustomerForm } from "../shared/CustomerForm"
 
 const PageEditCustomer = () => {
+
+    const params = useParams();
+    const id = params.id as string;
+
     return (
         <div className='dark:text-gray-300'>
             <Title
@@ -15,6 +22,8 @@ const PageEditCustomer = () => {
                     <RequiredFields />
                     <Separate />
                     <CustomerForm />
+
+                    <AccountLedgerSection partyType="customer" partyId={Number(id)} title="Cuentas por cobrar" />
                 </div>
             </div>
         </div>

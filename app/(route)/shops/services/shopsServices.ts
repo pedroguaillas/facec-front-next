@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { EmisionPoint, GeneralPaginate, ProductOutput, ShopCreateProps, ShopProps, ShopVoucherType, Supplier, Tax, TaxInput } from "@/types";
+import { AccountLedgerEntry, EmisionPoint, GeneralPaginate, ProductOutput, ShopCreateProps, ShopProps, ShopVoucherType, Supplier, Tax, TaxInput } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getShops = async (
@@ -30,3 +30,9 @@ export const shopUpdateService = async (
     axiosAuth: AxiosInstance,
     form: object
 ) => handleApiRequest<ShopProps>(() => axiosAuth.put(`shops/${id}`, form));
+
+export const registerShopPayment = async (
+    axiosAuth: AxiosInstance,
+    id: number,
+    data: object
+) => handleApiRequest<AccountLedgerEntry>(() => axiosAuth.post(`shops/${id}/payments`, data));

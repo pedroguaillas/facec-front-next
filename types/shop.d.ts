@@ -1,4 +1,5 @@
-import { states } from "./general"
+import { states, PaymentType } from "./general"
+import { MovementSourceType } from "./movement"
 
 interface ShopVoucherType {
     id: number,
@@ -33,7 +34,11 @@ interface ShopCreateProps {
     serie: string | null,
     date: string,
     authorization: string,
-    expiration_days: number,
+    payment_type: PaymentType,
+    due_date?: string, // Requerido si payment_type = CREDITO (YYYY-MM-DD)
+    source_type?: MovementSourceType, // Requerido si payment_type = CONTADO
+    source_id?: number, // Requerido si payment_type = CONTADO
+    paid?: number, // Solo lectura: viene del backend al editar
     voucher_type_id: number,
     no_iva: number,
     base0: number,

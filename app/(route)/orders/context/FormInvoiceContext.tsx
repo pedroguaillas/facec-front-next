@@ -50,7 +50,7 @@ interface Props {
 
 const initialInvoice: OrderCreateProps = {
   date: getDate(),
-  expiration_days: 0,
+  payment_type: 'CONTADO',
   no_iva: 0,
   base0: 0,
   base5: 0,

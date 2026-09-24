@@ -8,6 +8,7 @@ import { OrderProps } from "@/types/order";
 import { PDFViewer } from "@/components";
 import { AxiosInstance } from "axios";
 import { ORDER_SERIE_PREFIX } from "@/constants";
+import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
 
 interface Props {
     isOpen: boolean;
@@ -54,6 +55,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const { fetchInvoices } = useInvoices();
     const { data: session } = useSession();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     // La lista (GET orders) no manda voucher_type por fila; el tipo se lee del
     // prefijo que el backend ya arma en `serie` (ej. "FAC 001-001-000000001").
@@ -66,6 +68,10 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
+
+        if (order.atts.state !== "ANULADO") {
+            options.push({ label: "Registrar pago", onClick: async () => setIsPaymentModalOpen(true) });
+        }
 
         if (isElectronicVoucher && order.atts.state !== "ANULADO") {
             options.push({
@@ -194,6 +200,16 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                 )}
             </div>
             {pdf && <PDFViewer pdf={pdf} />}
+            {isPaymentModalOpen && (
+                <RegisterPaymentModal
+                    orderId={order.id}
+                    onClose={() => setIsPaymentModalOpen(false)}
+                    onSaved={() => {
+                        setIsPaymentModalOpen(false);
+                        fetchInvoices();
+                    }}
+                />
+            )}
         </>
     );
 };

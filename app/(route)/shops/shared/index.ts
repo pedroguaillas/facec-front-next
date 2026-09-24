@@ -4,6 +4,8 @@ export * from './ItemTax';
 export * from './ListProducts';
 export * from './ListTaxes';
 export * from './ModalSelectRetention';
+export * from './PaymentInformation';
+export * from './RegisterPaymentModal';
 export * from './RetentionInformation';
 export * from './SelectRetention';
 export * from './SubmitButton';

@@ -1,4 +1,4 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, Plate, Repayments, Totals } from '../shared';
+import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, PaymentInformation, Plate, Repayments, Totals } from '../shared';
 import { FormInvoiceProvider } from '../context/FormInvoiceContext';
 import { Separate, Title, RequiredFields } from '@/components';
 
@@ -28,6 +28,7 @@ const CreateOrderPage = () => {
               <div className='mb-2'>
                 <Plate />
                 <PayMethods />
+                <PaymentInformation />
                 <AditionalInformation />
               </div>
               <Totals />

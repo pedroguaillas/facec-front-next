@@ -20,6 +20,10 @@ export const invoiceSchema = z
       .transform(val => Number(val))
       .refine(val => val >= 0, { message: "Descuento debe ser mayor o igual a 0" }),
     pay_method: z.number(),
+    payment_type: z.enum(['CONTADO', 'CREDITO', 'ANTICIPO']),
+    due_date: z.string().optional(),
+    source_type: z.enum(['bank_account', 'cash_register_session']).optional(),
+    source_id: z.number().optional(),
     guia: z.string().optional(),
     plate: z.string().optional(),
     // Para notas de crédito
@@ -117,6 +121,29 @@ export const invoiceSchema = z
     {
       path: ['pay_method'],
       message: 'Monto desde $500, debe seleccionar otro forma de pago',
+    }
+  )
+  // Crédito: se necesita la fecha de vencimiento (due_date), se manda directo al backend
+  .refine(
+    (data) => data.payment_type !== 'CREDITO' || !!data.due_date,
+    {
+      path: ['due_date'],
+      message: 'Ingrese el plazo',
+    }
+  )
+  // Contado: genera movimiento real en Treasury, requiere origen
+  .refine(
+    (data) => data.payment_type !== 'CONTADO' || !!data.source_type,
+    {
+      path: ['source_type'],
+      message: 'Seleccione una cuenta bancaria o caja',
+    }
+  )
+  .refine(
+    (data) => data.payment_type !== 'CONTADO' || (data.source_id ?? 0) > 0,
+    {
+      path: ['source_id'],
+      message: 'Seleccione una cuenta bancaria o caja',
     }
   )
   // Placa obligatoria si algún item es un servicio de transporte (aux_cod H49200...)

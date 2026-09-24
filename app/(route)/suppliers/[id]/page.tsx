@@ -1,7 +1,14 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import { SupplierForm } from "../shared/SupplierForm";
-import { RequiredFields, Separate, Title } from "@/components";
+import { AccountLedgerSection, RequiredFields, Separate, Title } from "@/components";
 
 const PageEditSupplier = () => {
+
+    const params = useParams();
+    const id = params.id as string;
+
     return (
         <div className='dark:text-gray-300'>
             <Title
@@ -15,6 +22,8 @@ const PageEditSupplier = () => {
                     <RequiredFields />
                     <Separate />
                     <SupplierForm />
+
+                    <AccountLedgerSection partyType="provider" partyId={Number(id)} title="Cuentas por pagar" />
                 </div>
             </div>
         </div>

@@ -69,7 +69,7 @@ const initialShop: ShopCreateProps = {
     serie: null,
     date: getDate(),
     authorization: '',
-    expiration_days: 0,
+    payment_type: 'CONTADO',
     voucher_type_id: SHOP_VOUCHER_TYPE_ID.FACTURA,
     no_iva: 0,
     base0: 0,
