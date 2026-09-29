@@ -123,9 +123,9 @@ export const invoiceSchema = z
       message: 'Monto desde $500, debe seleccionar otro forma de pago',
     }
   )
-  // Crédito: se necesita la fecha de vencimiento (due_date), se manda directo al backend
+  // Crédito y Anticipo necesitan due_date (Anticipo: por si no alcanza y el resto queda a crédito)
   .refine(
-    (data) => data.payment_type !== 'CREDITO' || !!data.due_date,
+    (data) => data.payment_type === 'CONTADO' || !!data.due_date,
     {
       path: ['due_date'],
       message: 'Ingrese el plazo',

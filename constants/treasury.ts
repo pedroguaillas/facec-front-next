@@ -4,11 +4,14 @@ import {
     DenominationKind, MovementStatus, MovementTransactionType, MovementType, PaymentMethod, PaymentType,
 } from "@/types";
 
-// ANTICIPO queda fuera: reservado en backend, sin lógica todavía.
 export const paymentTypeOptions: { label: string; value: PaymentType }[] = [
     { label: 'Contado', value: 'CONTADO' },
     { label: 'Crédito', value: 'CREDITO' },
+    { label: 'Anticipo', value: 'ANTICIPO' },
 ];
+
+// Plazo sugerido al marcar Crédito (el usuario lo puede cambiar).
+export const DEFAULT_CREDIT_TERM_DAYS = 30;
 
 export const bankAccountTypeOptions: { label: string; value: BankAccountType }[] = [
     { label: 'Ahorro', value: 'AHORRO' },

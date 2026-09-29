@@ -4,36 +4,9 @@ import { TableResponsive } from "@/components";
 import { ButtonSubmit } from "./ButtonSubmit";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
-import { limitDecimals } from "@/helpers/numberHelper";
-
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-right bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
 
 export const Totals = () => {
-    const { invoice, selectCustom, setInvoice, formErrors } = useFormInvoice();
-
-    const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = limitDecimals(e.target.value, 2);
-
-        if (value === '') {
-            setInvoice(prev => ({
-                ...prev,
-                discount: '',
-                total: Number((prev.sub_total + prev.ice + prev.iva5 + prev.iva8 + prev.iva + prev.iva15).toFixed(2)),
-            }));
-            return;
-        }
-
-        const parsed = Number(value);
-        if (isNaN(parsed) || parsed < 0 || parsed >= invoice.sub_total) return;
-
-        const total = Number((invoice.sub_total + invoice.ice + invoice.iva5 + invoice.iva8 + invoice.iva + invoice.iva15 - parsed).toFixed(2));
-
-        setInvoice(prev => ({
-            ...prev,
-            discount: value,
-            total,
-        }));
-    };
+    const { invoice, selectCustom } = useFormInvoice();
 
     const subtotalRows = [
         { label: 'Subtotal 0%', value: invoice.base0 },
@@ -72,21 +45,12 @@ export const Totals = () => {
                             <td className="text-right border border-[var(--border)]">{value.toFixed(2)}</td>
                         </tr>
                     ))}
-                    <tr>
-                        <td className="border border-[var(--border)]">Descuento</td>
-                        <td className="text-right border border-[var(--border)]">
-                            <input
-                                type="number"
-                                inputMode="decimal"
-                                value={invoice.discount}
-                                onChange={handleDiscountChange}
-                                min={0}
-                                max={invoice.sub_total}
-                                step="0.01"
-                                className={`${inputBase} w-20 ${formErrors.discount ? 'border-red-400' : 'border-[var(--border-strong)]'}`}
-                            />
-                        </td>
-                    </tr>
+                    {Number(invoice.discount) > 0 && (
+                        <tr>
+                            <td className="border border-[var(--border)]">Descuento</td>
+                            <td className="text-right border border-[var(--border)]">{Number(invoice.discount).toFixed(2)}</td>
+                        </tr>
+                    )}
                     {invoice.ice > 0 && (
                         <tr>
                             <td className="border border-[var(--border)]">Monto de ICE</td>

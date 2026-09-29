@@ -14,6 +14,8 @@ interface ShopProps {
         date: string,
         serie: string,
         total: number | string,
+        payment_type: PaymentType,
+        paid: number | string,
         serie_retencion: string | null,
         state_retencion: states,
         xml_retention: string | null,

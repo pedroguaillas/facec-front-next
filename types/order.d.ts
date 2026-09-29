@@ -9,6 +9,8 @@ interface OrderProps {
         serie: string;
         state: states;
         total: number;
+        payment_type: PaymentType;
+        paid: number | string;
         xml: string | null;
     }
     customer: {

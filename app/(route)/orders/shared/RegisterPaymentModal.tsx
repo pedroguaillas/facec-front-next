@@ -5,6 +5,7 @@ import { Modal, PrimaryButton, SelectPaymentSource, TextInput } from "@/componen
 import { registerPaymentSchema } from "@/schemas/payment.schema";
 import { getInvoice, registerOrderPayment } from "../services/invoiceServices";
 import { parseZodErrors } from "@/helpers/zodHelper";
+import { getDate } from "@/helpers/dateHelper";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { MovementSourceType } from "@/types";
 
@@ -23,7 +24,7 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
     const [amount, setAmount] = useState('');
     const [sourceType, setSourceType] = useState<MovementSourceType | ''>('');
     const [sourceId, setSourceId] = useState<number | ''>('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(getDate());
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
 
@@ -31,8 +32,8 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
         const fetchOrder = async () => {
             const { data } = await getInvoice(axiosAuth, String(orderId));
             if (data) {
-                setTotal(data.order.total);
-                setPaid(data.order.paid ?? 0);
+                setTotal(Number(data.order.total));
+                setPaid(Number(data.order.paid ?? 0));
                 setIsCredit(data.order.payment_type === 'CREDITO');
             }
         };
@@ -91,7 +92,7 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
 
                     <TextInput type="number" label="Monto a abonar" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
                     <SelectPaymentSource sourceType={sourceType} sourceId={sourceId} error={errors.source_type || errors.source_id} onChange={handleSelectSource} />
-                    <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                    <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={getDate()} />
 
                     <div className='flex justify-end mt-4'>
                         <div className='w-28'>

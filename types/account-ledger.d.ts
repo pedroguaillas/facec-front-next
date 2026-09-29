@@ -1,4 +1,17 @@
-export type AccountLedgerEntryType = 'FACTURA' | 'NOTA_CREDITO' | 'RETENCION';
+export type AccountLedgerEntryType = 'FACTURA' | 'NOTA_CREDITO' | 'RETENCION' | 'PAGO' | 'SALDO_INICIAL';
+
+export interface AdvanceEntry {
+    id: number;
+    amount: number;
+    applied_amount: number;
+    remaining: number;
+    date: string;
+}
+
+export interface AdvancesSummary {
+    total_remaining: number;
+    advances: AdvanceEntry[];
+}
 
 export interface AccountLedgerEntry {
     id: number;

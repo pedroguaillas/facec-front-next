@@ -41,3 +41,5 @@ export * from './movements/MovementsSection';
 
 // Account ledger
 export * from './account-ledger/AccountLedgerSection';
+export * from './account-ledger/OpeningBalanceModal';
+export * from './account-ledger/AdvanceModal';

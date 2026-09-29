@@ -77,6 +77,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     // prefijo que el backend ya arma en `serie` (ej. "L/C 001-010-000000005").
     const seriePrefix = shop.atts.serie?.trim().split(" ")[0] ?? "";
     const isLiquidacion = seriePrefix === SHOP_SERIE_PREFIX.LIQUIDACION_COMPRA;
+    const canRegisterPayment = shop.atts.payment_type === "CREDITO" && Number(shop.atts.paid) < Number(shop.atts.total);
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
@@ -179,16 +180,20 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                 ${only ? "-mt-24" : "-mt-4"}`}
                 >
                     <div className="py-1">
-                        <button
-                            onClick={() => {
-                                setIsOpen(index); // Close dropdown after selection
-                                setIsPaymentModalOpen(true);
-                            }}
-                            className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
-                        >
-                            Registrar pago
-                        </button>
-                        <div className="my-1 border-t border-[var(--border)]" />
+                        {canRegisterPayment && (
+                            <>
+                                <button
+                                    onClick={() => {
+                                        setIsOpen(index); // Close dropdown after selection
+                                        setIsPaymentModalOpen(true);
+                                    }}
+                                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                >
+                                    Registrar pago
+                                </button>
+                                <div className="my-1 border-t border-[var(--border)]" />
+                            </>
+                        )}
                         {shop.atts.state_retencion && (
                             <>
                                 <span className="py-1">Retención</span>

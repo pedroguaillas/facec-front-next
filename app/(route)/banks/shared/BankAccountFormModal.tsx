@@ -62,6 +62,9 @@ export const BankAccountFormModal = ({ bankId, account, onClose, onSaved }: Prop
             <form onSubmit={handleSubmit}>
                 <TextInput type='text' label='Número de cuenta' value={form.account_number} error={errors.account_number} onChange={handleChange} name='account_number' maxLength={30} required />
                 <SelectOption label="Tipo" name='type' options={bankAccountTypeOptions} selectedValue={form.type} handleSelect={handleChange} required />
+                {!account && (
+                    <TextInput type='number' label='Saldo inicial' value={form.opening_balance?.toString() ?? ''} error={errors.opening_balance} onChange={handleChange} name='opening_balance' />
+                )}
 
                 <div className='flex justify-end mt-4'>
                     <div className='w-28'>

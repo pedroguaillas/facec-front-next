@@ -9,4 +9,8 @@ export const bankAccountSchema = z.object({
         .min(1, 'Número de cuenta requerido')
         .max(30, 'Máximo 30 caracteres'),
     type: z.enum(['AHORRO', 'CORRIENTE']),
+    opening_balance: z.union([z.string(), z.number()])
+        .optional()
+        .transform(val => (val === undefined || val === '') ? undefined : Number(val))
+        .refine(val => val === undefined || val >= 0, { message: 'El saldo inicial debe ser mayor o igual a 0' }),
 });

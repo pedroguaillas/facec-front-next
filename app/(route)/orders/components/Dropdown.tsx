@@ -69,7 +69,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const getOptions = () => {
         const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
 
-        if (order.atts.state !== "ANULADO") {
+        if (order.atts.payment_type === "CREDITO" && Number(order.atts.paid) < order.atts.total) {
             options.push({ label: "Registrar pago", onClick: async () => setIsPaymentModalOpen(true) });
         }
 

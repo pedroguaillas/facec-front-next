@@ -90,8 +90,8 @@ export const shopSchema = z
     message: 'La fecha de retención debe ser mayor o igual a la fecha del comprobante y no puede ser mayor a hoy.',
     path: ['date_retention'],
   })
-  // Crédito: se necesita la fecha de vencimiento (due_date), se manda directo al backend
-  .refine((data) => data.payment_type !== 'CREDITO' || !!data.due_date, {
+  // Crédito y Anticipo necesitan due_date (Anticipo: por si no alcanza y el resto queda a crédito)
+  .refine((data) => data.payment_type === 'CONTADO' || !!data.due_date, {
     message: 'Ingrese el plazo',
     path: ['due_date'],
   })

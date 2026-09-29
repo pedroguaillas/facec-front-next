@@ -18,6 +18,7 @@ export interface BankAccount {
     account_number: string;
     type: BankAccountType;
     balance: number;
+    opening_balance?: number | string; // Solo al crear
     bank?: Bank;
 }
 
