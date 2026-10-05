@@ -153,6 +153,11 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 8.25v10.5A2.25 2.25 0 0 0 4.5 21h15a2.25 2.25 0 0 0 2.25-2.25V8.25M2.25 8.25V6a2.25 2.25 0 0 1 2.25-2.25h15A2.25 2.25 0 0 1 21.75 6v2.25M6 12.75h.008v.008H6v-.008Zm3 0h6" />
                                     </svg>
                                 </LiLink>
+                                <LiLink label="Cartera vencida" link="/overdue" handleCloseSidebar={handleCloseSidebar} menuOpen={menu}>
+                                    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 shrink-0">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-8.25 3h.008v.008h-.008V15Z" />
+                                    </svg>
+                                </LiLink>
 
                                 {/* Herramientas */}
                                 <li className={`

@@ -15,6 +15,7 @@ export * from './general.d';
 export * from './movement.d';
 export * from './next-auth.d';
 export * from './order.d';
+export * from './overdue.d';
 export * from './paginate.d';
 export * from './password.d';
 export * from './product.d';

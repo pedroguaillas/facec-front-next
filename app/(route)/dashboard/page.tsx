@@ -4,10 +4,12 @@ import getAxiosAuthServer from "@/lib/axios/getAxiosAuthServer";
 import { BalanceChart } from "./components/BalanceChart";
 import { RecentOrdersTable } from "./components/RecentOrdersTable";
 import { StatCard } from "./components/StatCard";
+import { OverdueCard } from "./components/OverdueCard";
 import { FaCar, FaClock, FaFileCirclePlus, FaUserAstronaut, FaUsers } from "react-icons/fa6";
 import { redirect } from "next/navigation";
 import { FaExclamationTriangle } from "react-icons/fa";
 import { DashboardResponse } from "@/types";
+import { getCustomersOverdue, getProvidersOverdue } from "@/services/overdueServices";
 
 const InvoicesPage = async () => {
   const session = await getServerSession(authOptions);
@@ -18,6 +20,12 @@ const InvoicesPage = async () => {
 
   const axiosAuth = getAxiosAuthServer(session);
   const { data } = await axiosAuth.get<DashboardResponse>("/dashboard");
+  const [{ data: customersOverdue }, { data: providersOverdue }] = await Promise.all([
+    getCustomersOverdue(axiosAuth),
+    getProvidersOverdue(axiosAuth),
+  ]);
+  const totalOverdue = (customersOverdue?.total_overdue ?? 0) + (providersOverdue?.total_overdue ?? 0);
+  const overduePartiesCount = (customersOverdue?.parties.length ?? 0) + (providersOverdue?.parties.length ?? 0);
 
   const isCertExpired = !!data.certExpiration && new Date(data.certExpiration) < new Date();
   const isCertSoonToExpire = !!data.certExpiration && !isCertExpired
@@ -71,7 +79,7 @@ const InvoicesPage = async () => {
       )}
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           icon={<FaFileCirclePlus />}
           value={data.counts.orders}
@@ -102,6 +110,7 @@ const InvoicesPage = async () => {
           accentSoft="rgba(217, 119, 6, 0.12)"
           newThisMonth={data.newThisMonth.providers}
         />
+        <OverdueCard totalOverdue={totalOverdue} partiesCount={overduePartiesCount} />
       </div>
 
       {/* Balance */}
