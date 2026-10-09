@@ -9,7 +9,9 @@ export const PrimaryButton = ({
     onClick,
     url = '/',
     isLoading,
-    action
+    action,
+    disabled,
+    title,
 }: ActionsTitle) => {
 
     const color: Record<ActionsTitle['action'], string> = {
@@ -31,11 +33,12 @@ export const PrimaryButton = ({
         disabled:opacity-50 disabled:cursor-not-allowed
     `;
 
-    if (type === 'link')
+    if (type === 'link' && !disabled)
         return (
             <Link
                 className={`${baseClasses} w-full px-4 py-2 ${color[action]}`}
                 href={url}
+                title={title}
             >
                 {!isLoading && action === 'add' && <FaPlus className="text-xs" />}
                 {!isLoading && action === 'edit' && <FaPen className="text-xs" />}
@@ -57,9 +60,10 @@ export const PrimaryButton = ({
 
     return (
         <button
-            type={type}
+            type={type === 'link' ? 'button' : type}
             onClick={onClick}
-            disabled={isLoading}
+            disabled={isLoading || disabled}
+            title={title}
             className={`${baseClasses} w-full px-4 py-2 ${color[action]}`}
         >
             {isLoading ? (

@@ -85,8 +85,8 @@ export const BankAccountsSection = ({ bankId }: Props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {accounts.map((account, index) => (
-                        <tr key={account.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    {accounts.map((account) => (
+                        <tr key={account.id}>
                             <td className="text-left">{account.atts.account_number}</td>
                             <td>{typeLabel(account.atts.type)}</td>
                             <td>{account.atts.balance}</td>

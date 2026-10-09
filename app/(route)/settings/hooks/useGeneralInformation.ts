@@ -1,6 +1,7 @@
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { ChangeEvent, useEffect, useState } from "react";
 import { downloadSignService, getCompany, updateCompany } from "../services/companyServices";
+import { useToast } from "@/context/ToastContext";
 
 export const useGeneralInformation = () => {
     const axiosAuth = useAxiosAuth();
@@ -22,6 +23,10 @@ export const useGeneralInformation = () => {
     });
 
     const [editingCert, setEditingCert] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    // Mensaje del backend al pasar a RIMPE Negocio Popular (cambia los productos a IVA 0%)
+    const [ivaConfirmMessage, setIvaConfirmMessage] = useState<string | null>(null);
+    const { toast } = useToast();
 
     const optionType = [
         { label: 'GENERAL', value: '0' },
@@ -56,7 +61,7 @@ export const useGeneralInformation = () => {
         setForm(prev => ({ ...prev, cert: null, pass_cert: '' }));
     }
 
-    const submit = async () => {
+    const submit = async (confirmIvaChange = false) => {
         const formData = new FormData();
         formData.append('rimpe', form.rimpe + '');
         formData.append('accounting', String(form.accounting));
@@ -72,10 +77,26 @@ export const useGeneralInformation = () => {
             formData.append('pass_cert', form.pass_cert);
         }
 
-        const { data } = await updateCompany(axiosAuth, formData);
+        if (confirmIvaChange) {
+            formData.append('confirm_iva_change', '1');
+        }
+
+        setIsSaving(true);
+        const { data, errors, error } = await updateCompany(axiosAuth, formData);
+        setIsSaving(false);
+
+        if (errors?.confirm_iva_change) {
+            setIvaConfirmMessage(errors.confirm_iva_change);
+            return;
+        }
+        if (errors || error) {
+            toast(error ?? Object.values(errors ?? {})[0] ?? 'No se pudo guardar', 'error');
+            return;
+        }
 
         if (data) {
-            alert('Se ha editado los datos');
+            setIvaConfirmMessage(null);
+            toast('Datos actualizados');
             setEditingCert(false);
             setForm(prev => ({ ...prev, cert: null, pass_cert: '', ...(data as unknown as Partial<typeof prev>) }));
         }
@@ -140,5 +161,12 @@ export const useGeneralInformation = () => {
         fetchCertificate();
     }, [form.cert, form.pass_cert]);
 
-    return { optionType, form, editingCert, editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign }
+    const confirmIvaChange = () => submit(true);
+    const cancelIvaChange = () => setIvaConfirmMessage(null);
+
+    return {
+        optionType, form, editingCert, isSaving, ivaConfirmMessage,
+        editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign,
+        confirmIvaChange, cancelIvaChange,
+    }
 }

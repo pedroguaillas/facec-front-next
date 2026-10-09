@@ -14,6 +14,22 @@ export interface DashboardRecentOrder {
     customer: { name: string };
 }
 
+interface SriCounts {
+    pending: number;
+    rejected: number;
+}
+
+export interface DashboardSri extends SriCounts {
+    oldest_pending_date: string | null;
+    // Desglose por tipo (las 4 claves vienen siempre). orders coincide con GET orders?state=
+    by_type: {
+        orders: SriCounts;
+        shops: SriCounts;
+        retentions: SriCounts;
+        referralguides: SriCounts;
+    };
+}
+
 export interface DashboardResponse {
     succes: boolean;
     active: boolean;
@@ -32,4 +48,5 @@ export interface DashboardResponse {
         providers: number;
     };
     recentOrders: DashboardRecentOrder[];
+    sri?: DashboardSri;
 }

@@ -1,4 +1,4 @@
-import { ProductOutput } from "@/types";
+import { Holiday, ProductOutput } from "@/types";
 
 export interface InvoiceTotals {
     no_iva: number;
@@ -32,6 +32,25 @@ export const calculateLineTotal = (item: Pick<ProductOutput, 'price' | 'quantity
     const discount = item.discount === '' ? 0 : Number(item.discount);
     const base = price * quantity - discount;
     return parseFloat((base * (1 + item.percentage / 100)).toFixed(2));
+};
+
+// IVA diferenciado: en feriado los servicios turísticos pasan del 15% (code 4) al 8% (code 8)
+const STANDARD_IVA = { iva: 4, percentage: 15 };
+const DIFFERENTIATED_IVA = { iva: 8, percentage: 8 };
+
+// Feriado que cubre la fecha (YYYY-MM-DD, fechas inclusivas) o null
+export const findHoliday = (holidays: Holiday[], date: string) =>
+    holidays.find(h => h.starts_at.slice(0, 10) <= date && date <= h.ends_at.slice(0, 10)) ?? null;
+
+// Ajusta la tarifa del item según si la venta cae en feriado. Mismo criterio que el backend
+// al guardar: producto marcado + 15% + feriado → 8%; fuera de feriado un 8% vuelve a 15%.
+export const withHolidayIva = (item: ProductOutput, isHoliday: boolean): ProductOutput => {
+    const target = isHoliday
+        ? (item.differentiated_iva && item.iva === STANDARD_IVA.iva ? DIFFERENTIATED_IVA : null)
+        : (item.iva === DIFFERENTIATED_IVA.iva ? STANDARD_IVA : null);
+    if (!target) return item;
+    const updated = { ...item, ...target };
+    return { ...updated, total_iva: calculateLineTotal(updated) };
 };
 
 // Fuente única de verdad: totales de la factura siempre derivados de los items actuales.

@@ -21,7 +21,7 @@ export const Plate = () => {
     }
 
     return (
-        <div className="w-full overflow-x-auto sm:max-w-sm md:max-w-md lg:max-w-lg my-2">
+        <div className="w-full min-w-0">
             <TextInput
                 label="Placa"
                 name="plate"

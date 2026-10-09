@@ -1,10 +1,13 @@
+"use client";
+
 import { fields, ProductOutput } from "@/types/order";
 import { SelectProduct } from "@/components";
-import { FaTrash } from "react-icons/fa";
 import { ProductProps } from "@/types";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { limitDecimals } from "@/helpers/numberHelper";
+import { IconButton } from "@/components";
+import { cellInput, cellInputError, cellInputNormal, tableRow } from "./FormSection";
 
 interface Props {
     index: number;
@@ -15,9 +18,9 @@ interface Props {
     removeItem: (index: number) => void;
 }
 
-const inputBase = "w-full min-w-10 border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
-const inputError = "border-red-400";
-const inputNormal = "border-[var(--border-strong)]";
+const inputBase = `${cellInput} text-right`;
+const inputError = cellInputError;
+const inputNormal = cellInputNormal;
 
 export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
@@ -33,14 +36,14 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
 
     const ivaCalculation = () => {
         const { percentage } = productOutput;
-        if (productOutput.iva === 4 || productOutput.iva === 5) {
+        if (productOutput.iva === 4 || productOutput.iva === 5 || productOutput.iva === 8) {
             return baseCalculation() * percentage / 100;
         }
         return 0;
     }
 
     return (
-        <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
+        <tr className={tableRow}>
             <td>
                 <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
             </td>
@@ -74,8 +77,8 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     className={`${inputBase} ${error?.discount ? inputError : inputNormal}`}
                 />
             </td>
-            <td className="text-right">{baseCalculation().toFixed(2)}</td>
-            <td className="text-right">{ivaCalculation().toFixed(2)}</td>
+            <td className="text-right tabular-nums text-ink-2 pt-3.5!">{baseCalculation().toFixed(2)}</td>
+            <td className="text-right tabular-nums text-ink-2 pt-3.5!">{ivaCalculation().toFixed(2)}</td>
             <td className="text-right">
                 <input
                     onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}
@@ -99,10 +102,8 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     ) : null}
                 </td>
                 : null}
-            <td className="w-1">
-                <button onClick={() => removeItem(index)} className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600">
-                    <FaTrash />
-                </button>
+            <td className="w-1 py-0.5!">
+                <IconButton action="delete" type="button" onClick={() => removeItem(index)} title="Eliminar línea" />
             </td>
         </tr>
     )

@@ -11,7 +11,8 @@ export interface ProductProps {
         ice: null,
         irbpnr: null,
         stock: null,
-        tourism: false,
+        // Factura al 8% en feriados (solo empresas con base8 y tarifa 15%)
+        differentiated_iva?: boolean,
     },
     iva: {
         code: number,
@@ -30,6 +31,8 @@ interface Product {
     ice?: string,
     stock?: number,
     price1: string | number,
+    // Factura al 8% en feriados (solo empresas con base8 y tarifa 15%)
+    differentiated_iva?: boolean,
 }
 
 interface SriCategory {
@@ -43,6 +46,8 @@ interface ProductCreateResponse {
     iceCataloges: [];
     sriCategories: SriCategory[];
     transport: boolean;
+    // Empresa habilitada para IVA diferenciado (8% en feriados)
+    base8?: boolean;
 }
 
 interface ProductEditResponse extends ProductCreateResponse {

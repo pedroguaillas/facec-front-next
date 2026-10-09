@@ -7,7 +7,7 @@ import { deleteCarrier } from "@/services/carrierServices";
 
 export const CarriersTable = () => {
 
-    const { carriers, carrierDeleteId, fetchCarriers, setCarrierDeleteId } = useCarriers();
+    const { carriers, carrierDeleteId, fetchCarriers, setCarrierDeleteId, setCarrierFormId } = useCarriers();
 
     const confirmation = (accept: boolean) => {
         if (accept) {
@@ -31,9 +31,8 @@ export const CarriersTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {carriers.map((carrier, index) => (
+                    {carriers.map((carrier) => (
                         <tr key={carrier.id}
-                            className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
                         >
                             <td>{carrier.atts.identication}</td>
                             <td className="text-left">{carrier.atts.name}</td>
@@ -41,7 +40,7 @@ export const CarriersTable = () => {
                             <td className="text-left">{carrier.atts.email}</td>
                             <td className="w-1">
                                 <div className="flex gap-2">
-                                    <IconButton type="link" url={`/carriers/${carrier.id}`} action="edit" title="Editar" />
+                                    <IconButton type="button" action="edit" onClick={() => setCarrierFormId(carrier.id)} title="Editar" />
                                     <IconButton type="button" action="delete" onClick={() => setCarrierDeleteId(carrier.id)} title="Eliminar" />
                                 </div>
                             </td>

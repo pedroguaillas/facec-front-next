@@ -1,3 +1,5 @@
+import { Subscription } from "./subscription";
+
 export interface Company {
     id: string,
     ruc: string,
@@ -22,8 +24,6 @@ export interface Company {
     pay_method: number,
     base5: boolean,
     base8: boolean,
-    tourism_from: string | null,
-    tourism_to: string | null,
     ice: boolean,
     inventory: boolean,
     printf: boolean,
@@ -34,6 +34,11 @@ export interface Company {
     // Servicio de transporte:
     transport: boolean,
     repayment: boolean,
+
+    // Última suscripción, vigente o vencida (solo en la lista del admin); null si nunca tuvo plan
+    last_subscription?: Subscription | null,
+    // Usuario principal de la empresa (solo en la lista del admin)
+    user?: { id: number, user: string, email: string } | null,
 
     created_at?: string,
     updated_at?: string,

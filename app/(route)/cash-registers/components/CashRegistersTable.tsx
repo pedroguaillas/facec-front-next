@@ -31,12 +31,11 @@ export const CashRegistersTable = ({ onEdit, onOpen, onClose }: Props) => {
                 </tr>
             </thead>
             <tbody>
-                {cashRegisters.map((cashRegister, index) => {
+                {cashRegisters.map((cashRegister) => {
                     const canClose = cashRegister.active_session && cashRegister.atts.type !== 'GENERAL';
 
                     return (
                         <tr key={cashRegister.id}
-                            className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
                         >
                             <td className="text-left">{cashRegister.atts.name}</td>
                             <td>{typeLabel(cashRegister.atts.type)}</td>

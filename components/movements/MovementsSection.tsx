@@ -92,8 +92,8 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
                     </tr>
                 </thead>
                 <tbody>
-                    {movements.map((movement, index) => (
-                        <tr key={movement.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    {movements.map((movement) => (
+                        <tr key={movement.id}>
                             <td>{movement.atts.date}</td>
                             <td>{movementTransactionTypeLabels[movement.atts.transaction_type]}</td>
                             <td>{movement.atts.amount}</td>

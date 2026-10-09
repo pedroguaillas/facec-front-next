@@ -13,10 +13,12 @@ interface CustomersContextType {
     meta: Meta | null;
     links: Links | null;
     customerDeleteId: number | null;
+    customerFormId: number | 'new' | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
     fetchCustomers: (pageUrl?: string) => Promise<void>;
     setCustomerDeleteId: (value: number | null) => void;
+    setCustomerFormId: (value: number | 'new' | null) => void;
 }
 
 const CustomersContext = createContext<CustomersContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export const CustomersProvider = ({ children }: Props) => {
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
     const [customerDeleteId, setCustomerDeleteId] = useState<number | null>(null);
+    const [customerFormId, setCustomerFormId] = useState<number | 'new' | null>(null);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -62,8 +65,8 @@ export const CustomersProvider = ({ children }: Props) => {
     return (
         <CustomersContext.Provider
             value={{
-                customers, search, page, meta, links, customerDeleteId,
-                fetchCustomers, setSearch, setPage, setCustomerDeleteId,
+                customers, search, page, meta, links, customerDeleteId, customerFormId,
+                fetchCustomers, setSearch, setPage, setCustomerDeleteId, setCustomerFormId,
             }}
         >
             {children}

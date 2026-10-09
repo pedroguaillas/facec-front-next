@@ -7,6 +7,7 @@ import { PDFViewer } from "@/components";
 import { downloadXml } from "@/services/downloadXmlServices";
 import { SHOP_SERIE_PREFIX } from "@/constants";
 import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 interface Props {
     isOpen: boolean;
@@ -72,11 +73,15 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     const { fetchShops } = useShops();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const { canEmit } = usePlan();
+    // Con plan vencido no se procesa/envía al SRI; anular sí se permite
+    const canProcess = (state: string) => canEmit || state === "AUTORIZADO" || state === "PENDIENTE_DE_ANULAR";
 
     // La lista (GET shops) no manda voucher_type confiable por fila; se lee del
     // prefijo que el backend ya arma en `serie` (ej. "L/C 001-010-000000005").
     const seriePrefix = shop.atts.serie?.trim().split(" ")[0] ?? "";
     const isLiquidacion = seriePrefix === SHOP_SERIE_PREFIX.LIQUIDACION_COMPRA;
+    // Abonos sobre cartera existente: permitidos con cualquier plan (incluso vencido)
     const canRegisterPayment = shop.atts.payment_type === "CREDITO" && Number(shop.atts.paid) < Number(shop.atts.total);
 
     // 🔹 Función para obtener las opciones del menú
@@ -95,7 +100,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             },
         ];
 
-        if (shop.atts.state_retencion && shop.atts.state_retencion !== "ANULADO") {
+        if (shop.atts.state_retencion && shop.atts.state_retencion !== "ANULADO" && canProcess(shop.atts.state_retencion.replace(/ /g, "_"))) {
             const state = shop.atts.state_retencion.replace(/ /g, "_");
             options.splice(1, 0, {
                 label: renderSwitch[state],
@@ -120,7 +125,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             },
         ];
 
-        if (shop.atts.state && shop.atts.state !== "ANULADO") {
+        if (shop.atts.state && shop.atts.state !== "ANULADO" && canProcess(shop.atts.state.replace(" ", "_"))) {
             options.splice(1, 0, {
                 label: renderSwitch[shop.atts.state.replace(" ", "_")],
                 onClick: () => processAction("shops", shop.atts.state.replace(" ", "_"), shop.id, axiosAuth, fetchShops),

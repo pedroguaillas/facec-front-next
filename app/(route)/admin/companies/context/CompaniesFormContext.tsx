@@ -44,8 +44,6 @@ const initialCompany: Company = {
     pay_method: 0,
     base5: false,
     base8: false,
-    tourism_from: null,
-    tourism_to: null,
     ice: false,
     inventory: false,
     printf: false,

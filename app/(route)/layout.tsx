@@ -2,6 +2,8 @@
 
 import Header from "@/components/ui/header/Header";
 import Sidebar from "@/components/ui/sidebar/Sidebar";
+import { PlanBanner } from "@/components/plan/PlanBanner";
+import { PlanErrorNotice } from "@/components/plan/PlanErrorNotice";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, ReactNode, useEffect } from "react";
@@ -48,9 +50,11 @@ export default function Main({ children }: MainProps) {
                 ${menu ? 'md:ml-64' : 'md:ml-[4.5rem]'}
             `}>
                 <Header menu={menu} setMenu={setMenu} />
+                <PlanBanner />
                 <main className="flex-1 flex flex-col">
                     {children}
                 </main>
+                <PlanErrorNotice />
             </div>
         </div>
     );

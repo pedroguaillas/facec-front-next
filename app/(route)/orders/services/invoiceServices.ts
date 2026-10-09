@@ -1,9 +1,10 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { AccountLedgerEntry, AditionalInformation, Customer, EmisionPoint, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types";
+import { AccountLedgerEntry, AditionalInformation, Customer, EmisionPoint, Holiday, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types";
 import { AxiosInstance } from "axios";
 
-type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[], voucherTypes: VoucherType[] }
-interface ResCreateInvoice extends ResInvoice { pay_method: number, tourism: boolean, repayment: boolean };
+// holidays: feriados desde hace 1 mes en adelante (vacío si la empresa no tiene base8)
+type ResInvoice = { points: EmisionPoint[], methodOfPayments: PayMethod[], voucherTypes: VoucherType[], holidays?: Holiday[] }
+interface ResCreateInvoice extends ResInvoice { pay_method: number, repayment: boolean };
 interface ResUpdateInvoice extends ResInvoice { customers: Customer[], order: OrderCreateProps, order_aditionals: AditionalInformation[], order_items: ProductOutput[] };
 
 export const getCreateInvoice = async (

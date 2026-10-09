@@ -63,14 +63,14 @@ const OverdueTable = ({ partyType, summary }: { partyType: PartyType; summary: O
                 </tr>
             </thead>
             <tbody>
-                {summary.parties.map((party, index) => {
+                {summary.parties.map((party) => {
                     const id = partyType === 'customer' ? party.customer_id! : party.provider_id!;
                     const name = partyType === 'customer' ? party.customer_name : party.provider_name;
                     const isOpen = !!expanded[id];
 
                     return (
                         <Fragment key={id}>
-                            <tr className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                            <tr>
                                 <td className="text-left">{name}</td>
                                 <td>{party.documents.length}</td>
                                 <td>${party.total_overdue.toFixed(2)}</td>

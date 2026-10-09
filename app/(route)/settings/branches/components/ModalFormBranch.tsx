@@ -82,10 +82,7 @@ export const ModalFormBranch = ({ fetchGetBraches, editBranch, isFirstBranch }: 
                 <Switch name="type" label="Es Matriz" checked={branch.type === 'matriz'} disabled={branch.type === 'matriz'} onChange={handleTypeSwitch} />
 
                 {!isEdit && isFirstBranch && (
-                    <label className=" inline-flex gap-2 mt-2">
-                        <input type="checkbox" checked={!!branch.cf} onChange={handleCheckbox} name="cf" />
-                        Crear consumidor final?
-                    </label>
+                    <Switch name="cf" label="Crear consumidor final" description="Cliente genérico para ventas sin identificación" checked={!!branch.cf} onChange={handleCheckbox} />
                 )}
 
                 <div className='flex justify-end py-2'>

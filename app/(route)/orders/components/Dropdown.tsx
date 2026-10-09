@@ -9,6 +9,7 @@ import { PDFViewer } from "@/components";
 import { AxiosInstance } from "axios";
 import { ORDER_SERIE_PREFIX } from "@/constants";
 import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 interface Props {
     isOpen: boolean;
@@ -56,6 +57,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const { data: session } = useSession();
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const { canEmit } = usePlan();
 
     // La lista (GET orders) no manda voucher_type por fila; el tipo se lee del
     // prefijo que el backend ya arma en `serie` (ej. "FAC 001-001-000000001").
@@ -69,11 +71,14 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const getOptions = () => {
         const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
 
+        // Abonos sobre cartera existente: permitidos con cualquier plan (incluso vencido)
         if (order.atts.payment_type === "CREDITO" && Number(order.atts.paid) < order.atts.total) {
             options.push({ label: "Registrar pago", onClick: async () => setIsPaymentModalOpen(true) });
         }
 
-        if (isElectronicVoucher && order.atts.state !== "ANULADO") {
+        // Con plan vencido no se procesa/envía al SRI; anular sí se permite
+        const canProcess = canEmit || order.atts.state === "AUTORIZADO";
+        if (isElectronicVoucher && order.atts.state !== "ANULADO" && canProcess) {
             options.push({
                 label: renderSwitch[order.atts.state.replace(" ", "_")],
                 onClick: async () => {
@@ -103,7 +108,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
             });
         }
 
-        if (isProforma) {
+        if (isProforma && canEmit) {
             options.push({
                 label: "Convertir en Factura",
                 onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices),

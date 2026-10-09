@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 
 export const useProductOutput = () => {
 
-    const { productOutputs, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
+    const { productOutputs, applyHolidayIva, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
 
     const addItem = () => {
         setProductOutputs((prev) => ([...prev, { ...initialProductItem, id: nanoid(), }]));
@@ -55,7 +55,7 @@ export const useProductOutput = () => {
 
     // Seleccionar producto para un Item
     const selectProduct = (index: number, product: ProductProps) => {
-        const updated: ProductOutput = {
+        const selected: ProductOutput = {
             ...productOutputs[index],
             product_id: product.id,
             aux_cod: product.atts.aux_cod,
@@ -65,10 +65,12 @@ export const useProductOutput = () => {
             discount: 0,
             stock: 1,
             total_iva: (product.atts.price1 * (1 + product.iva.percentage / 100)).toFixed(2),
-            //   TODO Agregar Si es turismo
             iva: product.iva.code,
             percentage: product.iva.percentage,
+            differentiated_iva: !!product.atts.differentiated_iva,
         };
+        // En feriado un servicio turístico (IVA diferenciado) pasa del 15% al 8%
+        const [updated] = applyHolidayIva([selected]);
         if (product.atts.ice !== null) {
             updated.ice = '';
             setIsActiveIce(true);

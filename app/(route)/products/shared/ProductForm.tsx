@@ -1,16 +1,16 @@
 "use client";
 
-import { LabelComponent, SelectOption, Separate, TextInput } from '@/components';
+import { LabelComponent, SelectOption, Separate, Switch, TextInput } from '@/components';
 import { useProductForm } from '../hooks/useProductForm';
 import { SelectSriCategory } from './SelectSriCategory';
 import { useProductCreateContext } from '../context/ProductFormContext';
 
 export const ProductForm = () => {
 
-    const { product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport } = useProductCreateContext();
+    const { product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport, base8 } = useProductCreateContext();
     const {
-        optionType, breakdown, total,
-        handleChange, handleSelect, onChangeCheckbox, handleTotal
+        optionType, breakdown, total, ivaRate, canBreakdown,
+        handleChange, handleSelect, onChangeCheckbox, handleTotal, toggleDifferentiatedIva
     } = useProductForm();
 
     // Servicio no admite IVA 5% (categoría ferretería exclusiva de Producto)
@@ -53,14 +53,16 @@ export const ProductForm = () => {
 
                 {/* Col 2 */}
                 <div className='w-full'>
-                    <div className='lg:w-2/3'>
-                        <input type='checkbox' checked={breakdown} onChange={onChangeCheckbox} /> ¿Necesitas desglosar el IVA?
-                    </div>
+                    {canBreakdown && (
+                        <div className='lg:w-2/3'>
+                            <Switch name="breakdown" label="Desglosar el IVA" description={`Ingresa el total con IVA (${ivaRate}%) y se calcula el precio sin impuesto`} checked={breakdown} onChange={onChangeCheckbox} />
+                        </div>
+                    )}
                     <div className='lg:w-2/3'>
                         <div className='flex flex-col gap-1.5 my-2'>
                             <LabelComponent name='price' label='Precio' required />
                             <div className='flex flex-row'>
-                                <input type='text' value={total} onChange={handleTotal} placeholder='Total' maxLength={15}
+                                <input type='text' value={total} onChange={handleTotal} placeholder='Total con IVA' maxLength={15} inputMode='decimal' aria-label='Total con IVA'
                                     className={`border rounded-l-lg px-3 py-2 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors border-[var(--border-strong)]
                                     ${breakdown ? 'block' : 'hidden'}`} />
                                 <input type='number' value={product.price1} onChange={handleChange} name='price1'
@@ -90,6 +92,20 @@ export const ProductForm = () => {
                 </div>
 
                 {/* Col 2 */}
+                {base8 && product.iva === 4 && (
+                    <div className='w-full'>
+                        <div className='lg:w-2/3'>
+                            <Switch
+                                name="differentiated_iva"
+                                label="IVA diferenciado (8% en feriados)"
+                                description="Servicio turístico: en los feriados nacionales se factura al 8% en vez del 15%"
+                                checked={!!product.differentiated_iva}
+                                onChange={toggleDifferentiatedIva}
+                            />
+                            {errorProduct.differentiated_iva && <p className="text-xs text-red-500">{errorProduct.differentiated_iva}</p>}
+                        </div>
+                    </div>
+                )}
                 {iceCataloges.length > 0 && (
                     <div className='w-full'>
                         <div className='lg:w-2/3'>

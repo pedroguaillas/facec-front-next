@@ -1,6 +1,6 @@
-import { AditionalInformation, GeneralInformation, ListProducts, PayMethods, PaymentInformation, Plate, Totals } from "../shared";
+import { AditionalInformation, GeneralInformation, ListProducts, PaymentSection, Totals } from "../shared";
 import { FormInvoiceProvider } from "../context/FormInvoiceContext";
-import { Separate, Title, RequiredFields } from "@/components";
+import { Title } from "@/components";
 
 const EditOrderPage = () => {
     return (
@@ -14,26 +14,17 @@ const EditOrderPage = () => {
                     actions={[{ label: "Regresar", type: "link", url: "/orders", action: "back" }]}
                 />
 
-                <div className="md:mx-8 py-4">
-
-                    {/* Card */}
-                    <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
-                        <RequiredFields />
-                        <Separate />
+                {/* Formulario + resumen tipo recibo (fijo al costado en pantallas grandes) */}
+                <div className="md:mx-8 py-4 mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem] items-start">
+                    <div className="min-w-0 rounded-xl border border-line bg-surface p-4 lg:p-6">
                         <GeneralInformation />
-                        <Separate />
                         <ListProducts />
-                        <Separate />
-                        <div className='flex flex-col sm:flex-row justify-between pt-2 gap-2'>
-                            <div className='mb-2'>
-                                <Plate />
-                                <PayMethods />
-                                <PaymentInformation />
-                                <AditionalInformation />
-                            </div>
-                            <Totals />
-                        </div>
+                        <PaymentSection />
+                        <AditionalInformation />
                     </div>
+                    <aside className="w-full sm:max-w-sm sm:ml-auto xl:max-w-none xl:sticky xl:top-20">
+                        <Totals />
+                    </aside>
                 </div>
             </div>
         </FormInvoiceProvider>

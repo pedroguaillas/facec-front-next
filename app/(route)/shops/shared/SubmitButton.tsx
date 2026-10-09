@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { Tax } from '@/types';
 import { shopStoreService, shopUpdateService } from '../services/shopsServices';
+import { usePlan } from '@/lib/hooks/usePlan';
 
 export const SubmitButton = () => {
     const [isPending, setIsPending] = useState(false);
@@ -15,6 +16,7 @@ export const SubmitButton = () => {
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const params = useParams();
+    const { canUseFinance } = usePlan();
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -27,6 +29,8 @@ export const SubmitButton = () => {
             app_retention: applieWithholding,
             send: send,
             point_id: selectPoint?.id,
+            // Sin cartera (Facturador) la compra es siempre de contado y sin origen (caja/banco)
+            ...(!canUseFinance && { payment_type: 'CONTADO' as const, due_date: undefined, source_type: undefined, source_id: undefined, without_source: true }),
         };
 
         if (!applieWithholding) {

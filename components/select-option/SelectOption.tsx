@@ -1,4 +1,6 @@
-import { ChangeEvent } from "react";
+"use client";
+
+import { ChangeEvent, useId } from "react";
 import { LabelComponent } from "../label/LabelComponent";
 
 interface OptionProps {
@@ -18,11 +20,14 @@ interface Props {
 }
 
 export const SelectOption = ({ options, label, name, select = false, selectedValue, error, handleSelect, required }: Props) => {
+    const generatedId = useId();
+    const selectId = `${name}-${generatedId}`;
+
     return (
         <div className="flex flex-col gap-1 my-2">
-            <LabelComponent name={name} label={label} required={required} />
+            <LabelComponent name={name} htmlFor={selectId} label={label} required={required} />
             <select
-                // id={name} // Vincula el label con el input
+                id={selectId} // Vincula el label con el select
                 name={name} // Útil para formularios
                 className={`border rounded-lg px-3 py-2 text-sm transition-colors duration-150 focus:outline-none bg-[var(--background)] ${error
                     ? "border-red-400 focus:border-red-500"
@@ -30,6 +35,7 @@ export const SelectOption = ({ options, label, name, select = false, selectedVal
                     } dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed`}
                 value={selectedValue} // 🔹 Controlado por una prop externa
                 required
+                aria-invalid={error ? 'true' : 'false'}
                 onChange={handleSelect}
             >
                 {select && <option value="">Seleccione</option>}

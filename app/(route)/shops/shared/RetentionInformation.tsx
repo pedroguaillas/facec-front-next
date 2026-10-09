@@ -4,7 +4,7 @@ import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useSelectPoint } from '../hooks/useSelectPoint';
 import { useShopVoucherType } from '../hooks/useShopVoucherType';
 import { useFormShop } from "../context/FormShopContext";
-import { SelectOption, TextInput } from '@/components';
+import { SelectOption, Switch, TextInput } from '@/components';
 import { nanoid } from 'nanoid';
 
 // SRI: código de retención de renta fijo para compras registradas como
@@ -68,12 +68,7 @@ export const RetentionInformation = () => {
 
     return (
         <div className='py-2'>
-            <div className='font-bold'>
-                <label className='flex items-center gap-2' htmlFor="applieWithholding">
-                    <input type="checkbox" name='applieWithholding' checked={applieWithholding} onChange={handleToggleWithholding} />
-                    Aplicar Retención
-                </label>
-            </div>
+            <Switch name="applieWithholding" label="Aplicar retención" checked={applieWithholding} onChange={handleToggleWithholding} />
 
             {applieWithholding && <div className='sm:flex gap-4'>
 

@@ -34,9 +34,8 @@ export const BanksTable = ({ onEdit, onViewAccounts }: Props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {banks.map((bank, index) => (
+                    {banks.map((bank) => (
                         <tr key={bank.id}
-                            className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
                         >
                             <td className="text-left">{bank.atts.name}</td>
                             <td className="w-1">

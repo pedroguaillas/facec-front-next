@@ -78,7 +78,7 @@ const PermissionFormCompany = () => {
                     />
                     <Switch
                         name="base8"
-                        label="Registra servicios turisticos (base 8%)?"
+                        label="IVA diferenciado 8% en feriados (servicios turísticos)"
                         checked={company.base8}
                         onChange={handleChangeCheckbox}
                     />

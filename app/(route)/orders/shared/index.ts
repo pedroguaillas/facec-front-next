@@ -7,6 +7,7 @@ export * from './ItemProduct';
 export * from './ListProducts';
 export * from './PayMethods';
 export * from './PaymentInformation';
+export * from './PaymentSection';
 export * from './Plate';
 export * from './RegisterPaymentModal';
 export * from './Repayments';

@@ -1,101 +1,25 @@
 import { resolveSupplier, storeSupplier, updateSupplier } from "@/services/supplierServices";
 import { initialSupplier } from "@/constants/initialValues";
-import { getSupplier } from "../services/suppliersServices";
 import { supplierSchema } from "@/schemas/supplier.schema";
-import { useParams, useRouter } from "next/navigation";
+import { getSupplier } from "../services/suppliersServices";
+import { usePartyForm } from "@/lib/hooks/usePartyForm";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { useEffect, useState } from "react";
 import { Supplier } from "@/types";
 
-export const useSupplierForm = () => {
-    const [supplier, setSupplier] = useState<Supplier>(initialSupplier);
-    type SupplierErrors = Partial<Record<keyof Supplier, string>>;
-    const [errors, setErrors] = useState<SupplierErrors>({});
-    const [skiFetch, setSkiFetch] = useState(false);
+export const useSupplierForm = (id: string | undefined, onSaved: () => void) => {
     const axiosAuth = useAxiosAuth();
-    const params = useParams();
-    const router = useRouter();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setSupplier(prev => ({ ...prev, [name]: value }));
-
-        if (name in errors) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    }
-
-    const handleSubmit = async (formData: FormData) => {
-        const supplier = Object.fromEntries(
-            Array.from(formData.entries()).map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value])
-        );
-
-        const parsed = supplierSchema.safeParse(supplier);
-
-        if (!parsed.success) {
-            const formatted: Record<string, string> = {};
-            parsed.error.errors.forEach(err => {
-                formatted[err.path[0] as string] = err.message;
-            });
-            setErrors(formatted);
-            return;
-        }
-
-        if (params?.id !== undefined) {
-            const response = await updateSupplier(params.id + '', axiosAuth, supplier);
-            if (response.errors) {
-                setErrors(response.errors);
-                return;
-            }
-            router.push('/suppliers');
-            return;
-        }
-
-        const response = await storeSupplier(axiosAuth, supplier);
-        if (response.errors) {
-            setErrors(response.errors);
-            return;
-        }
-        router.push('/suppliers');
-    }
-
-    useEffect(() => {
-        const fetchGetSupplier = async () => {
-            if (typeof params?.id === 'string') {
-                const { data } = await getSupplier(params.id, axiosAuth);
-                if (data) {
-                    setSkiFetch(true);
-                    setSupplier({ ...data, id: data.id + '' });
-                }
-            }
-        }
-
-        fetchGetSupplier();
-    }, [params?.id, axiosAuth]);
-
-    useEffect(() => {
-        const handleCustom = async () => {
-            const { data } = await resolveSupplier(axiosAuth, supplier.identication);
-            if (data) {
-                if (data.branch_id && data.branch_id !== 0) {
-                    setErrors({ identication: 'El proveedor ya esta registrado' })
-                    return;
-                }
-                const { name, address, email, phone } = data
-                setSupplier(prev => ({
-                    ...prev,
-                    name, address, email, phone
-                }));
-            }
-        }
-
-        const identication = supplier.identication.trim();
-
-        if (!skiFetch && ((supplier.type_identification === 'cédula' && identication.length === 10) || (supplier.type_identification === 'ruc' && identication.length === 13))) {
-            handleCustom();
-        }
-
-    }, [supplier.type_identification, supplier.identication, skiFetch, axiosAuth])
-
-    return { supplier, errors, handleChange, handleSubmit };
+    return usePartyForm<Supplier>({
+        id,
+        initial: initialSupplier,
+        schema: supplierSchema,
+        fetch: (supplierId) => getSupplier(supplierId, axiosAuth),
+        save: (form, supplierId) => supplierId
+            ? updateSupplier(supplierId, axiosAuth, form)
+            : storeSupplier(axiosAuth, form),
+        resolve: (identication) => resolveSupplier(axiosAuth, identication),
+        fillFields: ['name', 'address', 'phone', 'email'],
+        duplicateMessage: 'El proveedor ya está registrado',
+        onSaved,
+    });
 }

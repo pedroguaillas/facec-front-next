@@ -16,6 +16,7 @@ interface ProductCreateContextType {
     iceCataloges: [];
     sriCategories: SriCategory[];
     transport: boolean;
+    base8: boolean;
     setProduct: Dispatch<SetStateAction<Product>>;
     setErrorProduct: Dispatch<SetStateAction<Partial<Record<keyof Product, string>>>>;
 }
@@ -44,6 +45,7 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     const [iceCataloges, setIceCataloges] = useState<[]>([]);
     const [sriCategories, setSriCategories] = useState<SriCategory[]>([]);
     const [transport, setTransport] = useState(false);
+    const [base8, setBase8] = useState(false);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -59,6 +61,7 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 setIceCataloges(data.iceCataloges);
                 setSriCategories(data.sriCategories);
                 setTransport(data.transport);
+                setBase8(!!data.base8);
                 if ("product" in data) {
                     const editData = data as ProductEditResponse;
                     // requiere convertir el ID en string
@@ -81,6 +84,7 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 iceCataloges,
                 sriCategories,
                 transport,
+                base8,
                 setProduct,
                 setErrorProduct,
             }}

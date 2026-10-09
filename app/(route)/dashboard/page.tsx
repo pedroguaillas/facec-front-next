@@ -3,11 +3,13 @@ import { authOptions } from "@/lib/auth"; // Tu archivo de config de auth
 import getAxiosAuthServer from "@/lib/axios/getAxiosAuthServer";
 import { BalanceChart } from "./components/BalanceChart";
 import { RecentOrdersTable } from "./components/RecentOrdersTable";
-import { StatCard } from "./components/StatCard";
+import { MonthSummary } from "./components/MonthSummary";
+import { RecordsPanel } from "./components/RecordsPanel";
+import { SriStrip } from "./components/SriStrip";
 import { OverdueCard } from "./components/OverdueCard";
-import { FaCar, FaClock, FaFileCirclePlus, FaUserAstronaut, FaUsers } from "react-icons/fa6";
+import { FinancieroUpsellCard } from "./components/FinancieroUpsellCard";
 import { redirect } from "next/navigation";
-import { FaExclamationTriangle } from "react-icons/fa";
+import { Notice } from "@/components";
 import { DashboardResponse } from "@/types";
 import { getCustomersOverdue, getProvidersOverdue } from "@/services/overdueServices";
 
@@ -19,11 +21,16 @@ const InvoicesPage = async () => {
   }
 
   const axiosAuth = getAxiosAuthServer(session);
+  // Plan Facturador no incluye cartera: en lugar de la cartera vencida se invita a probar el Financiero
+  const isFacturador = session.user.permissions.plan === 'FACTURADOR';
+
   const { data } = await axiosAuth.get<DashboardResponse>("/dashboard");
-  const [{ data: customersOverdue }, { data: providersOverdue }] = await Promise.all([
-    getCustomersOverdue(axiosAuth),
-    getProvidersOverdue(axiosAuth),
-  ]);
+  const [{ data: customersOverdue }, { data: providersOverdue }] = isFacturador
+    ? [{ data: undefined }, { data: undefined }]
+    : await Promise.all([
+      getCustomersOverdue(axiosAuth),
+      getProvidersOverdue(axiosAuth),
+    ]);
   const totalOverdue = (customersOverdue?.total_overdue ?? 0) + (providersOverdue?.total_overdue ?? 0);
   const overduePartiesCount = (customersOverdue?.parties.length ?? 0) + (providersOverdue?.parties.length ?? 0);
 
@@ -31,92 +38,68 @@ const InvoicesPage = async () => {
   const isCertSoonToExpire = !!data.certExpiration && !isCertExpired
     && (new Date(data.certExpiration).getTime() - Date.now()) < (7 * 24 * 60 * 60 * 1000);
 
-  return (
-    <div className="dark:text-gray-300 p-6 space-y-6">
+  const formatLongDate = (date: string) =>
+    new Date(date).toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' });
 
-      {/* Alerta de cuenta inactiva */}
+  const today = new Date().toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Guayaquil' });
+
+  const cartera = isFacturador
+    ? <FinancieroUpsellCard />
+    : <OverdueCard totalOverdue={totalOverdue} partiesCount={overduePartiesCount} />;
+
+  return (
+    <div className="p-4 md:p-6 lg:p-8 space-y-4 lg:space-y-6 text-ink-1">
+
+      <header>
+        <p className="text-sm text-ink-3 first-letter:uppercase">{today}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Resumen</h1>
+      </header>
+
+      {/* Avisos de la cuenta y la firma electrónica */}
       {!data.active && (
-        <div className="rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4 bg-red-500/90 border border-red-400 text-white backdrop-blur-sm">
-          <div className="flex-grow text-center sm:text-left">
-            <div className="text-4xl shrink-0 mb-2"><FaExclamationTriangle /></div>
-            <h3 className="text-xl font-bold">Tu cuenta está inactiva</h3>
-            {data.expired && (
-              <p className="text-white/80 mt-1">
-                Venció el {new Date(data.expired).toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' })}.
-              </p>
-            )}
-          </div>
-        </div>
+        <Notice tone="danger" title="Tu cuenta está inactiva">
+          {data.expired && <>Venció el {formatLongDate(data.expired)}.</>}
+        </Notice>
       )}
 
-      {/* Alerta de Certificado */}
       {(isCertExpired || isCertSoonToExpire) && (
-        <div className={`
-          rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4
-          ${isCertExpired ? 'bg-red-500/90 border-red-400' : 'bg-yellow-500/90 border-yellow-400'}
-          text-white border backdrop-blur-sm
-        `}>
-          <div className="flex-grow text-center sm:text-left">
-            <div className="text-4xl shrink-0 mb-2">
-              {isCertExpired ? <FaExclamationTriangle /> : <FaClock />}
-            </div>
-            <h3 className="text-xl font-bold">
-              {isCertExpired ? 'Tu Firma Electrónica ha Caducado' : 'Tu Firma está por Caducar'}
-            </h3>
-            <p className="text-white/80 mt-1">
-              {isCertExpired
-                ? 'Para continuar emitiendo documentos, es necesario que la renueves.'
-                : `Tu firma caduca el ${new Date(data.certExpiration!).toLocaleDateString('es-EC', { year: 'numeric', month: 'long', day: 'numeric' })}.`}
-            </p>
+        <Notice
+          tone={isCertExpired ? 'danger' : 'warning'}
+          title={isCertExpired ? 'Tu firma electrónica caducó' : 'Tu firma electrónica está por caducar'}
+          action={
             <a
               href="https://www.facec.ec/firma-electronica"
-              className="mt-3 inline-block bg-white text-gray-900 px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors duration-150"
+              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primaryhover transition-colors"
             >
-              Renovar Ahora
+              Renovar firma
             </a>
-          </div>
-        </div>
+          }
+        >
+          {isCertExpired
+            ? 'Sin firma vigente no puedes emitir comprobantes. Renuévala para seguir facturando.'
+            : `Caduca el ${formatLongDate(data.certExpiration!)}.`}
+        </Notice>
       )}
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatCard
-          icon={<FaFileCirclePlus />}
-          value={data.counts.orders}
-          label="Ventas"
-          accent="var(--color-primary)"
-          accentSoft="rgba(0, 92, 103, 0.12)"
-        />
-        <StatCard
-          icon={<FaCar />}
-          value={data.counts.shops}
-          label="Compras"
-          accent="#475569"
-          accentSoft="rgba(71, 85, 105, 0.12)"
-        />
-        <StatCard
-          icon={<FaUsers />}
-          value={data.counts.customers}
-          label="Clientes"
-          accent="var(--color-success)"
-          accentSoft="rgba(14, 159, 110, 0.12)"
-          newThisMonth={data.newThisMonth.customers}
-        />
-        <StatCard
-          icon={<FaUserAstronaut />}
-          value={data.counts.providers}
-          label="Proveedores"
-          accent="#d97706"
-          accentSoft="rgba(217, 119, 6, 0.12)"
-          newThisMonth={data.newThisMonth.providers}
-        />
-        <OverdueCard totalOverdue={totalOverdue} partiesCount={overduePartiesCount} />
+      {/* Estado de los comprobantes en el SRI: lo primero que hay que atender */}
+      {data.sri && <SriStrip sri={data.sri} />}
+
+      {/* Mes en curso + cartera (en Facturador, la invitación al plan Financiero va primero) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        {isFacturador && cartera}
+        <div className="lg:col-span-2 grid">
+          <MonthSummary income={data.income} expenses={data.expenses} />
+        </div>
+        {!isFacturador && cartera}
       </div>
 
-      {/* Balance */}
-      <BalanceChart income={data.income} expenses={data.expenses} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+        <div className="lg:col-span-2">
+          <BalanceChart income={data.income} expenses={data.expenses} />
+        </div>
+        <RecordsPanel counts={data.counts} newThisMonth={data.newThisMonth} />
+      </div>
 
-      {/* Ventas recientes */}
       <RecentOrdersTable orders={data.recentOrders} />
 
     </div>

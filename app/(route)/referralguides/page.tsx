@@ -4,11 +4,13 @@ import { ReferralGuidesProvider, useReferralGuides } from "./context/ReferralGui
 import ReferrralGuidesList from "./components/ReferrralGuidesList";
 import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 const PageReferralGuides = () => {
 
+    const { canEmit } = usePlan();
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: '/referralguides/create', action: 'add' },
+        { label: "", type: "link", url: '/referralguides/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva guía' : 'Tu plan está vencido' },
     ];
 
     const ReferralGuidesPagination = () => {

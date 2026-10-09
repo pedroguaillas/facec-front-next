@@ -11,6 +11,7 @@ export const productSchema = z.object({
   iva: z.number(),
   ice: z.string().nullable().optional(),
   stock: z.number().nullable().optional(),
+  differentiated_iva: z.boolean().optional(),
   price1: z
     .union([
       z.string().refine(val => val.trim() !== "", { message: "Precio requerido" }),

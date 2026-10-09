@@ -34,9 +34,9 @@ export const BranchesList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {branches.map((branch, index) => (
+                        {branches.map((branch) => (
                             <tr key={branch.store}
-                                className={`${index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''} [&>td]:p-1`}
+                                className="[&>td]:p-1"
                             >
                                 <td>{(branch.store + '').padStart(3, '0')}</td>
                                 <td>{branch.name}</td>

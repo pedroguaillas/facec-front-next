@@ -16,6 +16,8 @@ export const shopSchema = z
     authorization: z.string().optional(),
     payment_type: z.enum(['CONTADO', 'CREDITO', 'ANTICIPO']),
     due_date: z.string().optional(),
+    // Plan sin cartera (Facturador): no se elige forma de pago ni origen (caja/banco)
+    without_source: z.boolean().optional(),
     source_type: z.enum(['bank_account', 'cash_register_session']).optional(),
     source_id: z.number().optional(),
     serie_retencion: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
@@ -96,11 +98,11 @@ export const shopSchema = z
     path: ['due_date'],
   })
   // Contado: genera movimiento real en Treasury, requiere origen
-  .refine((data) => data.payment_type !== 'CONTADO' || !!data.source_type, {
+  .refine((data) => data.without_source || data.payment_type !== 'CONTADO' || !!data.source_type, {
     message: 'Seleccione una cuenta bancaria o caja',
     path: ['source_type'],
   })
-  .refine((data) => data.payment_type !== 'CONTADO' || (data.source_id ?? 0) > 0, {
+  .refine((data) => data.without_source || data.payment_type !== 'CONTADO' || (data.source_id ?? 0) > 0, {
     message: 'Seleccione una cuenta bancaria o caja',
     path: ['source_id'],
   });

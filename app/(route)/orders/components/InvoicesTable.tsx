@@ -44,7 +44,7 @@ const InvoicesTable = () => {
                     const seriePrefix = order.atts.serie?.trim().split(" ")[0] ?? "";
                     const isElectronic = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
                     return (
-                    <tr key={order.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    <tr key={order.id}>
                         <td>{order.atts.date}</td>
                         <td>
                             <Link className="hover:underline cursor-pointer text-blue-500" href={`/orders/${order.id}`}>

@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { Company, GeneralPaginate } from "@/types";
+import { ApiResponse, Company, CompanySubscriptions, GeneralPaginate, Subscription } from "@/types";
 import { AxiosInstance } from "axios";
 
 export const getCompanies = async (
@@ -16,15 +16,22 @@ export const getCompanies = async (
     }
 }
 
-export const storeCompany = async (axiosAuth: AxiosInstance, form: object) => {
-    try {
-        const response = await axiosAuth.post('admin/companies', form);
-        return response.data;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
+export const storeCompany = async (axiosAuth: AxiosInstance, form: object) =>
+    handleApiRequest<unknown>(() => axiosAuth.post('admin/companies', form));
+
+export const getCompanySubscriptions = async (
+    axiosAuth: AxiosInstance,
+    companyId: string,
+): Promise<ApiResponse<CompanySubscriptions>> =>
+    handleApiRequest<CompanySubscriptions>(() => axiosAuth.get(`admin/companies/${companyId}/subscriptions`));
+
+// Cierra la suscripción vigente y abre una nueva (renovar o cambiar plan)
+export const storeCompanySubscription = async (
+    axiosAuth: AxiosInstance,
+    companyId: string,
+    form: object,
+): Promise<ApiResponse<Subscription>> =>
+    handleApiRequest<Subscription>(() => axiosAuth.post(`admin/companies/${companyId}/subscription`, form));
 
 export const getCompanyEdit = async (axiosAuth: AxiosInstance, id: string) =>
     handleApiRequest<Company>(() => axiosAuth.get(`admin/companies/${id}/edit`));

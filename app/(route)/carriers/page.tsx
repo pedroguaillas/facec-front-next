@@ -2,7 +2,7 @@
 
 import { Paginate, Title } from '@/components';
 import { CarriersProvider, useCarriers } from './context/CarriersContext';
-import { CarriersFilter, CarriersTable } from './components';
+import { CarrierFormModal, CarriersFilter, CarriersTable } from './components';
 
 const CarriersPagination = () => {
     const { meta, links, fetchCarriers, setPage } = useCarriers();
@@ -16,24 +16,33 @@ const CarriersPagination = () => {
     return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
 };
 
-const OrdersPage = () => {
+const CarriersContent = () => {
+    const { setCarrierFormId } = useCarriers();
+
+    return (
+        <div className="dark:text-gray-300">
+
+            <Title
+                title='Transportistas'
+                subTitle='Lista de todos los transportistas'
+                actions={[{ label: "", type: "button", action: "add", onClick: () => setCarrierFormId('new') }]}
+            />
+            <div className="md:mx-8 py-4">
+                <CarriersFilter />
+                <CarriersTable />
+                <CarriersPagination />
+            </div>
+            <CarrierFormModal />
+        </div>
+    )
+}
+
+const CarriersPage = () => {
     return (
         <CarriersProvider>
-            <div className="dark:text-gray-300">
-
-                <Title
-                    title='Transportistas'
-                    subTitle='Lista de todos los transportistas'
-                    actions={[{ label: "", type: "link", url: "carriers/create", action: "add" }]}
-                />
-                <div className="md:mx-8 py-4">
-                    <CarriersFilter />
-                    <CarriersTable />
-                    <CarriersPagination />
-                </div>
-            </div>
+            <CarriersContent />
         </CarriersProvider>
     )
 }
 
-export default OrdersPage;
+export default CarriersPage;

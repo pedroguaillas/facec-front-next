@@ -1,51 +1,50 @@
 "use client";
+
+import { FormModal, FormSectionTitle, IdentificationFields, TextInput } from "@/components"
 import { useSupplierForm } from "../hooks/useSupplierForm";
-import { SelectOption, TextInput } from "@/components"
-import { ButtonSubmit } from "./ButtonSubmit";
 
-export const SupplierForm = () => {
-    const { supplier, errors, handleChange, handleSubmit } = useSupplierForm();
+interface Props {
+    // Si viene, se edita el proveedor; si no, se registra uno nuevo
+    id?: string;
+    onClose: () => void;
+    onSaved: () => void;
+}
 
-    const optionType = [
-        { label: 'Cédula', value: 'cédula' },
-        { label: 'RUC', value: 'ruc' },
-        { label: 'Pasaporte', value: 'pasaporte' },
-    ]
+export const SupplierForm = ({ id, onClose, onSaved }: Props) => {
+
+    const {
+        data: supplier, errors, isLoading, isDirty, isPending, message, lookupStatus,
+        handleChange, setType, setIdentification, handleSubmit,
+    } = useSupplierForm(id, onSaved);
 
     return (
-        <form action={handleSubmit}>
-            <strong className='font-bold'>Datos generales</strong>
+        <FormModal
+            title={id ? 'Editar proveedor' : 'Registrar proveedor'}
+            subtitle={id ? undefined : 'Ingresa la identificación para buscar sus datos'}
+            onClose={onClose}
+            onSubmit={handleSubmit}
+            isPending={isPending}
+            isLoading={isLoading}
+            isDirty={isDirty}
+            message={message}
+        >
+            <IdentificationFields
+                type={supplier.type_identification}
+                identification={supplier.identication}
+                error={errors.identication}
+                lookupStatus={lookupStatus}
+                readOnly={!!id}
+                onTypeChange={setType}
+                onIdentificationChange={setIdentification}
+            />
+            <TextInput type="text" label="Razón social / Proveedor" value={supplier.name} name="name" error={errors.name} onChange={handleChange} maxLength={300} required />
 
-            <div className='sm:flex gap-4'>
-
-                {/* Col 1 */}
-                <div className='w-full'>
-                    <div className='lg:w-2/3'>
-                        <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={supplier.type_identification} handleSelect={handleChange} />
-                    </div>
-                    <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Identificación" value={supplier.identication} name="identication" error={errors.identication} onChange={handleChange} maxLength={supplier.type_identification === 'cédula' ? 10 : 13} required />
-                    </div>
-                    <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Razon social / Proveedor" value={supplier.name} name="name" error={errors.name} onChange={handleChange} maxLength={300} required />
-                    </div>
-                </div>
-
-                {/* Col 2 */}
-                <div className='w-full'>
-                    <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Dirección" value={supplier.address ?? ''} name="address" error={errors.address} onChange={handleChange} maxLength={300} required />
-                    </div>
-                    <div className='lg:w-2/3'>
-                        <TextInput type="text" label="Teléfono" value={supplier.phone ?? ''} name="phone" error={errors.phone} onChange={handleChange} maxLength={20} />
-                    </div>
-                    <div className='lg:w-2/3'>
-                        <TextInput type="email" label="Correo" value={supplier.email ?? ''} name="email" error={errors.email} onChange={handleChange} maxLength={50} />
-                    </div>
-                </div>
+            <FormSectionTitle>Contacto</FormSectionTitle>
+            <TextInput type="text" label="Dirección" value={supplier.address ?? ''} name="address" error={errors.address} onChange={handleChange} maxLength={300} required />
+            <div className='sm:grid sm:grid-cols-2 sm:gap-4'>
+                <TextInput type="tel" label="Teléfono" value={supplier.phone ?? ''} name="phone" error={errors.phone} onChange={handleChange} maxLength={20} inputMode="tel" />
+                <TextInput type="email" label="Correo" value={supplier.email ?? ''} name="email" error={errors.email} onChange={handleChange} maxLength={50} inputMode="email" placeholder="correo@ejemplo.com" />
             </div>
-
-            <ButtonSubmit />
-        </form>
+        </FormModal>
     )
 }

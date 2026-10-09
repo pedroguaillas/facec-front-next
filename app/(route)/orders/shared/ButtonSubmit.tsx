@@ -5,20 +5,26 @@ import { useFormInvoice } from '../context/FormInvoiceContext';
 import { invoiceSchema } from '@/schemas/invoice.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter, useParams } from 'next/navigation';
-import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
+import { FaPaperPlane, FaRegSave, FaSpinner } from 'react-icons/fa';
+import { useToast } from '@/context/ToastContext';
 import { useState } from 'react';
 import { Repayment } from '@/types';
 import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoiceServices';
 import { calculateInvoiceTotals } from '@/helpers/invoiceTotalsHelper';
 import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
+import { usePlan } from '@/lib/hooks/usePlan';
 
 export const ButtonSubmit = () => {
 
     const { invoice, selectPoint, productOutputs, aditionalInformation, repayments, voucherTypes, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
-    const [isPending, setIsPending] = useState(false);
+    // Acción en curso: guardar (false) o guardar y procesar (true)
+    const [pendingSend, setPendingSend] = useState<boolean | null>(null);
+    const isPending = pendingSend !== null;
+    const { toast } = useToast();
     const params = useParams();
+    const { canUseFinance } = usePlan();
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -38,7 +44,9 @@ export const ButtonSubmit = () => {
                 description: aditional.description.trim(),
             })),
             point_id: selectPoint?.id,
-            repayments
+            repayments,
+            // Sin cartera (Facturador) la venta es siempre de contado y sin origen (caja/banco)
+            ...(!canUseFinance && { payment_type: 'CONTADO' as const, due_date: undefined, source_type: undefined, source_id: undefined, without_source: true }),
         };
 
         const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(form.voucher_type_id));
@@ -113,38 +121,42 @@ export const ButtonSubmit = () => {
         }
 
         // 3. Enviar el formulario
-        setIsPending(true);
+        setPendingSend(send);
 
-        const {data, error} = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), form) : invoiceStoreServices(axiosAuth, form));
-        if(data) {
+        const { data, error, errors } = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), form) : invoiceStoreServices(axiosAuth, form));
+        if (data) {
+            toast(send ? 'Venta guardada y enviada a procesar' : 'Venta guardada');
             router.push(`/orders`);
-        }else if(error) {
-            console.error('Error al enviar el formulario:', error);
-            setIsPending(false);
-            // Aquí podrías mostrar un mensaje de error al usuario si lo deseas
+            return;
+        }
+        setPendingSend(null);
+        if (errors) {
+            setFormErrors(errors);
+            toast(Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
+        } else {
+            toast(error ?? 'No se pudo guardar la venta', 'error');
         }
     };
 
     return (
-        <div className='flex justify-end mt-4 gap-2'>
+        <div className="flex flex-col gap-2">
             <button
-                onClick={(e) => handleSubmit(e, false)}
-                disabled={isPending}
-                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                <FaRegSave />
-                Guardar
-            </button>
-            <button
+                type="button"
                 onClick={(e) => handleSubmit(e, true)}
                 disabled={isPending}
-                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                {isPending && (
-                    <FaSpinner className='animate-spin' />
-                )}
-                {!isPending && (
-                    <FaSave />
-                )}
-                Guardar y procesar
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+                {pendingSend === true ? <FaSpinner className="animate-spin" /> : <FaPaperPlane />}
+                {pendingSend === true ? 'Procesando…' : 'Guardar y procesar'}
+            </button>
+            <button
+                type="button"
+                onClick={(e) => handleSubmit(e, false)}
+                disabled={isPending}
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg text-sm font-medium border border-line-strong text-ink-2 transition-colors cursor-pointer hover:bg-surface hover:text-ink-1 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+                {pendingSend === false ? <FaSpinner className="animate-spin" /> : <FaRegSave />}
+                {pendingSend === false ? 'Guardando…' : 'Solo guardar'}
             </button>
         </div>
     )

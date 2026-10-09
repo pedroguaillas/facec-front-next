@@ -87,8 +87,8 @@ export const SessionsSection = ({ cashRegisterId, cashRegisterType, activeSessio
                     </tr>
                 </thead>
                 <tbody>
-                    {sessions.map((session, index) => (
-                        <tr key={session.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    {sessions.map((session) => (
+                        <tr key={session.id}>
                             <td>{session.atts.opened_at}</td>
                             <td>{session.atts.closed_at ?? '-'}</td>
                             <td>{session.atts.initial_balance}</td>

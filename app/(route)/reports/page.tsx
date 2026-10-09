@@ -10,7 +10,7 @@ const PageReports = () => {
             />
             <div className="md:mx-8 py-4">
                 {/* Card */}
-                <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
+                <div className="w-full overflow-x-auto rounded-xl border border-line bg-surface p-4 lg:p-8 mt-4">
                     <ReportComponent />
                 </div>
             </div>

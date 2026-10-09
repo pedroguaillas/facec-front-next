@@ -8,7 +8,7 @@ import { CONSUMIDOR_FINAL_IDENTICATION } from "@/constants";
 
 export const CustomersTable = () => {
 
-  const { customers, customerDeleteId, fetchCustomers, setCustomerDeleteId } = useCustomers();
+  const { customers, customerDeleteId, fetchCustomers, setCustomerDeleteId, setCustomerFormId } = useCustomers();
 
   const confirmation = (accept: boolean) => {
     if (accept) {
@@ -31,9 +31,8 @@ export const CustomersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {customers.map((customer, index) => (
+          {customers.map((customer) => (
             <tr key={customer.id}
-              className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
             >
               <td className="text-left">{customer.atts.identication}</td>
               <td className="text-left">{customer.atts.name}</td>
@@ -41,7 +40,10 @@ export const CustomersTable = () => {
               <td className="w-1">
                 <div className="flex gap-2">
                   {customer.atts.identication !== CONSUMIDOR_FINAL_IDENTICATION && (
-                    <IconButton type="link" action="edit" url={`/customers/${customer.id}`} title="Editar" />
+                    <>
+                      <IconButton type="link" action="view" url={`/customers/${customer.id}`} title="Cuentas por cobrar" />
+                      <IconButton type="button" action="edit" onClick={() => setCustomerFormId(customer.id)} title="Editar" />
+                    </>
                   )}
                   <IconButton type="button" action="delete" onClick={() => setCustomerDeleteId(customer.id)} title="Eliminar" />
                 </div>

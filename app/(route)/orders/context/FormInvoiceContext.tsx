@@ -1,11 +1,12 @@
 "use client";
 
-import { createContext, useState, useContext, useEffect, ReactNode, SetStateAction, Dispatch } from "react";
+import { createContext, useState, useContext, useEffect, useMemo, ReactNode, SetStateAction, Dispatch } from "react";
 import { AditionalInformation, OrderCreateProps, PayMethod, ProductOutput, VoucherType } from "@/types/order";
 import { getCreateInvoice, getInvoice } from "../services/invoiceServices";
 import { initialProductItem } from "@/constants/initialValues";
-import { calculateInvoiceTotals, calculateLineTotal, hasIceApplied } from "@/helpers/invoiceTotalsHelper";
-import { CustomerProps, EmisionPoint, Repayment } from "@/types";
+import { calculateInvoiceTotals, calculateLineTotal, findHoliday, hasIceApplied, withHolidayIva } from "@/helpers/invoiceTotalsHelper";
+import { CustomerProps, EmisionPoint, Holiday, Repayment } from "@/types";
+import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ✅ Importar el hook
 import { getDate } from "@/helpers/dateHelper";
 import { useSession } from "next-auth/react";
@@ -19,7 +20,10 @@ interface InvoicesContextType {
   voucherTypes: VoucherType[];
   selectPoint: EmisionPoint | null;
   selectCustom: CustomerProps | null;
-  tourism: boolean;
+  // Feriado que cubre la fecha de la venta (IVA diferenciado 8%); null si no aplica
+  activeHoliday: Holiday | null;
+  // Ajusta la tarifa de los items al feriado de la fecha de la venta
+  applyHolidayIva: (items: ProductOutput[]) => ProductOutput[];
   repayment: boolean;
   repayments: Repayment[];
   errorRepayments: Record<string, Partial<Record<keyof Repayment, string>>>;
@@ -85,7 +89,8 @@ export const FormInvoiceProvider = ({ children }: Props) => {
   const [aditionalInformation, setAditionalInformation] = useState<AditionalInformation[]>([]);
   const [errorAditionalInformation, setErrorAditionalInformation] = useState<Record<string, Partial<Record<keyof AditionalInformation, string>>>>({});
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof OrderCreateProps, string>>>({});
-  const [tourism, setTourism] = useState(false);
+  // Feriados recientes/próximos (vacío si la empresa no tiene base8)
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [repayment, setRepayment] = useState(false);
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [errorRepayments, setErrorRepayments] = useState<Record<string, Partial<Record<keyof Repayment, string>>>>({});
@@ -101,7 +106,8 @@ export const FormInvoiceProvider = ({ children }: Props) => {
       if (typeof params?.id === 'string') {
         const { data } = await getInvoice(axiosAuth, params.id as string);
         if (data) {
-          const { customers, methodOfPayments, order, order_aditionals, order_items, points, voucherTypes } = data;
+          const { customers, methodOfPayments, order, order_aditionals, order_items, points, voucherTypes, holidays } = data;
+          setHolidays(holidays ?? []);
           setPoints(points);
           setPayMethods(methodOfPayments);
           setVoucherTypes(voucherTypes ?? []);
@@ -129,12 +135,12 @@ export const FormInvoiceProvider = ({ children }: Props) => {
       } else {
         const { data } = await getCreateInvoice(axiosAuth);
         if (data) {
-          const { points, methodOfPayments, pay_method, tourism, repayment, voucherTypes } = data;
+          const { points, methodOfPayments, pay_method, holidays, repayment, voucherTypes } = data;
           setInvoice((prev) => ({ ...prev, pay_method: pay_method ?? prev.pay_method }));
           setPoints(points);
           setPayMethods(methodOfPayments);
           setVoucherTypes(voucherTypes ?? []);
-          setTourism(tourism);
+          setHolidays(holidays ?? []);
           setRepayment(repayment);
           setProductOutputs([{ ...initialProductItem, id: nanoid(), }]);
         }
@@ -143,9 +149,28 @@ export const FormInvoiceProvider = ({ children }: Props) => {
     fetchEditInvoice();
   }, [status, axiosAuth, params?.id]);
 
+  // La N/C replica el IVA de la factura: no se ajusta por feriado
+  const isNotaCredito = voucherTypes.find(vt => vt.id === Number(invoice.voucher_type_id))?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
+  const activeHoliday = useMemo(
+    () => isNotaCredito ? null : findHoliday(holidays, invoice.date),
+    [holidays, invoice.date, isNotaCredito]
+  );
+
+  const applyHolidayIva = (items: ProductOutput[]) =>
+    isNotaCredito ? items : items.map(item => withHolidayIva(item, activeHoliday !== null));
+
+  // Al cambiar la fecha (o cargar los feriados) se ajusta la tarifa de los items ya ingresados
+  useEffect(() => {
+    if (isNotaCredito) return;
+    const adjusted = productOutputs.map(item => withHolidayIva(item, activeHoliday !== null));
+    if (adjusted.every((item, i) => item === productOutputs[i])) return;
+    setProductOutputs(adjusted);
+    setInvoice(prev => ({ ...prev, ...calculateInvoiceTotals(adjusted) }));
+  }, [activeHoliday, isNotaCredito]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <FormInvoiceContext.Provider value={{
-      invoice, selectPoint, selectCustom, payMethods, points, voucherTypes, tourism, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isActiveIce,
+      invoice, selectPoint, selectCustom, payMethods, points, voucherTypes, activeHoliday, applyHolidayIva, repayment, repayments, errorRepayments, productOutputs, errorProductOutputs, aditionalInformation, errorAditionalInformation, formErrors, isActiveIce,
       setInvoice, setSelectPoint, setSelectCustom, setProductOutputs, setRepayments, setErrorRepayments, setErrorProductOutputs, setAditionalInformation, setErrorAditionalInformation, setFormErrors, setIsActiveIce
     }}>
       {children}

@@ -6,6 +6,7 @@ import { OrderProps } from "@/types/order";
 import { Links, Meta } from "@/types";
 import { isPendingVoucherState } from "@/helpers/voucherPolling";
 import { ORDER_SERIE_PREFIX } from "@/constants";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface InvoicesContextType {
     invoices: OrderProps[];
@@ -15,6 +16,9 @@ interface InvoicesContextType {
     links: Links | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
+    // Filtro por estado SRI que viene en la URL (?state=), ej. desde el dashboard
+    stateFilter: string | null;
+    clearStateFilter: () => void;
     fetchInvoices: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
 }
 
@@ -32,6 +36,12 @@ export const InvoicesProvider = ({ children }: Props) => {
     const [links, setLinks] = useState<Links | null>(null);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const stateFilter = searchParams.get('state');
+
+    const clearStateFilter = useCallback(() => router.replace(pathname), [router, pathname]);
 
     const fetchInvoices = useCallback(
         async (pageUrl: string = `orders?page=${page}`) => {
@@ -39,6 +49,9 @@ export const InvoicesProvider = ({ children }: Props) => {
 
             if (search) {
                 pageUrl = `${pageUrl}&search=${search}`;
+            }
+            if (stateFilter && !pageUrl.includes('state=')) {
+                pageUrl = `${pageUrl}&state=${encodeURIComponent(stateFilter)}`;
             }
 
             const { data } = await getInvoices(axiosAuth, pageUrl);
@@ -48,7 +61,7 @@ export const InvoicesProvider = ({ children }: Props) => {
                 setLinks(data.links);
             }
         },
-        [status, axiosAuth, search, page],
+        [status, axiosAuth, search, page, stateFilter],
     );
 
     useEffect(() => {
@@ -73,8 +86,8 @@ export const InvoicesProvider = ({ children }: Props) => {
     return (
         <InvoicesContext.Provider
             value={{
-                invoices, search, page, meta, links,
-                fetchInvoices, setSearch, setPage,
+                invoices, search, page, meta, links, stateFilter,
+                fetchInvoices, setSearch, setPage, clearStateFilter,
             }}
         >
             {children}

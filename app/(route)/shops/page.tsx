@@ -5,6 +5,7 @@ import { ShopsTable } from "./components/ShopsTable";
 import ShopFilters from "./components/ShopFilters";
 import { Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 const ShopsPagination = () => {
     const { meta, links, fetchShops, setPage } = useShops();
@@ -20,8 +21,9 @@ const ShopsPagination = () => {
 
 const PageShops = () => {
 
+    const { canEmit } = usePlan();
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: 'shops/create', action: 'add' },
+        { label: "", type: "link", url: 'shops/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva compra' : 'Tu plan está vencido' },
     ];
 
     return (

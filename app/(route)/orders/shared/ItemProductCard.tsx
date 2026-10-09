@@ -17,10 +17,10 @@ interface Props {
     removeItem: (index: number) => void;
 }
 
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-center bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
+const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-center bg-[var(--background)] text-ink-1 tabular-nums focus:outline-none focus:border-primary transition-colors";
 const inputError = "border-red-400";
-const inputNormal = "border-[var(--border-strong)]";
-const stepperBtn = "w-11 h-11 shrink-0 rounded-md border border-[var(--border-strong)] text-lg leading-none cursor-pointer hover:border-primary";
+const inputNormal = "border-line-strong";
+const stepperBtn = "w-11 h-11 shrink-0 rounded-md border border-line-strong text-lg leading-none text-ink-2 cursor-pointer hover:border-primary hover:text-brand-ink";
 
 export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
 
@@ -28,33 +28,24 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
     const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <div className="border border-[var(--border)] rounded-lg p-3 bg-[var(--background)]">
-            <div className="flex justify-between items-start gap-2">
-                <p className="text-sm font-medium">{productOutput.name || 'Seleccionar producto...'}</p>
-                <div className="flex shrink-0 gap-1 -mt-1 -mr-1">
+        <div className="border border-line rounded-lg p-3 bg-surface">
+            {/* Selección directa: no hace falta abrir el modal para elegir el producto */}
+            <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
+
+            <div className="flex items-center gap-2 mt-2 text-sm">
+                <span className="text-ink-3 tabular-nums">{productOutput.quantity || 0} × ${Number(productOutput.price ?? 0).toFixed(2)}</span>
+                <span className="font-semibold text-ink-1 tabular-nums ml-auto">${Number(productOutput.total_iva ?? 0).toFixed(2)}</span>
+                <div className="flex shrink-0 gap-1 -my-2 -mr-2">
                     <IconButton action="edit" type="button" onClick={() => setIsEditing(true)} title="Editar línea" />
                     <IconButton action="delete" type="button" onClick={() => removeItem(index)} title="Eliminar línea" />
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 mt-2 text-sm">
-                <span className="opacity-60">Cant: {productOutput.quantity || 0}</span>
-                <span className="opacity-30">|</span>
-                <span className="opacity-60">${Number(productOutput.price ?? 0).toFixed(2)}</span>
-                <span className="font-bold ml-auto">${Number(productOutput.total_iva ?? 0).toFixed(2)}</span>
-            </div>
-
-            {error?.product_id && <p className="text-xs text-red-500 mt-1">{error.product_id}</p>}
 
             <Modal isOpen={isEditing} onClose={() => setIsEditing(false)} title="Editar Línea" modalSize="sm">
                 <div className="flex flex-col gap-3">
                     <div>
-                        <label className="text-xs opacity-60 mb-1 block">Producto/Servicio</label>
-                        <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
-                    </div>
-
-                    <div>
-                        <label className="text-xs opacity-60 mb-1 block">Cantidad</label>
+                        <label className="text-xs font-medium text-ink-3 mb-1 block">Cantidad</label>
                         <div className="flex items-center gap-2">
                             <button
                                 type="button"
@@ -83,7 +74,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                     </div>
 
                     <div>
-                        <label className="text-xs opacity-60 mb-1 block">Precio Unitario</label>
+                        <label className="text-xs font-medium text-ink-3 mb-1 block">Precio Unitario</label>
                         <input
                             onChange={(e) => updateItem(index, 'price', limitDecimals(e.target.value, 6))}
                             value={productOutput.price ?? ''}
@@ -96,7 +87,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                     </div>
 
                     <div>
-                        <label className="text-xs opacity-60 mb-1 block">Descuento</label>
+                        <label className="text-xs font-medium text-ink-3 mb-1 block">Descuento</label>
                         <input
                             onChange={(e) => updateItem(index, 'discount', limitDecimals(e.target.value, 2))}
                             value={productOutput.discount ?? ''}
@@ -110,7 +101,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
 
                     {isActiveIce && hasIceApplied(productOutput.ice) && (
                         <div>
-                            <label className="text-xs opacity-60 mb-1 block">ICE</label>
+                            <label className="text-xs font-medium text-ink-3 mb-1 block">ICE</label>
                             <input
                                 onChange={(e) => updateItem(index, 'ice', e.target.value)}
                                 value={productOutput.ice}
@@ -123,12 +114,12 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                     )}
 
                     {productOutput.aux_cod && (
-                        <div className="text-xs opacity-60 border-t border-[var(--border)] pt-2">
+                        <div className="text-xs opacity-60 border-t border-line pt-2">
                             Código: {productOutput.aux_cod}
                         </div>
                     )}
 
-                    <div className="border-t border-[var(--border)] pt-3 flex justify-between items-center">
+                    <div className="border-t border-line pt-3 flex justify-between items-center">
                         <span className="text-sm font-bold">Total Línea</span>
                         <input
                             onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}

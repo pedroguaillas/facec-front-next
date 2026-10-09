@@ -54,8 +54,8 @@ export const DenominationCountForm = ({ onChange }: Props) => {
                 </tr>
             </thead>
             <tbody>
-                {denominations.map((denomination, index) => (
-                    <tr key={denomination.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                {denominations.map((denomination) => (
+                    <tr key={denomination.id}>
                         <td className="text-left">{denomination.atts.value}</td>
                         <td>{denominationTypeLabels[denomination.atts.type]}</td>
                         <td>

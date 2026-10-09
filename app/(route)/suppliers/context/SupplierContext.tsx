@@ -10,10 +10,12 @@ interface SupplierContextType {
     meta: Meta | null;
     links: Links | null;
     supplierDeleteId: number | null;
+    supplierFormId: number | 'new' | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
     fetchSuppliers: (pageUrl?: string) => Promise<void>;
     setSupplierDeleteId: (value: number | null) => void;
+    setSupplierFormId: (value: number | 'new' | null) => void;
 }
 
 const SupplierContext = createContext<SupplierContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export const SupplierProvider = ({ children }: Props) => {
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
     const [supplierDeleteId, setSupplierDeleteId] = useState<number | null>(null);
+    const [supplierFormId, setSupplierFormId] = useState<number | 'new' | null>(null);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth();
 
@@ -50,8 +53,8 @@ export const SupplierProvider = ({ children }: Props) => {
     }, [fetchSuppliers])
     return (
         <SupplierContext.Provider value={{
-            suppliers, search, page, meta, links, supplierDeleteId,
-            setSearch, setPage, fetchSuppliers, setSupplierDeleteId
+            suppliers, search, page, meta, links, supplierDeleteId, supplierFormId,
+            setSearch, setPage, fetchSuppliers, setSupplierDeleteId, setSupplierFormId
         }}>
             {children}
         </SupplierContext.Provider>

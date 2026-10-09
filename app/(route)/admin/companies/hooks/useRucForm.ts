@@ -5,14 +5,18 @@ import { checkUserAvailability } from '@/services/adminUserServices';
 import { ChangeEvent, useActionState, useEffect, useState } from 'react';
 import { storeCompany } from '../services/companiesServices';
 import { useRouter } from 'next/navigation';
+import { PlanCode } from '@/types';
 
 interface initialRuc {
     ruc: string,
     company: string,
-    regimen: number,
+    rimpe: number,
     user: string,
     password: string,
     email: string,
+    plan: PlanCode,
+    plan_ends_at: string,
+    plan_amount: string,
 }
 
 export const useRucForm = () => {
@@ -20,11 +24,15 @@ export const useRucForm = () => {
     const [ruc, setRuc] = useState<initialRuc>({
         ruc: '',
         company: '',
-        regimen: 0,
+        rimpe: 0,
         user: '',
         password: '',
         email: '',
+        plan: 'GRATUITO',
+        plan_ends_at: '',
+        plan_amount: '',
     });
+    const [message, setMessage] = useState<string>();
 
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
@@ -43,11 +51,16 @@ export const useRucForm = () => {
 
         setRuc(prev => ({
             ...prev,
-            [name]: name === 'regimen' ? Number(value) : value
+            [name]: name === 'rimpe' ? Number(value) : value
         }));
 
         setErrors(prev => ({ ...prev, [name]: '' }));
         setSuccess(prev => ({ ...prev, [name]: '' }));
+    };
+
+    const handlePlanChange = (plan: PlanCode) => {
+        setRuc(prev => ({ ...prev, plan }));
+        setErrors(prev => ({ ...prev, plan: '', plan_ends_at: '', plan_amount: '' }));
     };
 
     const [, formAction] = useActionState(
@@ -69,8 +82,16 @@ export const useRucForm = () => {
                 return;
             }
 
+            setMessage(undefined);
             const res = await storeCompany(axiosAuth, parsed.data);
-            console.log(res)
+            if (res.errors) {
+                setErrors(res.errors);
+                return;
+            }
+            if (res.error) {
+                setMessage(res.error);
+                return;
+            }
             router.push('/admin/companies');
         }, null
     );
@@ -150,7 +171,9 @@ export const useRucForm = () => {
         errors,
         success,
         optionType,
+        message,
         handleChange,
+        handlePlanChange,
         formAction,
     }
 }

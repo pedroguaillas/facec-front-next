@@ -7,21 +7,24 @@ import { Alert, Paginate, Title } from "@/components";
 import { ActionsTitle } from "@/types";
 import { useImportExcel } from "./hooks/useImportExcel";
 import { useSession } from "next-auth/react";
+import { Suspense } from "react";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 const InvoicesPage = () => {
 
     const { data: session } = useSession();
+    const { canEmit } = usePlan();
     // Define esta función antes de usarla
     const importOrders = () => {
         document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
     };
 
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: 'orders/create', action: 'add' },
+        { label: "", type: "link", url: 'orders/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva venta' : 'Tu plan está vencido' },
     ];
 
     if (session?.user.permissions.import_in_invoices) {
-        multipleActions.unshift({ label: "Importar", type: "button", action: 'import', onClick: importOrders });
+        multipleActions.unshift({ label: "Importar", type: "button", action: 'import', onClick: importOrders, disabled: !canEmit, title: canEmit ? undefined : 'Tu plan está vencido' });
     }
 
     const ProductsPagination = () => {
@@ -52,6 +55,8 @@ const InvoicesPage = () => {
 
     return (
         <>
+            {/* useSearchParams (filtro ?state=) requiere Suspense */}
+            <Suspense>
             <InvoicesProvider>
                 <div className="dark:text-gray-300">
 
@@ -68,6 +73,7 @@ const InvoicesPage = () => {
                     </div>
                 </div>
             </InvoicesProvider>
+            </Suspense>
         </>
     );
 };

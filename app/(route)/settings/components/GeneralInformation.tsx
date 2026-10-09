@@ -1,12 +1,17 @@
 "use client";
 
-import { FileDropInput, PrimaryButton, SelectOption, TextInput } from "@/components"
+import { FileDropInput, Modal, PrimaryButton, SelectOption, Switch, TextInput } from "@/components"
+import { FaTriangleExclamation } from "react-icons/fa6";
 import { useGeneralInformation } from "../hooks/useGeneralInformation";
 import { FaFileSignature, FaImage } from "react-icons/fa";
 
 export const GeneralInformation = () => {
 
-    const { optionType, form, editingCert, editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign } = useGeneralInformation();
+    const {
+        optionType, form, editingCert, isSaving, ivaConfirmMessage,
+        editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign,
+        confirmIvaChange, cancelIvaChange,
+    } = useGeneralInformation();
 
     const logoUrl = form.logo_url;
 
@@ -25,17 +30,13 @@ export const GeneralInformation = () => {
                 <div className='w-full'>
                     <div className='py-2'><span className='font-bold'>RUC: </span>{form.ruc}</div>
                     <div className='py-2'><span className='font-bold'>Razón social: </span>{form.company}</div>
-                    <label className=" inline-flex gap-2 mt-2">
-                        <input type="checkbox" checked={!!form.accounting} onChange={handleCheckbox} name="accounting" />
-                        Es obligado llevar contabilidad?
-                    </label>
+                    <div className='mt-2'>
+                        <Switch name="accounting" label="¿Obligado a llevar contabilidad?" checked={!!form.accounting} onChange={handleCheckbox} />
+                    </div>
                     <div className='lg:w-2/3'>
                         <SelectOption label="Régimen" name='rimpe' options={optionType} selectedValue={form.rimpe} handleSelect={handleChange} />
                     </div>
-                    <label className=" inline-flex gap-2">
-                        <input type="checkbox" checked={!!form.retention_agent} onChange={handleCheckbox} name="retention_agent" />
-                        Es agente de retención?
-                    </label>
+                    <Switch name="retention_agent" label="¿Agente de retención?" checked={!!form.retention_agent} onChange={handleCheckbox} />
                 </div>
 
                 {/* Col 2 */}
@@ -94,9 +95,45 @@ export const GeneralInformation = () => {
 
             <div className='flex justify-end'>
                 <div className='w-28'>
-                    <PrimaryButton label='Guardar' type='submit' action='store' onClick={submit} />
+                    <PrimaryButton label='Guardar' type='submit' action='store' isLoading={isSaving} onClick={() => submit()} />
                 </div>
             </div>
+
+            {/* Pasar a RIMPE Negocio Popular cambia todos los productos a IVA 0%: el backend pide confirmación */}
+            <Modal
+                isOpen={ivaConfirmMessage !== null}
+                onClose={cancelIvaChange}
+                title="Cambiar a RIMPE Negocio Popular"
+                modalSize="sm"
+                footer={
+                    <div className="flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={cancelIvaChange}
+                            disabled={isSaving}
+                            className="px-4 py-2 rounded-lg text-sm font-medium border border-line-strong text-ink-1 hover:bg-surface-hover cursor-pointer disabled:opacity-50"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="button"
+                            onClick={confirmIvaChange}
+                            disabled={isSaving}
+                            className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-primary hover:bg-primaryhover cursor-pointer disabled:opacity-50"
+                        >
+                            {isSaving ? 'Guardando…' : 'Sí, cambiar a IVA 0%'}
+                        </button>
+                    </div>
+                }
+            >
+                <div className="flex gap-3">
+                    <FaTriangleExclamation className="shrink-0 mt-0.5 text-sri-wait" aria-hidden="true" />
+                    <div className="space-y-2 text-sm">
+                        <p className="text-ink-1">{ivaConfirmMessage}</p>
+                        <p className="text-ink-3">Las ventas ya emitidas no se modifican.</p>
+                    </div>
+                </div>
+            </Modal>
         </>
     )
 }

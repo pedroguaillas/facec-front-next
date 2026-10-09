@@ -19,8 +19,8 @@ const DenominationsTable = ({ denominations }: { denominations: CashRegisterSess
             </tr>
         </thead>
         <tbody>
-            {denominations.map((denomination, index) => (
-                <tr key={denomination.denomination_id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+            {denominations.map((denomination) => (
+                <tr key={denomination.denomination_id}>
                     <td className="text-left">{denomination.value}</td>
                     <td>{denominationTypeLabels[denomination.denomination_type]}</td>
                     <td>{denomination.quantity}</td>
@@ -60,7 +60,7 @@ const PageCashRegisterSession = () => {
                 actions={[{ label: "Regresar", type: "link", url: `/cash-registers/${cashRegisterId}`, action: "back" }]}
             />
             <div className='md:mx-8 py-4'>
-                <div className="w-full overflow-x-auto bg-gray-50 dark:bg-gray-800 rounded p-4 lg:p-8 mt-4 shadow-2xl">
+                <div className="w-full overflow-x-auto rounded-xl border border-line bg-surface p-4 lg:p-8 mt-4">
                     <p><strong className="font-bold">Estado: </strong>{cashRegisterStatusLabels[session.atts.status]}</p>
                     <p><strong className="font-bold">Saldo inicial: </strong>{session.atts.initial_balance}</p>
                     <p><strong className="font-bold">Saldo actual: </strong>{session.atts.current_balance}</p>

@@ -1,6 +1,7 @@
-import { TableResponsive } from "@/components";
-import { DashboardRecentOrder } from "@/types";
 import Link from "next/link";
+import { FaArrowRight } from "react-icons/fa6";
+import { SriStatus, TableResponsive } from "@/components";
+import { DashboardRecentOrder } from "@/types";
 
 interface RecentOrdersTableProps {
     orders: DashboardRecentOrder[];
@@ -12,46 +13,49 @@ const calPrefix: Record<number, string> = {
     5: "N/D",
 };
 
+const currency = (value: number) =>
+    value.toLocaleString("es-EC", { style: "currency", currency: "USD" });
+
 export const RecentOrdersTable = ({ orders }: RecentOrdersTableProps) => {
     if (!orders || orders.length === 0) return null;
 
     return (
-        <div className="w-full p-4 bg-white dark:bg-slate-800 rounded shadow">
-            <h2 className="text-xl font-bold mb-4 text-slate-700 dark:text-slate-200">Ventas recientes</h2>
-            <TableResponsive>
-                <thead>
-                    <tr>
-                        <th>F. EMISIÓN</th>
-                        <th>DOCUMENTO</th>
-                        <th className="text-left">CLIENTE</th>
-                        <th>ESTADO</th>
-                        <th className="text-right">TOTAL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders.map((order, index) => (
-                        <tr key={order.id} className={index % 2 === 0 ? "bg-gray-200 dark:bg-gray-900 rounded" : ""}>
-                            <td>{order.date}</td>
-                            <td>
-                                <Link className="hover:underline cursor-pointer text-blue-500" href={`/orders/${order.id}`}>
-                                    {`${calPrefix[order.voucher_type] ?? ""} ${order.serie}`}
-                                </Link>
-                            </td>
-                            <td className="text-left uppercase">{order.customer?.name}</td>
-                            <td>
-                                <span
-                                    className={`px-2 py-1 rounded-2xl text-xs inline-block
-                                        ${order.state === "AUTORIZADO" ? "bg-green-700 text-white" : "bg-yellow-100 text-yellow-800 dark:bg-yellow-300 dark:text-yellow-900"}
-                                    `}
-                                >
-                                    {order.state || "CREADO"}
-                                </span>
-                            </td>
-                            <td className="text-right">${order.total.toFixed(2)}</td>
+        <section className="rounded-xl border border-line bg-surface p-5 lg:p-6">
+            <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-ink-3">Ventas recientes</p>
+                <Link href="/orders" className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand-ink">
+                    Ver todas
+                    <FaArrowRight className="text-xs transition-transform group-hover:translate-x-0.5" />
+                </Link>
+            </div>
+            <div className="-mx-5 lg:-mx-6 [&>div]:my-2 [&>div]:border-0 [&>div]:rounded-none [&>div]:p-0">
+                <TableResponsive>
+                    <thead>
+                        <tr>
+                            <th className="text-left pl-5 lg:pl-6">Emisión</th>
+                            <th className="text-left">Comprobante</th>
+                            <th className="text-left">Cliente</th>
+                            <th>Estado SRI</th>
+                            <th className="text-right pr-5 lg:pr-6">Total</th>
                         </tr>
-                    ))}
-                </tbody>
-            </TableResponsive>
-        </div>
+                    </thead>
+                    <tbody>
+                        {orders.map((order) => (
+                            <tr key={order.id}>
+                                <td className="text-left pl-5 lg:pl-6 text-ink-3 tabular-nums whitespace-nowrap">{order.date}</td>
+                                <td className="text-left whitespace-nowrap">
+                                    <Link className="font-mono text-[13px] text-brand-ink hover:underline underline-offset-2" href={`/orders/${order.id}`}>
+                                        <span className="text-ink-3">{calPrefix[order.voucher_type] ?? ""}</span> {order.serie}
+                                    </Link>
+                                </td>
+                                <td className="text-left">{order.customer?.name}</td>
+                                <td><SriStatus state={order.state} /></td>
+                                <td className="text-right pr-5 lg:pr-6 font-mono tabular-nums whitespace-nowrap">{currency(order.total)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </TableResponsive>
+            </div>
+        </section>
     );
 };

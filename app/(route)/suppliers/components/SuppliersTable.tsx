@@ -6,7 +6,7 @@ import { axiosAuth } from "@/lib/axios";
 import { deleteSupplier } from "../services/suppliersServices";
 
 export const SuppliersTable = () => {
-  const { suppliers, supplierDeleteId, fetchSuppliers, setSupplierDeleteId } = useSuppliers();
+  const { suppliers, supplierDeleteId, fetchSuppliers, setSupplierDeleteId, setSupplierFormId } = useSuppliers();
 
   const confirmation = (accept: boolean) => {
     if (accept) {
@@ -29,16 +29,16 @@ export const SuppliersTable = () => {
           </tr>
         </thead>
         <tbody>
-          {suppliers.map((supplier, index) => (
+          {suppliers.map((supplier) => (
             <tr key={supplier.id}
-              className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}
             >
               <td>{supplier.atts.identication}</td>
               <td className="text-left">{supplier.atts.name}</td>
               <td className="text-left">{supplier.atts.address}</td>
               <td className="w-1">
                 <div className="flex gap-2">
-                  <IconButton type="link" action="edit" url={`/suppliers/${supplier.id}`} title="Editar" />
+                  <IconButton type="link" action="view" url={`/suppliers/${supplier.id}`} title="Cuentas por pagar" />
+                  <IconButton type="button" action="edit" onClick={() => setSupplierFormId(supplier.id)} title="Editar" />
                   <IconButton type="button" action="delete" onClick={() => setSupplierDeleteId(supplier.id)} title="Eliminar" />
                 </div>
               </td>

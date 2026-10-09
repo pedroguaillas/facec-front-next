@@ -7,11 +7,15 @@ import { paymentTypeOptions, DEFAULT_CREDIT_TERM_DAYS } from "@/constants";
 import { addDaysToDate, getDate } from "@/helpers/dateHelper";
 import { getCustomerAdvances } from "@/services/accountLedgerServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { usePlan } from "@/lib/hooks/usePlan";
 import { MovementSourceType, PaymentType } from "@/types";
 
 export const PaymentInformation = () => {
 
     const axiosAuth = useAxiosAuth();
+    const { canUseFinance } = usePlan();
+    // Crédito y anticipo requieren el plan Financiero
+    const paymentOptions = canUseFinance ? paymentTypeOptions : paymentTypeOptions.filter(option => option.value === 'CONTADO');
     const { invoice, formErrors, setInvoice, setFormErrors } = useFormInvoice();
     const [advancesAvailable, setAdvancesAvailable] = useState<number | null>(null);
 
@@ -47,12 +51,15 @@ export const PaymentInformation = () => {
         setFormErrors(prev => ({ ...prev, source_type: '', source_id: '' }));
     };
 
+    // Forma de pago y origen (caja/banco) solo con plan Financiero o Gratuito
+    if (!canUseFinance) return null;
+
     return (
-        <div className="w-full overflow-x-auto sm:max-w-sm md:max-w-md lg:max-w-lg my-2">
+        <div className="w-full min-w-0">
             <SelectOption
-                label="Forma de pago"
+                label="Condición de pago"
                 name="payment_type"
-                options={paymentTypeOptions}
+                options={paymentOptions}
                 selectedValue={invoice.payment_type}
                 error={formErrors.payment_type}
                 handleSelect={handleSelectPaymentType}

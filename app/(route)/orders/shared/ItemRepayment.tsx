@@ -1,8 +1,11 @@
+"use client";
+
 import { fieldRepaymetStrings, Repayment } from "@/types";
 import { FaTrash } from "react-icons/fa";
 import { useItemRepaymentTaxes } from "../hooks/useItemRepaymentTaxes";
 import { ItemRepaymentTaxes } from "./ItemRepaymentTaxes";
 import { getDate } from "@/helpers/dateHelper";
+import { cellInput, cellInputError, cellInputNormal, tableRow } from "./FormSection";
 
 interface Props {
   index: number;
@@ -12,15 +15,15 @@ interface Props {
   deleteItemRepayment: (index: number) => void;
 }
 
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
-const inputError = "border-red-400";
-const inputNormal = "border-[var(--border-strong)]";
+const inputBase = cellInput;
+const inputError = cellInputError;
+const inputNormal = cellInputNormal;
 
 export const ItemRepayment = ({ index, repayment, error, updateItemRepayment, deleteItemRepayment }: Props) => {
   const { addItemRepaymentTax, updateItemRepaymentTax, deleteItemRepaymentTax } = useItemRepaymentTaxes();
 
   return (
-    <tr className="[&>td]:p-1.5 [&>td]:border [&>td]:border-[var(--border)] [&>td]:py-2">
+    <tr className={tableRow}>
       <td>
         <input
           onChange={(e) => updateItemRepayment(index, 'identification', e.target.value)}

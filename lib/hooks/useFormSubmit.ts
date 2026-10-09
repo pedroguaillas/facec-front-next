@@ -10,7 +10,8 @@ interface UseFormSubmitOptions<T extends object> {
     data: T;
     setErrors: (errors: Record<string, string>) => void;
     onSubmit: (form: T) => Promise<ApiResponse<unknown>>;
-    onSuccess: () => void;
+    // Recibe los datos que devolvió la API
+    onSuccess: (data?: unknown) => void;
 }
 
 export const useFormSubmit = <T extends object>({
@@ -46,7 +47,7 @@ export const useFormSubmit = <T extends object>({
             return;
         }
 
-        onSuccess();
+        onSuccess(res.data);
     };
 
     return { handleSubmit, isPending, message };

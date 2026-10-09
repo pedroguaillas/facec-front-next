@@ -2,23 +2,23 @@
 
 import { AditionalInformation as AditionalInformationType } from '@/types/order';
 import { ItemAditionalInformation } from './ItemAditionalInformation';
-import { PrimaryButton, TableResponsive } from '@/components';
+import { AddRowButton, FormSection, tableHead } from './FormSection';
 import { useFormInvoice } from '../context/FormInvoiceContext';
 import { nanoid } from 'nanoid';
+
+const MAX_ADITIONALS = 13;
 
 export const AditionalInformation = () => {
 
   const { aditionalInformation, setAditionalInformation, errorAditionalInformation } = useFormInvoice();
-  const id = nanoid(); // "V1StGXR8_Z5jdHi6B-myT"
+  // El SRI admite hasta 13 campos adicionales
+  const canAdd = aditionalInformation.length < MAX_ADITIONALS;
 
   const addItem = () => {
-    if (aditionalInformation.length >= 13) {
-      alert('No se puede registrar mas información adicional')
-      return
-    }
+    if (!canAdd) return;
 
     const newAnditionalInformation: AditionalInformationType = {
-      id,
+      id: nanoid(),
       name: '',
       description: '',
     }
@@ -40,34 +40,32 @@ export const AditionalInformation = () => {
   };
 
   return (
-    <div className='w-full'>
-      <TableResponsive>
-        <thead>
-          <tr className="[&>th]:p-2">
-            <th className="border border-gray-300" colSpan={3}>Información Adicional</th>
-          </tr>
-          <tr className="[&>th]:p-2">
-            <th className="border border-gray-300">Nombre</th>
-            <th className="border border-gray-300">Descripción</th>
-            <th className="border border-gray-300"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {aditionalInformation.map((aditional, index) => (
-            <ItemAditionalInformation
-              key={aditional.id} index={index}
-              aditionalInformation={aditional}
-              error={errorAditionalInformation[aditional.id]} // 🔴 pasamos errores por ID
-              updateItem={updateItem} removeItem={removeItem}
-            />
-          ))}
-        </tbody>
-      </TableResponsive>
-      <div className="flex justify-end mt-2">
-        <div className="w-28">
-          <PrimaryButton onClick={addItem} label="Añadir" action="add" type="button" />
-        </div>
-      </div>
-    </div>
+    <FormSection
+      title="Información adicional"
+      aside={aditionalInformation.length > 0 ? <span className="text-xs text-ink-3 tabular-nums">{aditionalInformation.length}/{MAX_ADITIONALS}</span> : undefined}
+    >
+      {aditionalInformation.length > 0 && (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className={tableHead}>
+              <th className="text-left w-2/5">Nombre</th>
+              <th className="text-left">Descripción</th>
+              <th className="w-11"><span className="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {aditionalInformation.map((aditional, index) => (
+              <ItemAditionalInformation
+                key={aditional.id} index={index}
+                aditionalInformation={aditional}
+                error={errorAditionalInformation[aditional.id]} // 🔴 pasamos errores por ID
+                updateItem={updateItem} removeItem={removeItem}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
+      {canAdd && <AddRowButton label="Agregar campo (ej. Descripción)" onClick={addItem} />}
+    </FormSection>
   )
 }

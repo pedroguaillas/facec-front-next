@@ -87,6 +87,8 @@ interface ProductOutput {
     ice: undefined | number | string;
     percentage: number;
     name?: string;
+    // Producto con IVA diferenciado: en feriado su 15% (code 4) pasa a 8% (code 8)
+    differentiated_iva?: boolean;
 }
 
 type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';

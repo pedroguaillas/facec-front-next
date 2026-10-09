@@ -34,7 +34,7 @@ const ReferrralGuidesList = () => {
             </thead>
             <tbody>
                 {referralGuides.map((referralGuide, index) => (
-                    <tr key={referralGuide.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    <tr key={referralGuide.id}>
                         <td className="text-left">{`${referralGuide.atts.date_start} - ${referralGuide.atts.date_end}`}</td>
                         <td>
                             <Link className="hover:underline cursor-pointer text-blue-500" href={`/referralguides/${referralGuide.id}`}>

@@ -1,42 +1,60 @@
 "use client";
 
-import { useCarrierFormContext } from "../context/CarrierFormContext";
-import { SelectOption, TextInput } from "@/components"
-import { ChangeEvent } from "react";
+import { FormModal, FormSectionTitle, IdentificationFields, TextInput } from "@/components"
+import { useCarrierForm } from "../hooks/useCarrierForm";
 
-export const CarrierForm = () => {
+interface Props {
+    // Si viene, se edita el transportista; si no, se registra uno nuevo
+    id?: string;
+    onClose: () => void;
+    onSaved: () => void;
+}
 
-    const { carrier, errors, setCarrier, setErrors } = useCarrierFormContext();
+export const CarrierForm = ({ id, onClose, onSaved }: Props) => {
 
-    const optionType = [
-        { label: 'Cédula', value: 'cédula' },
-        { label: 'RUC', value: 'ruc' },
-        { label: 'Pasaporte', value: 'pasaporte' },
-    ]
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setCarrier(prev => ({ ...prev, [name]: value }))
-        setErrors(prev => ({ ...prev, [name]: '' }))
-    }
+    const {
+        data: carrier, errors, isLoading, isDirty, isPending, message, lookupStatus,
+        handleChange, setField, setType, setIdentification, handleSubmit,
+    } = useCarrierForm(id, onSaved);
 
     return (
-        <div className='sm:flex gap-4'>
+        <FormModal
+            title={id ? 'Editar transportista' : 'Registrar transportista'}
+            subtitle={id ? undefined : 'Ingresa la identificación para buscar sus datos'}
+            onClose={onClose}
+            onSubmit={handleSubmit}
+            isPending={isPending}
+            isLoading={isLoading}
+            isDirty={isDirty}
+            message={message}
+        >
+            <IdentificationFields
+                type={carrier.type_identification}
+                identification={carrier.identication}
+                error={errors.identication}
+                lookupStatus={lookupStatus}
+                readOnly={!!id}
+                onTypeChange={setType}
+                onIdentificationChange={setIdentification}
+            />
+            <TextInput type='text' label='Nombre' value={carrier.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} required />
 
-            {/* Col 1 */}
-            < div className='w-full sm:max-w-sm' >
-
-                <SelectOption label="Tipo de identificación" name='type_identification' options={optionType} selectedValue={carrier.type_identification} handleSelect={handleChange} />
-
-                <TextInput type='text' label='Identificación' value={carrier.identication} error={errors.identication} onChange={handleChange} name='identication' maxLength={carrier.type_identification === 'cédula' ? 10 : 13} required />
-
-                <TextInput type='text' label='Nombre' value={carrier.name} error={errors.name} onChange={handleChange} name='name' maxLength={300} required />
-
-                <TextInput type='text' label='Placa' value={carrier.license_plate} error={errors.license_plate} onChange={handleChange} name='license_plate' maxLength={10} required />
-
-                <TextInput type='email' label='Correo electrónico' value={carrier.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={100} />
-
+            <FormSectionTitle>Vehículo y contacto</FormSectionTitle>
+            <div className='sm:grid sm:grid-cols-2 sm:gap-4'>
+                <TextInput
+                    type='text'
+                    label='Placa'
+                    value={carrier.license_plate}
+                    error={errors.license_plate}
+                    onChange={(e) => setField('license_plate', e.target.value.toUpperCase())}
+                    name='license_plate'
+                    maxLength={10}
+                    placeholder='ABC1234'
+                    className='uppercase'
+                    required
+                />
+                <TextInput type='email' label='Correo electrónico' value={carrier.email ?? ''} error={errors.email} onChange={handleChange} name='email' maxLength={100} inputMode='email' placeholder='correo@ejemplo.com' />
             </div>
-        </div>
+        </FormModal>
     )
 }

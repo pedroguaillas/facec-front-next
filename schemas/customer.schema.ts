@@ -5,9 +5,9 @@ export const customerSchema = z.object({
     type_identification: z.enum(['cédula', 'ruc', 'pasaporte']),
     identication: z.string().min(1, 'La identificación es requerida'),
     name: z.string().min(3, "Nombre del cliente requerido").max(300, "Máximo 300 caracteres"),
-    address: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+    address: z.string().min(1, 'La dirección es requerida').max(300, 'Máximo 300 caracteres'),
     phone: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
-    email: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+    email: z.preprocess(emptyStringToNull, z.string().email('Correo electrónico no válido').nullable().optional()),
 }).superRefine((data, ctx) => {
     if (data.type_identification === 'cédula') {
         if (!/^\d+$/.test(data.identication)) {

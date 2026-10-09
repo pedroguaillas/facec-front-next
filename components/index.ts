@@ -1,5 +1,7 @@
 // Alert
 export * from './alert/Alert';
+export * from './notice/Notice';
+export * from './sri-status/SriStatus';
 
 // Elements
 export * from './text-input/TextInput';
@@ -12,6 +14,8 @@ export * from './title/Title';
 export * from './separate/Separate';
 export * from './legend-required/RequiredFields';
 export * from './label/LabelComponent';
+export * from './segmented-control/SegmentedControl';
+export * from './identification-fields/IdentificationFields';
 
 // Components
 export * from './dialog/Dialog';
@@ -26,6 +30,12 @@ export * from './ui/sidebar/Sidebar';
 
 // Modal
 export * from './modal/Modal';
+export * from './form-modal/FormModal';
+
+// Plan / suscripción
+export * from './plan/PlanBanner';
+export * from './plan/PlanErrorNotice';
+export * from './plan/PlanBadge';
 
 // Selects
 export * from './selects/product/SelectProduct';

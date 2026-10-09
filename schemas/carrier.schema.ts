@@ -10,8 +10,9 @@ export const carrierSchema = z.object({
     address: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
     license_plate: z
         .string()
-        .min(7, "Placa vehicular requerido"),
-    email: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+        .min(1, "La placa es requerida")
+        .min(7, "La placa debe tener al menos 7 caracteres"),
+    email: z.preprocess(emptyStringToNull, z.string().email('Correo electrónico no válido').nullable().optional()),
 }).superRefine((data, ctx) => {
     if (data.type_identification === 'cédula') {
         if (!/^\d+$/.test(data.identication)) {

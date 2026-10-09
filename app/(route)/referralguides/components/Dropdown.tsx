@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "axios";
 import { downloadXml } from "@/services/downloadXmlServices";
 import { PDFViewer } from "@/components";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 interface Props {
     isOpen: boolean;
@@ -45,14 +46,16 @@ const handleApiCall = async (
     }
 };
 
+
 // 🔹 Diccionario de acciones asociadas al estado de la orden
 const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetchReferralGuides: () => void) => Promise<void>
 > = {
     CREADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("sendsri", id, axiosAuth, fetchInvoices),
-    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
-    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("authorize", id, axiosAuth, fetchInvoices),
+    // El backend nuevo solo expone /process (firma, envía y autoriza según el estado)
+    FIRMADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    ENVIADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
+    EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
         handleApiCall("cancel", id, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
@@ -64,6 +67,7 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
     const axiosAuth = useAxiosAuth(); // ✅ Usa el hook dentro del componente
     const { fetchReferralGuides } = useReferralGuides();
     const [pdf, setPdf] = useState<{ route: string, name: string } | null>(null);
+    const { canEmit } = usePlan();
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
@@ -73,7 +77,9 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
             { label: "Enviar correo", onClick: sendMail },
         ];
 
-        if (referralGuide.atts.state !== "ANULADO") {
+        // Con plan vencido no se procesa (todo salvo anular usa /process)
+        const blockedByPlan = !canEmit && referralGuide.atts.state !== "AUTORIZADO";
+        if (referralGuide.atts.state !== "ANULADO" && !blockedByPlan) {
             options.splice(1, 0, {
                 label: renderSwitch[referralGuide.atts.state.replace(' ', '_')],
                 onClick: () => renderProcess[referralGuide.atts.state.replace(' ', '_')](parseInt(referralGuide.id), axiosAuth, fetchReferralGuides),

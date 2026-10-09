@@ -1,9 +1,9 @@
 "use client";
 
-import { PrimaryButton, Separate } from "@/components";
 import { useFormInvoice } from "../context/FormInvoiceContext"
 import { ItemRepayment } from "./ItemRepayment";
 import { useRepayments } from "../hooks/useRepayments";
+import { AddRowButton, FormSection, tableHead } from "./FormSection";
 
 export const Repayments = () => {
 
@@ -15,20 +15,18 @@ export const Repayments = () => {
     }
 
     return (
-        <>
-            <h2 className="font-bold py-2">Rembolsos</h2>
-
+        <FormSection title="Reembolsos">
             {/* Table responsive */}
             <div className="w-full overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full text-sm">
                     <thead>
-                        <tr className="[&>th]:p-1 [&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500">
+                        <tr className={`${tableHead} [&>th]:text-left`}>
                             <th>RUC</th>
                             <th>Secuencial</th>
                             <th>Fecha</th>
                             <th>Autorización</th>
                             <th>Subtotal - IVA - Total</th>
-                            <th></th>
+                            <th className="w-11"><span className="sr-only">Acciones</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,13 +44,7 @@ export const Repayments = () => {
                 </table>
             </div>
 
-            <div className="flex justify-end mt-2">
-                <div className="w-28">
-                    <PrimaryButton onClick={addItemRepayment} label="Añadir" action="add" type="button" />
-                </div>
-            </div>
-
-            <Separate />
-        </>
+            <AddRowButton label="Agregar reembolso" onClick={addItemRepayment} />
+        </FormSection>
     )
 }

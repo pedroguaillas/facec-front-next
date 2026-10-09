@@ -1,6 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "./axios";
+import { AuthUser } from "@/types";
+import { SESSION_UPDATABLE_PERMISSIONS } from "@/constants/sessionPermissions";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -26,8 +28,21 @@ export const authOptions: NextAuthOptions = {
   // pages: { signIn: "/app/auth/login" },
   session: { strategy: "jwt" },
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, trigger, session }) => {
       if (user) token.user = user; // Store the token
+      // useSession().update({ permissions }) tras guardar en Configuración > Permisos:
+      // solo se aceptan estas banderas (el plan y demás permisos vienen únicamente del login)
+      if (trigger === "update" && session?.permissions && token.user) {
+        const current = token.user as AuthUser;
+        const updatable = SESSION_UPDATABLE_PERMISSIONS.filter(key => typeof session.permissions[key] === "boolean");
+        token.user = {
+          ...current,
+          permissions: {
+            ...current.permissions,
+            ...Object.fromEntries(updatable.map(key => [key, session.permissions[key]])),
+          },
+        };
+      }
       return token;
     },
     session: async ({ session, token }) => {

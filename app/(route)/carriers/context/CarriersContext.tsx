@@ -13,10 +13,12 @@ interface CarriersContextType {
     meta: Meta | null;
     links: Links | null;
     carrierDeleteId: number | null;
+    carrierFormId: number | 'new' | null;
     setSearch: (value: string) => void;
     setPage: (value: number) => void;
     fetchCarriers: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
     setCarrierDeleteId: (value: number | null) => void;
+    setCarrierFormId: (value: number | 'new' | null) => void;
 }
 
 const CarriersContext = createContext<CarriersContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export const CarriersProvider = ({ children }: Props) => {
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
     const [carrierDeleteId, setCarrierDeleteId] = useState<number | null>(null);
+    const [carrierFormId, setCarrierFormId] = useState<number | 'new' | null>(null);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
 
@@ -57,8 +60,8 @@ export const CarriersProvider = ({ children }: Props) => {
 
     return (
         <CarriersContext.Provider value={{
-            carriers, search, page, meta, links, carrierDeleteId,
-            fetchCarriers, setSearch, setPage, setCarrierDeleteId
+            carriers, search, page, meta, links, carrierDeleteId, carrierFormId,
+            fetchCarriers, setSearch, setPage, setCarrierDeleteId, setCarrierFormId
         }}>
             {children}
         </CarriersContext.Provider>

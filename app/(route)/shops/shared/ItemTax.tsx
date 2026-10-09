@@ -1,3 +1,5 @@
+"use client";
+
 import { Tax } from "@/types"
 import { useTaxes } from "../hooks/useTaxes";
 import { useShopVoucherType } from "../hooks/useShopVoucherType";

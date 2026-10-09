@@ -16,11 +16,8 @@ export async function handleApiRequest<T>(
             return { error: CodeErrors.NETWORK_ERROR_MESSAGE };
         }
 
-        // TODO: estos errores especificos pueden estar aqui
-        //   401 → sesión expirada (¿redirigir al login?)
-        //   403 → sin permisos
-        //   404 → recurso no encontrado
-        //   500 → error del servidor
+        // 403 por plan (subscription_expired / plan_required) además se avisa
+        // globalmente desde el interceptor de axiosAuth (lib/axios.ts)
 
         // El unico error que capturamos es cuando no pasa la validación en el Backend
         if (error.response && error.response.status === 422) {
@@ -41,6 +38,12 @@ export async function handleApiRequest<T>(
             return { errors: flattenedErrors };
         }
 
-        return { error: 'Se produjo un error inesperado' };
+        // 4xx con mensaje del backend ({ succes: false, message, error })
+        const { status, data } = error.response;
+        if (status < 500 && data?.message) {
+            return { error: data.message, code: data.error };
+        }
+
+        return { error: 'Se produjo un error inesperado', code: data?.error };
     }
 }

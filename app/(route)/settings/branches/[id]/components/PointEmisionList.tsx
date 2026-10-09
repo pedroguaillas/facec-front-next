@@ -38,10 +38,10 @@ export const PointEmisionList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {emisionPoints.map((emisionPoint, index) => (
+                        {emisionPoints.map((emisionPoint) => (
                             <tr
                                 key={emisionPoint.point}
-                                className={`text-center ${index % 2 === 0 ? "bg-gray-200 dark:bg-gray-900 rounded" : ""} [&>td]:p-1`}
+                                className="text-center [&>td]:p-1"
                             >
                                 <td>{(emisionPoint.point + "").padStart(3, "0")}</td>
                                 <td>{emisionPoint.invoice}</td>

@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Paginate, PrimaryButton, Separate, TableResponsive } from "@/components";
+import { Paginate, PrimaryButton, TableResponsive } from "@/components";
 import { OpeningBalanceModal } from "./OpeningBalanceModal";
-import { AdvanceModal } from "./AdvanceModal";
 import { getCustomerAccountReceivable, getProviderAccountPayable, getCustomerAdvances, getProviderAdvances } from "@/services/accountLedgerServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { usePlan } from "@/lib/hooks/usePlan";
 import { AccountLedgerEntry, Links, Meta } from "@/types";
 
 interface Props {
@@ -17,13 +17,14 @@ interface Props {
 export const AccountLedgerSection = ({ partyType, partyId, title = 'Estado de cuenta' }: Props) => {
 
     const axiosAuth = useAxiosAuth();
+    // Saldo inicial requiere el plan Financiero; la consulta de la cartera sigue visible
+    const { canUseFinance } = usePlan();
     const [entries, setEntries] = useState<AccountLedgerEntry[]>([]);
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
     const [currentBalance, setCurrentBalance] = useState<number | null>(null);
     const [advancesAvailable, setAdvancesAvailable] = useState<number | null>(null);
     const [isOpeningBalanceModalOpen, setIsOpeningBalanceModalOpen] = useState(false);
-    const [isAdvanceModalOpen, setIsAdvanceModalOpen] = useState(false);
 
     const fetchAdvances = useCallback(async () => {
         const { data } = partyType === 'customer'
@@ -64,7 +65,6 @@ export const AccountLedgerSection = ({ partyType, partyId, title = 'Estado de cu
 
     return (
         <div>
-            <Separate />
             <div className="flex justify-between items-center gap-4">
                 <strong className="font-bold">{title}</strong>
                 <div className="flex items-center gap-4">
@@ -74,12 +74,11 @@ export const AccountLedgerSection = ({ partyType, partyId, title = 'Estado de cu
                     {!!advancesAvailable && (
                         <span><strong className="font-bold">Anticipo disponible: </strong>{advancesAvailable.toFixed(2)}</span>
                     )}
-                    <div className="w-48">
-                        <PrimaryButton label="Registrar anticipo" type="button" action="add" onClick={() => setIsAdvanceModalOpen(true)} />
-                    </div>
-                    <div className="w-52">
-                        <PrimaryButton label="Registrar saldo anterior" type="button" action="add" onClick={() => setIsOpeningBalanceModalOpen(true)} />
-                    </div>
+                    {canUseFinance && (
+                        <div className="w-52">
+                            <PrimaryButton label="Registrar saldo anterior" type="button" action="add" onClick={() => setIsOpeningBalanceModalOpen(true)} />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -94,8 +93,8 @@ export const AccountLedgerSection = ({ partyType, partyId, title = 'Estado de cu
                     </tr>
                 </thead>
                 <tbody>
-                    {entries.map((entry, index) => (
-                        <tr key={entry.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    {entries.map((entry) => (
+                        <tr key={entry.id}>
                             <td>{entry.date}</td>
                             <td className="text-left">{entry.description}</td>
                             <td>{entry.debe ? entry.debe.toFixed(2) : '-'}</td>
@@ -115,19 +114,6 @@ export const AccountLedgerSection = ({ partyType, partyId, title = 'Estado de cu
                     onSaved={() => {
                         setIsOpeningBalanceModalOpen(false);
                         fetchEntries();
-                    }}
-                />
-            )}
-
-            {isAdvanceModalOpen && (
-                <AdvanceModal
-                    partyType={partyType}
-                    partyId={partyId}
-                    onClose={() => setIsAdvanceModalOpen(false)}
-                    onSaved={() => {
-                        setIsAdvanceModalOpen(false);
-                        fetchEntries();
-                        fetchAdvances();
                     }}
                 />
             )}

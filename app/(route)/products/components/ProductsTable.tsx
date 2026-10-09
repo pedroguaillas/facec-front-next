@@ -30,8 +30,8 @@ export const ProductsTable = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {products.map((product, index) => (
-                        <tr key={product.id} className={index % 2 === 0 ? "bg-gray-200 dark:bg-gray-900 rounded" : ""}>
+                    {products.map((product) => (
+                        <tr key={product.id}>
                             <td>{product.atts.code}</td>
                             <td className="text-left">{product.atts.name}</td>
                             <td className="text-right">${product.atts.price1.toFixed(2)}</td>

@@ -45,7 +45,7 @@ export const ShopsTable = () => {
             </thead>
             <tbody>
                 {shops.map((shop, index) => (
-                    <tr key={shop.id} className={index % 2 === 0 ? 'bg-gray-200 dark:bg-gray-900 rounded' : ''}>
+                    <tr key={shop.id}>
                         <td>{shop.atts.date}</td>
                         <td>
                             <Link className="hover:underline cursor-pointer text-blue-500" href={`/shops/${shop.id}`}>
