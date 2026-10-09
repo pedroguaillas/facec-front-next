@@ -1,6 +1,8 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "./axios";
+import { AxiosError } from "axios";
+import { EMAIL_UNVERIFIED } from "@/constants/register";
 import { AuthUser } from "@/types";
 import { SESSION_UPDATABLE_PERMISSIONS } from "@/constants/sessionPermissions";
 
@@ -15,13 +17,20 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials || !credentials.user || !credentials.password)
           return null;
-        const res = await axios.post("login", {
-          user: credentials.user,
-          password: credentials.password,
-        });
+        try {
+          const res = await axios.post("login", {
+            user: credentials.user,
+            password: credentials.password,
+          });
 
-        const user = res.data;
-        return user ? user : null;
+          const user = res.data;
+          return user ? user : null;
+        } catch (err) {
+          // Correo sin confirmar (registro público): el login lo distingue para ofrecer reenviar el correo
+          const data = (err as AxiosError<{ error?: string }>).response?.data;
+          if (data?.error === EMAIL_UNVERIFIED) throw new Error(EMAIL_UNVERIFIED);
+          return null;
+        }
       },
     }),
   ],

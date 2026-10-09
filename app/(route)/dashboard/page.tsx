@@ -10,6 +10,7 @@ import { OverdueCard } from "./components/OverdueCard";
 import { FinancieroUpsellCard } from "./components/FinancieroUpsellCard";
 import { redirect } from "next/navigation";
 import { Notice } from "@/components";
+import Link from "next/link";
 import { DashboardResponse } from "@/types";
 import { getCustomersOverdue, getProvidersOverdue } from "@/services/overdueServices";
 
@@ -59,6 +60,24 @@ const InvoicesPage = async () => {
       {!data.active && (
         <Notice tone="danger" title="Tu cuenta está inactiva">
           {data.expired && <>Venció el {formatLongDate(data.expired)}.</>}
+        </Notice>
+      )}
+
+      {/* Empresa nueva (p. ej. registro de prueba): sin firma no puede emitir */}
+      {data.hasCert === false && (
+        <Notice
+          tone="warning"
+          title="Sube tu firma electrónica para empezar a facturar"
+          action={
+            <Link
+              href="/settings"
+              className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primaryhover transition-colors"
+            >
+              Subir firma (.p12)
+            </Link>
+          }
+        >
+          Tu establecimiento y punto de emisión 001 ya están listos. Solo falta el archivo de tu firma y su contraseña.
         </Notice>
       )}
 

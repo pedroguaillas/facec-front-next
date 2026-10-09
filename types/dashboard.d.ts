@@ -35,6 +35,8 @@ export interface DashboardResponse {
     active: boolean;
     expired: string | null;
     certExpiration: string | null;
+    // true si la empresa ya subió su firma (.p12); certExpiration puede faltar en datos viejos
+    hasCert?: boolean;
     income: DashboardChartItem[];
     expenses: DashboardChartItem[];
     counts: {

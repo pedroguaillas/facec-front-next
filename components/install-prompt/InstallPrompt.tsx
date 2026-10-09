@@ -7,8 +7,9 @@ export const InstallPrompt = () => {
 
     if (!canInstall) return null;
 
+    // Solo celulares y tablets: se oculta en pantallas grandes con mouse (computadora)
     return (
-        <div className="fixed bottom-4 inset-x-4 md:inset-x-auto md:right-4 md:max-w-sm z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex items-center justify-between gap-4">
+        <div className="[@media(min-width:1024px)_and_(pointer:fine)]:hidden fixed bottom-4 inset-x-4 md:inset-x-auto md:right-4 md:max-w-sm z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex items-center justify-between gap-4">
             <p className="text-sm text-gray-800 dark:text-gray-100">
                 {isIOS ? (
                     <>Instala Facec: toca <strong>Compartir</strong> y luego <strong>&quot;Agregar a inicio&quot;</strong>.</>
