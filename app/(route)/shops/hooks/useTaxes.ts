@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 export const useTaxes = () => {
 
-    const { taxes, setTaxes, setErrorTaxes } = useFormShop();
+    const { shop, taxes, setTaxes, setErrorTaxes } = useFormShop();
 
     // Agregar producto a la lista
     const addItem = () => {
@@ -22,6 +22,13 @@ export const useTaxes = () => {
             ...newTaxes[index],
             [field]: val
         };
+
+        // Al elegir el impuesto se propone la base: renta sobre el subtotal, IVA sobre el IVA de la compra
+        if (field === 'code' && newTaxes[index].base === '') {
+            const ivaTotal = Number(shop.iva) + Number(shop.iva5) + Number(shop.iva15);
+            const suggested = val === '1' ? Number(shop.sub_total) : val === '2' ? ivaTotal : 0;
+            if (suggested > 0) newTaxes[index] = { ...newTaxes[index], base: Number(suggested.toFixed(2)) };
+        }
 
         // Recalculamos el value si tenemos base y porcentaje
         const { porcentage, base } = newTaxes[index];

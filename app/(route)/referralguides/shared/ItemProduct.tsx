@@ -1,7 +1,9 @@
 import { ProductOutput } from '@/types/order';
-import { SelectProduct } from '@/components';
-import { FaTrash } from 'react-icons/fa';
+import { IconButton, SelectProduct } from '@/components';
 import { ProductProps } from '@/types';
+import { limitDecimals } from '@/helpers/numberHelper';
+import { DragHandle, useSortableItem } from '../../orders/shared/SortableItems';
+import { cellInput, cellInputError, cellInputNormal, tableRow } from '../../orders/shared/FormSection';
 
 interface Props {
 	index: number;
@@ -10,41 +12,34 @@ interface Props {
 	updateItem: (index: number, value: number | string) => void;
 	selectProduct: (index: number, product: ProductProps) => void;
 	removeItem: (index: number) => void;
+	sortable?: boolean;
 }
 
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
-const inputError = "border-red-400";
-const inputNormal = "border-[var(--border-strong)]";
+export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem, sortable = false }: Props) => {
+	const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
 
-export const ItemProduct = ({
-	index,
-	productOutput,
-	error,
-	updateItem,
-	selectProduct,
-	removeItem,
-}: Props) => {
 	return (
-		<tr className='[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5'>
-			<td>
-				<input
-					onChange={e => updateItem(index, e.target.value)}
-					value={productOutput.quantity ?? ''}
-					type='number'
-					className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
-				/>
+		<tr ref={setNodeRef} style={style} className={`${tableRow} ${isDragging ? 'bg-surface shadow-md' : ''}`}>
+			<td className='py-0.5! align-middle'>
+				{sortable && <DragHandle {...handleProps} label={`Mover línea ${index + 1}`} />}
 			</td>
 			<td>
 				<SelectProduct index={index} label={productOutput.name} selectProduct={selectProduct} error={error?.product_id} onlyProducts />
 			</td>
-
-			<td className='w-1'>
-				<button
-					onClick={() => removeItem(index)}
-					className='flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600'
-				>
-					<FaTrash />
-				</button>
+			<td>
+				<input
+					aria-label={`Cantidad línea ${index + 1}`}
+					onChange={e => updateItem(index, limitDecimals(e.target.value, 6))}
+					value={productOutput.quantity ?? ''}
+					type='number'
+					inputMode='decimal'
+					min='0'
+					className={`${cellInput} text-right ${error?.quantity ? cellInputError : cellInputNormal}`}
+				/>
+				{error?.quantity && <p className='mt-1 text-xs text-red-500'>{error.quantity}</p>}
+			</td>
+			<td className='w-1 py-0.5!'>
+				<IconButton action='delete' type='button' onClick={() => removeItem(index)} title='Eliminar línea' />
 			</td>
 		</tr>
 	);

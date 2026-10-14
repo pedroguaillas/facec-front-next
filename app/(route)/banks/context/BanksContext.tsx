@@ -1,69 +1,53 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { getBanks } from "../services/banksServices";
+import { getBankAccounts } from "../services/bankAccountsServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
-import { BankProps, Links, Meta } from "@/types";
+import { BankAccountProps, Links, Meta } from "@/types";
+
+// Una pyme suele tener pocas cuentas: se traen de una vez para poder sumar el total
+const ACCOUNTS_URL = 'bank-accounts?paginate=50';
 
 interface BanksContextType {
-    banks: BankProps[];
-    search: string;
-    page: number;
+    accounts: BankAccountProps[];
     meta: Meta | null;
     links: Links | null;
-    bankDeleteId: number | null;
-    setSearch: (value: string) => void;
-    setPage: (value: number) => void;
-    fetchBanks: (pageUrl?: string) => Promise<void>;
-    setBankDeleteId: (value: number | null) => void;
+    isLoading: boolean;
+    fetchAccounts: (pageUrl?: string) => Promise<void>;
 }
 
 const BanksContext = createContext<BanksContextType | undefined>(undefined);
 
-interface Props {
-    children: ReactNode;
-}
-
-export const BanksProvider = ({ children }: Props) => {
-    const [banks, setBanks] = useState<BankProps[]>([]);
-    const [search, setSearch] = useState<string>("");
-    const [page, setPage] = useState(1);
+export const BanksProvider = ({ children }: { children: ReactNode }) => {
+    const [accounts, setAccounts] = useState<BankAccountProps[]>([]);
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
-    const [bankDeleteId, setBankDeleteId] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth();
 
-    const fetchBanks = useCallback(
-        async (pageUrl = `banks?page=${page}`) => {
+    const fetchAccounts = useCallback(
+        async (pageUrl = ACCOUNTS_URL) => {
             if (status !== "authenticated") return;
 
-            if (search) {
-                pageUrl = `${pageUrl}&search=${search}`
-            }
-
-            const { data } = await getBanks(axiosAuth, pageUrl);
+            const { data } = await getBankAccounts(axiosAuth, pageUrl);
             if (data) {
-                setBanks(data.data);
+                setAccounts(data.data);
                 setMeta(data.meta);
                 setLinks(data.links);
             }
+            setIsLoading(false);
         },
-        [status, axiosAuth, search, page],
+        [status, axiosAuth],
     );
 
     useEffect(() => {
-        fetchBanks();
-    }, [fetchBanks]);
+        fetchAccounts();
+    }, [fetchAccounts]);
 
     return (
-        <BanksContext.Provider
-            value={{
-                banks, search, page, meta, links, bankDeleteId,
-                fetchBanks, setSearch, setPage, setBankDeleteId,
-            }}
-        >
+        <BanksContext.Provider value={{ accounts, meta, links, isLoading, fetchAccounts }}>
             {children}
         </BanksContext.Provider>
     );

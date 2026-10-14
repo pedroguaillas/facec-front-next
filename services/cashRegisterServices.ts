@@ -5,7 +5,7 @@ import { AxiosInstance } from "axios";
 export const getAllCashRegisters = async (
     axiosAuth: AxiosInstance,
 ): Promise<ApiResponse<GeneralPaginate<CashRegisterProps>>> =>
-    handleApiRequest<GeneralPaginate<CashRegisterProps>>(() => axiosAuth.get("cash-registers?per_page=100"));
+    handleApiRequest<GeneralPaginate<CashRegisterProps>>(() => axiosAuth.get("cash-registers?paginate=100"));
 
 export const storeCashRegister = async (
     axiosAuth: AxiosInstance,

@@ -1,22 +1,21 @@
 import { FormReferralGuideProvider } from '../context/FormReferralGuideContext';
 import { GeneralInformation, ListProducts, ButtonSubmit } from '../shared';
-import { RequiredFields, Separate, Title } from '@/components';
+import { Title } from '@/components';
 
 const PageCreateReferralGuide = () => {
 	return (
 		<FormReferralGuideProvider>
 			<div className='dark:text-gray-300'>
-				<Title title='Guia de remisión' subTitle='Registrar un nuevo guia de remisión' />
+				<Title
+					title='Guía de remisión'
+					subTitle='Registrar una nueva guía de remisión'
+					actions={[{ label: 'Regresar', type: 'link', url: '/referralguides', action: 'back' }]}
+				/>
 
-				<div className='md:mx-8 py-4'>
-					{/* Card */}
-					<div className='w-full overflow-x-auto rounded-xl border border-line bg-surface p-4 lg:p-8 mt-4'>
-						<RequiredFields />
-						<Separate />
+				<div className='md:mx-8 py-4 mt-4'>
+					<div className='max-w-5xl rounded-xl border border-line bg-surface p-4 lg:p-6'>
 						<GeneralInformation />
-						<Separate />
 						<ListProducts />
-						<Separate />
 						<ButtonSubmit />
 					</div>
 				</div>

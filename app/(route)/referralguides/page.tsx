@@ -10,7 +10,7 @@ const PageReferralGuides = () => {
 
     const { canEmit } = usePlan();
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: '/referralguides/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva guía' : 'Tu plan está vencido' },
+        { label: "Nueva guía", type: "link", url: '/referralguides/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva guía' : 'Tu plan está vencido' },
     ];
 
     const ReferralGuidesPagination = () => {

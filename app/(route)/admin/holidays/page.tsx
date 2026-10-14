@@ -74,7 +74,7 @@ const PageAdminHolidays = () => {
             <Title
                 title="Feriados"
                 subTitle="IVA diferenciado 8% en servicios turísticos, para todas las empresas habilitadas"
-                actions={[{ label: "", type: "button", action: "add", onClick: () => setEditing('new') }]}
+                actions={[{ label: "Nuevo feriado", type: "button", action: "add", onClick: () => setEditing('new') }]}
             />
             <div className="md:mx-8 py-4">
                 <TableResponsive>

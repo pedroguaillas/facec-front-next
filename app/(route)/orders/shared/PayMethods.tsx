@@ -3,14 +3,18 @@
 import { SelectOption } from "@/components"
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
+import { usePlan } from "@/lib/hooks/usePlan";
 
 export const PayMethods = () => {
 
     const { invoice, formErrors, payMethods, voucherTypes, setInvoice } = useFormInvoice();
+    const { canUseFinance } = usePlan();
 
     // Solo se pide forma de pago en Factura (Nota de Crédito, Nota de Venta y Proforma no la piden)
     const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(invoice.voucher_type_id));
     if (selectedVoucherType?.slug !== ORDER_VOUCHER_TYPE_SLUG.FACTURA) return null;
+    // Con plan Financiero se deduce de la condición de pago y la caja/banco (ver ButtonSubmit)
+    if (canUseFinance) return null;
 
     const optionPayMethods = payMethods.map(pay => {
         return { value: pay.code, label: pay.description }

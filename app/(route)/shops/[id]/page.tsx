@@ -1,6 +1,6 @@
-import { RequiredFields, Separate, Title } from "@/components";
+import { Title } from "@/components";
 import { FormShopProvider } from "../context/FormShopContext";
-import { GeneralInformation, ListProducts, ListTaxes, PaymentInformation, RetentionInformation, Totals } from "../shared";
+import { GeneralInformation, ListProducts, PaymentInformation, RetentionInformation, Totals } from "../shared";
 
 const PageShopEdit = () => {
     return (
@@ -8,26 +8,22 @@ const PageShopEdit = () => {
             <div className="dark:text-gray-300">
 
                 <Title
-                    title="Documento"
-                    subTitle="Editar un documento"
+                    title="Compra"
+                    subTitle="Editar compra"
                     actions={[{ label: "Regresar", type: "link", url: "/shops", action: "back" }]}
                 />
 
-                <div className="md:mx-8 py-4">
-
-                    {/* Card */}
-                    <div className="w-full overflow-x-auto rounded-xl border border-line bg-surface p-4 lg:p-8 mt-4">
-                        <RequiredFields />
-                        <Separate />
+                {/* Formulario + resumen tipo recibo (fijo al costado en pantallas grandes) */}
+                <div className="md:mx-8 py-4 mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem] items-start">
+                    <div className="min-w-0 rounded-xl border border-line bg-surface p-4 lg:p-6">
                         <GeneralInformation />
-                        <PaymentInformation />
                         <ListProducts />
-                        <Separate />
+                        <PaymentInformation />
                         <RetentionInformation />
-                        <ListTaxes />
-                        <Separate />
-                        <Totals />
                     </div>
+                    <aside className="w-full sm:max-w-sm sm:ml-auto xl:max-w-none xl:sticky xl:top-20">
+                        <Totals />
+                    </aside>
                 </div>
             </div>
         </FormShopProvider>

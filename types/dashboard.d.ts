@@ -21,6 +21,8 @@ interface SriCounts {
 
 export interface DashboardSri extends SriCounts {
     oldest_pending_date: string | null;
+    // Inicio de la ventana contada (Y-m-d, hoy - 30 días)
+    since?: string;
     // Desglose por tipo (las 4 claves vienen siempre). orders coincide con GET orders?state=
     by_type: {
         orders: SriCounts;

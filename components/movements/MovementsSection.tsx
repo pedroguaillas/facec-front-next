@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Paginate, PrimaryButton, Separate, TableResponsive } from "@/components";
+import Link from "next/link";
+import { Paginate, Separate, TableResponsive } from "@/components";
 import { movementTransactionTypeLabels, movementStatusLabels, paymentMethodOptions } from "@/constants";
 import { getMovements, completeMovement } from "@/services/movementServices";
-import { MovementFormModal } from "./MovementFormModal";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { Links, Meta, Movement, MovementSourceType } from "@/types";
 
@@ -21,7 +21,6 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
     const [movements, setMovements] = useState<Movement[]>([]);
     const [meta, setMeta] = useState<Meta | null>(null);
     const [links, setLinks] = useState<Links | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchMovements = useCallback(async (pageUrl?: string) => {
         const { data } = pageUrl
@@ -49,11 +48,6 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
         onChanged?.();
     };
 
-    const handleSaved = () => {
-        setIsModalOpen(false);
-        fetchMovements();
-        onChanged?.();
-    };
 
     const paymentMethodLabel = (method: Movement['atts']['payment_method']) =>
         paymentMethodOptions.find(it => it.value === method)?.label ?? method;
@@ -74,9 +68,8 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
             <Separate />
             <div className="flex justify-between items-center">
                 <strong className="font-bold">{title}</strong>
-                <div className="w-44">
-                    <PrimaryButton label="Nuevo movimiento" type="button" action="add" onClick={() => setIsModalOpen(true)} />
-                </div>
+{/* Se registra desde Movimientos: un solo lugar para todas las cuentas y cajas */}
+                <Link href="/movements" className="text-sm text-primary hover:underline">Registrar en Movimientos →</Link>
             </div>
 
             <TableResponsive>
@@ -95,7 +88,7 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
                     {movements.map((movement) => (
                         <tr key={movement.id}>
                             <td>{movement.atts.date}</td>
-                            <td>{movementTransactionTypeLabels[movement.atts.transaction_type]}</td>
+                            <td>{movementTransactionTypeLabels[movement.atts.transaction_type] ?? movement.atts.transaction_type}</td>
                             <td>{movement.atts.amount}</td>
                             <td>{counterpart(movement)}</td>
                             <td>{paymentMethodLabel(movement.atts.payment_method)}</td>
@@ -117,14 +110,6 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
             </TableResponsive>
             <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />
 
-            {isModalOpen && (
-                <MovementFormModal
-                    sourceType={sourceType}
-                    sourceId={sourceId}
-                    onClose={() => setIsModalOpen(false)}
-                    onSaved={handleSaved}
-                />
-            )}
         </div>
     )
 }

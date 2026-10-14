@@ -22,7 +22,7 @@ const SuppliersContent = () => {
                 <Title
                     title="Proveedores"
                     subTitle="Lista de todos los proveedores"
-                    actions={[{ label: "", type: "button", action: 'add', onClick: () => setSupplierFormId('new') }]}
+                    actions={[{ label: "Nuevo proveedor", type: "button", action: 'add', onClick: () => setSupplierFormId('new') }]}
                 />
             </div>
             <div className="md:mx-8 py-4">

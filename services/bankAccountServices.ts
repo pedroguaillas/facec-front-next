@@ -5,7 +5,7 @@ import { AxiosInstance } from "axios";
 export const getAllBankAccounts = async (
     axiosAuth: AxiosInstance,
 ): Promise<ApiResponse<GeneralPaginate<BankAccountProps>>> =>
-    handleApiRequest<GeneralPaginate<BankAccountProps>>(() => axiosAuth.get("bank-accounts?per_page=100"));
+    handleApiRequest<GeneralPaginate<BankAccountProps>>(() => axiosAuth.get("bank-accounts?paginate=100"));
 
 export const storeBankAccount = async (
     axiosAuth: AxiosInstance,

@@ -1,3 +1,4 @@
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { downloadXml } from "@/services/downloadXmlServices";
 import { canShareFiles, sharePdf } from "@/services/sharePdfService";
 import { useInvoices } from "../context/InvoicesContext";
@@ -10,6 +11,7 @@ import { AxiosInstance } from "axios";
 import { ORDER_SERIE_PREFIX } from "@/constants";
 import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
 import { usePlan } from "@/lib/hooks/usePlan";
+import { useRouter } from "next/navigation";
 
 interface Props {
     isOpen: boolean;
@@ -58,6 +60,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const [pdf, setPdf] = useState<{ route: string; name: string } | null>(null);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const { canEmit } = usePlan();
+    const router = useRouter();
 
     // La lista (GET orders) no manda voucher_type por fila; el tipo se lee del
     // prefijo que el backend ya arma en `serie` (ej. "FAC 001-001-000000001").
@@ -70,11 +73,6 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
         const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
-
-        // Abonos sobre cartera existente: permitidos con cualquier plan (incluso vencido)
-        if (order.atts.payment_type === "CREDITO" && Number(order.atts.paid) < order.atts.total) {
-            options.push({ label: "Registrar pago", onClick: async () => setIsPaymentModalOpen(true) });
-        }
 
         // Con plan vencido no se procesa/envía al SRI; anular sí se permite
         const canProcess = canEmit || order.atts.state === "AUTORIZADO";
@@ -100,14 +98,6 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         }
         options.push({ label: "Enviar correo", onClick: sendMail });
 
-        if (isElectronicVoucher) {
-            options.push({
-                label: "Descargar Xml",
-                onClick: () =>
-                    downloadXml(`orders/${order.id}/xml`, axiosAuth, order.atts.serie),
-            });
-        }
-
         if (isProforma && canEmit) {
             options.push({
                 label: "Convertir en Factura",
@@ -120,6 +110,28 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                 label: "Compartir",
                 onClick: () =>
                     sharePdf(`orders/${order.id}/pdf`, axiosAuth, order.atts.serie),
+            });
+        }
+
+        // Al final: Registrar pago, Hacer recurrente y Descargar Xml (último)
+        // Abonos sobre cartera existente: permitidos con cualquier plan (incluso vencido)
+        if (order.atts.payment_type === "CREDITO" && Number(order.atts.paid) < order.atts.total) {
+            options.push({ label: "Registrar pago", onClick: async () => setIsPaymentModalOpen(true) });
+        }
+
+        // Plantilla que se emite sola cada período, precargada con esta factura
+        if (seriePrefix === ORDER_SERIE_PREFIX.FACTURA && canEmit) {
+            options.push({
+                label: "Hacer recurrente",
+                onClick: async () => router.push(`/recurring-invoices/create?from_order=${order.id}`),
+            });
+        }
+
+        if (isElectronicVoucher) {
+            options.push({
+                label: "Descargar Xml",
+                onClick: () =>
+                    downloadXml(`orders/${order.id}/xml`, axiosAuth, order.atts.serie),
             });
         }
 
@@ -175,16 +187,19 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
             <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
                 {/* Dropdown Button */}
                 <button
+                    type="button"
                     onClick={() => setIsOpen(index)}
-                    className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer"
+                    aria-label="Acciones"
+                    aria-expanded={isOpen}
+                    className={`inline-flex items-center justify-center w-8 h-8 rounded-md text-ink-3 transition-colors cursor-pointer hover:bg-surface-sunken hover:text-ink-1 focus-visible:outline-2 focus-visible:outline-brand-ink ${isOpen ? 'bg-surface-sunken text-ink-1' : ''}`}
                 >
-                    &#60;
+                    <FaEllipsisVertical aria-hidden="true" />
                 </button>
 
                 {/* Dropdown Menu */}
                 {isOpen && (
                     <div
-                        className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700
+                        className={`absolute origin-top-right right-9 z-1 w-40 bg-surface border border-line rounded-lg shadow-lg
                 ${only ? "-mt-20" : "-mt-4"}`}
                     >
                         <div className="py-1">
@@ -195,7 +210,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                                         setIsOpen(index); // Close dropdown after selection
                                         option.onClick();
                                     }}
-                                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                    className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
                                 >
                                     {option.label}
                                 </button>

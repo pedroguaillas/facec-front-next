@@ -1,11 +1,10 @@
 import { TableResponsive } from "@/components/table-responsive/TableResponsive";
-import { FaCheckCircle, FaInfoCircle, FaMailBulk, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaEnvelope } from "react-icons/fa";
+import { SriStatus, VoucherSerie } from "@/components";
+import { formatDate } from "@/helpers/dateHelper";
 import { useInvoices } from "../context/InvoicesContext";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
-import Link from "next/link";
-import { getStateBadgeClasses } from "@/helpers/stateBadge";
-import { isPendingVoucherState } from "@/helpers/voucherPolling";
 import { ORDER_SERIE_PREFIX } from "@/constants";
 
 const InvoicesTable = () => {
@@ -26,63 +25,43 @@ const InvoicesTable = () => {
         <TableResponsive>
             <thead>
                 <tr>
-                    <th>F. EMISIÓN</th>
-                    <th>DOCUMENTO</th>
-                    <th className="text-left">CLIENTE</th>
-                    <th>ESTADO</th>
-                    <th className="text-right">TOTAL</th>
-                    <th>
-                        <div className="flex justify-center">
-                            <FaMailBulk />
-                        </div>
+                    <th className="text-left">Emisión</th>
+                    <th className="text-left">Documento</th>
+                    <th className="text-left">Cliente</th>
+                    <th>Estado</th>
+                    <th className="text-right">Total</th>
+                    <th className="w-8">
+                        <span className="flex justify-center" title="Enviado por correo">
+                            <FaEnvelope aria-label="Enviado por correo" />
+                        </span>
                     </th>
-                    <th></th>
+                    <th className="w-10"><span className="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>
                 {invoices.map((order, index) => {
                     const seriePrefix = order.atts.serie?.trim().split(" ")[0] ?? "";
                     const isElectronic = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
+                    const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state);
                     return (
                     <tr key={order.id}>
-                        <td>{order.atts.date}</td>
+                        <td className="text-left whitespace-nowrap tabular-nums text-ink-2">{formatDate(order.atts.date)}</td>
+                        <td className="text-left">
+                            <VoucherSerie serie={order.atts?.serie} href={`/orders/${order.id}`} />
+                        </td>
+                        <td className="text-left min-w-48">{order.customer?.name}</td>
                         <td>
-                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/orders/${order.id}`}>
-                                {order.atts?.serie}
-                            </Link>
+                            <SriStatus state={order.atts?.state} isElectronic={isElectronic} detail={hasDetail ? order.atts.extra_detail : null} />
                         </td>
-                        <td className="text-left uppercase">{order.customer?.name}</td>
-                        <td className="text-center">
-                            <div className="inline-flex relative justify-center items-center">
-                                <span
-                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(order.atts?.state || "CREADO", isElectronic)}`}
-                                >
-                                    {isPendingVoucherState(order.atts?.state, isElectronic) && (
-                                        <FaSpinner className="inline-block mr-1 animate-spin" />
-                                    )}
-                                    {order.atts?.state || "CREADO"}
-
-                                    {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state) && (
-                                        <div className="absolute -top-1 -right-1 group">
-                                            <FaInfoCircle className="text-gray-400 cursor-pointer" />
-                                            <div className="absolute -top-6 right-0 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-                                                {order.atts.extra_detail}
-                                            </div>
-                                        </div>
-                                    )}
-                                </span>
-                            </div>
-                        </td>
-
-                        <td className="text-right">${order.atts.total.toFixed(2)}</td>
+                        <td className="text-right whitespace-nowrap tabular-nums font-medium">${order.atts.total.toFixed(2)}</td>
                         <td>
                             {Number(order.atts.send_mail) === 1 && (
-                                <div className="flex justify-center text-green-600/90">
-                                    <FaCheckCircle />
-                                </div>
+                                <span className="flex justify-center text-sri-ok" title="Enviado por correo">
+                                    <FaCheckCircle aria-label="Enviado por correo" />
+                                </span>
                             )}
                         </td>
-                        <td className="w-4">
+                        <td>
                             <Dropdown isOpen={dropdown[index]} index={index} order={order} only={invoices.length === 1 || index > invoices.length - 5} setIsOpen={handleDrops} />
                         </td>
                     </tr>

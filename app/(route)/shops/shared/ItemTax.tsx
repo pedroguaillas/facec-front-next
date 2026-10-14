@@ -1,10 +1,11 @@
 "use client";
 
 import { Tax } from "@/types"
+import { IconButton } from "@/components";
 import { useTaxes } from "../hooks/useTaxes";
 import { useShopVoucherType } from "../hooks/useShopVoucherType";
-import { FaTrash } from "react-icons/fa";
 import { SelectRetention } from "./SelectRetention";
+import { cellInput, cellInputError, cellInputNormal, tableRow } from "../../orders/shared/FormSection";
 
 interface Props {
     index: number;
@@ -12,58 +13,54 @@ interface Props {
     error?: Partial<Record<keyof Tax, string>>;
 }
 
-const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
-const selectBase = "w-full border rounded-md px-2 py-1.5 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors";
-const inputError = "border-red-400";
-const inputNormal = "border-[var(--border-strong)]";
-
 export const ItemTax = ({ index, tax, error }: Props) => {
 
     const { updateItem, deleteItem } = useTaxes();
     const { isNotaVenta } = useShopVoucherType();
 
     return (
-        <tr className="[&>td]:border [&>td]:border-[var(--border)] [&>td]:p-1.5">
+        <tr className={tableRow}>
             <td>
                 <select
+                    aria-label={`Impuesto línea ${index + 1}`}
                     value={tax.code}
                     onChange={(e) => updateItem(index, 'code', e.target.value)}
                     disabled={isNotaVenta}
-                    className={`${selectBase} ${error?.code ? inputError : inputNormal}`}
+                    className={`${cellInput} ${error?.code ? cellInputError : cellInputNormal} disabled:opacity-60`}
                 >
                     <option value="">Seleccione</option>
+                    <option value={1}>Renta</option>
                     <option value={2}>IVA</option>
-                    <option value={1}>Imp. Renta</option>
                 </select>
             </td>
-            <td className="p-1.5">
+            <td>
                 <SelectRetention index={index} tax={tax} error={error?.tax_code} disabled={isNotaVenta} />
             </td>
-            <td className="p-1.5 text-right">
+            <td className="text-right tabular-nums">
                 {tax.editable_porcentage ? (
                     <input
+                        aria-label={`Porcentaje línea ${index + 1}`}
                         type="number"
+                        inputMode="decimal"
                         value={tax.porcentage ?? ''}
-                        className={`${inputBase} ${error?.porcentage ? inputError : inputNormal}`}
+                        className={`${cellInput} text-right ${error?.porcentage ? cellInputError : cellInputNormal}`}
                         onChange={(e) => updateItem(index, 'porcentage', e.target.value)}
                     />
-                ) : (`${tax.porcentage}%`)}
+                ) : <span className="inline-block pt-1.5 text-ink-2">{tax.porcentage}%</span>}
             </td>
-            <td className="p-1.5">
+            <td>
                 <input
+                    aria-label={`Base línea ${index + 1}`}
                     type="number"
+                    inputMode="decimal"
                     value={tax.base}
-                    className={`${inputBase} ${error?.base ? inputError : inputNormal}`}
+                    className={`${cellInput} text-right ${error?.base ? cellInputError : cellInputNormal}`}
                     onChange={(e) => updateItem(index, 'base', e.target.value)}
                 />
             </td>
-            <td className="p-1.5 text-right">{tax.value.toFixed(2)}</td>
-            <td className="w-1">
-                <button
-                    onClick={() => deleteItem(index)}
-                    className="flex justify-center items-center text-red-500 cursor-pointer rounded p-1 hover:text-red-600">
-                    <FaTrash />
-                </button>
+            <td className="text-right tabular-nums text-ink-1 pt-3.5!">{tax.value.toFixed(2)}</td>
+            <td className="w-1 py-0.5!">
+                <IconButton action="delete" type="button" onClick={() => deleteItem(index)} title="Eliminar retención" />
             </td>
         </tr>
     )

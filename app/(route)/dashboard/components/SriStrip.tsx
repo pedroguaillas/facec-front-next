@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaArrowRight, FaCircleCheck } from "react-icons/fa6";
-import { ordersStateUrl, SRI_PENDING_STATES, SRI_REJECTED_STATES } from "@/constants/sriStates";
+import { ordersStateUrl, SRI_PENDING_STATES, SRI_REJECTED_STATES, SRI_WINDOW_DAYS } from "@/constants/sriStates";
+import { addDaysToDate, getDate } from "@/helpers/dateHelper";
 import { DashboardSri } from "@/types";
 
 interface Props {
@@ -57,18 +58,23 @@ const Row = ({ tone, count, title, detail, href }: RowProps) => (
 
 // Recorrido de los comprobantes en el SRI: lo que espera autorización y lo que fue rechazado
 export const SriStrip = ({ sri }: Props) => {
+    // Solo cuenta los últimos 30 días (el backend manda desde cuándo)
+    const since = sri.since ?? addDaysToDate(getDate(), -SRI_WINDOW_DAYS);
+
     if (sri.pending === 0 && sri.rejected === 0) {
         return (
             <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-5 lg:px-6 py-3 text-sm text-ink-2">
                 <FaCircleCheck className="text-sri-ok shrink-0" aria-hidden="true" />
-                Todos tus comprobantes electrónicos están autorizados por el SRI.
+                Tus comprobantes electrónicos de los últimos {SRI_WINDOW_DAYS} días están autorizados por el SRI.
             </div>
         );
     }
 
     return (
         <section className="rounded-xl border border-line bg-surface">
-            <p className="px-5 lg:px-6 pt-4 text-xs font-semibold uppercase tracking-wider text-ink-3">Comprobantes en el SRI</p>
+            <p className="px-5 lg:px-6 pt-4 text-xs font-semibold uppercase tracking-wider text-ink-3">
+                Comprobantes en el SRI <span className="normal-case tracking-normal font-normal">· últimos {SRI_WINDOW_DAYS} días</span>
+            </p>
             <div className="divide-y divide-line">
                 {sri.rejected > 0 && (
                     <Row
@@ -76,7 +82,7 @@ export const SriStrip = ({ sri }: Props) => {
                         count={sri.rejected}
                         title={sri.rejected === 1 ? 'Rechazado: revísalo y vuelve a procesarlo' : 'Rechazados: revísalos y vuelve a procesarlos'}
                         detail={breakdown(sri, 'rejected')}
-                        href={sri.by_type.orders.rejected > 0 ? ordersStateUrl(SRI_REJECTED_STATES) : undefined}
+                        href={sri.by_type.orders.rejected > 0 ? ordersStateUrl(SRI_REJECTED_STATES, since) : undefined}
                     />
                 )}
                 {sri.pending > 0 && (
@@ -85,7 +91,7 @@ export const SriStrip = ({ sri }: Props) => {
                         count={sri.pending}
                         title="Sin autorizar todavía"
                         detail={`${breakdown(sri, 'pending')}${sri.oldest_pending_date ? ` · el más antiguo del ${formatDate(sri.oldest_pending_date)}` : ''}`}
-                        href={sri.by_type.orders.pending > 0 ? ordersStateUrl(SRI_PENDING_STATES) : undefined}
+                        href={sri.by_type.orders.pending > 0 ? ordersStateUrl(SRI_PENDING_STATES, since) : undefined}
                     />
                 )}
             </div>

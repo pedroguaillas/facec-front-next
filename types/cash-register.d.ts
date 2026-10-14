@@ -23,6 +23,8 @@ export interface CashRegister {
     responsible_id: number | '';
     type: CashRegisterType;
     status: CashRegisterStatus;
+    // false: una sola sesión siempre abierta; true: apertura y cierre (arqueo)
+    uses_sessions?: boolean;
     active_session: CashRegisterActiveSession | null;
 }
 
@@ -32,6 +34,7 @@ export interface CashRegisterProps {
         name: string;
         type: CashRegisterType;
         status: CashRegisterStatus;
+        uses_sessions?: boolean;
     };
     responsible: { id: number; name: string; email: string };
     active_session: CashRegisterSession | null;

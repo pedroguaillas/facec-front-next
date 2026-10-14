@@ -9,6 +9,8 @@ export interface Company {
     micro_business: boolean,
     rimpe: number,
     retention_agent: number | null,
+    // Nro. de calificación artesanal; null = no es artesano
+    artisan_number?: string | null,
     phone: string | null,
     logo_dir: string | null,
     logo_url: string | null,

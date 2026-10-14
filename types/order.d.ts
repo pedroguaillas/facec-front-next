@@ -89,6 +89,11 @@ interface ProductOutput {
     name?: string;
     // Producto con IVA diferenciado: en feriado su 15% (code 4) pasa a 8% (code 8)
     differentiated_iva?: boolean;
+    // Código principal del producto (placeholder del código propio en la recurrente). `code` en la línea es el código propio
+    product_code?: string;
+    // Solo factura recurrente: código y descripción propios de la línea (admiten marcadores)
+    custom_code?: string;
+    custom_description?: string;
 }
 
 type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';

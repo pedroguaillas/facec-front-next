@@ -8,10 +8,11 @@ import { RecordsPanel } from "./components/RecordsPanel";
 import { SriStrip } from "./components/SriStrip";
 import { OverdueCard } from "./components/OverdueCard";
 import { FinancieroUpsellCard } from "./components/FinancieroUpsellCard";
+import { BusinessHealthSection } from "./components/health/BusinessHealthSection";
 import { redirect } from "next/navigation";
 import { Notice } from "@/components";
 import Link from "next/link";
-import { DashboardResponse } from "@/types";
+import { BusinessHealth, DashboardResponse } from "@/types";
 import { getCustomersOverdue, getProvidersOverdue } from "@/services/overdueServices";
 
 const InvoicesPage = async () => {
@@ -25,12 +26,18 @@ const InvoicesPage = async () => {
   // Plan Facturador no incluye cartera: en lugar de la cartera vencida se invita a probar el Financiero
   const isFacturador = session.user.permissions.plan === 'FACTURADOR';
 
+  // Salud del negocio: solo planes con cartera (Financiero / Gratuito). Si falla (403, plan vencido) no se muestra
+  const canUseFinance = !!session.user.permissions.financiero;
+
   const { data } = await axiosAuth.get<DashboardResponse>("/dashboard");
-  const [{ data: customersOverdue }, { data: providersOverdue }] = isFacturador
-    ? [{ data: undefined }, { data: undefined }]
+  const [{ data: customersOverdue }, { data: providersOverdue }, health] = isFacturador
+    ? [{ data: undefined }, { data: undefined }, null]
     : await Promise.all([
       getCustomersOverdue(axiosAuth),
       getProvidersOverdue(axiosAuth),
+      canUseFinance
+        ? axiosAuth.get<BusinessHealth>("/dashboard/health").then(res => res.data).catch(() => null)
+        : Promise.resolve(null),
     ]);
   const totalOverdue = (customersOverdue?.total_overdue ?? 0) + (providersOverdue?.total_overdue ?? 0);
   const overduePartiesCount = (customersOverdue?.parties.length ?? 0) + (providersOverdue?.parties.length ?? 0);
@@ -111,6 +118,8 @@ const InvoicesPage = async () => {
         </div>
         {!isFacturador && cartera}
       </div>
+
+      {health && <BusinessHealthSection health={health} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         <div className="lg:col-span-2">

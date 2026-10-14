@@ -1,9 +1,9 @@
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { useReferralGuides } from "../context/ReferralGuidesContext";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth"; // ⚠️ Verifica que el path sea correcto
 import { ReferralGuideProps } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "axios";
-import { downloadXml } from "@/services/downloadXmlServices";
 import { PDFViewer } from "@/components";
 import { usePlan } from "@/lib/hooks/usePlan";
 
@@ -22,7 +22,6 @@ const renderSwitch: Record<string, string> = {
     RECIBIDA: "Autorizar",
     EN_PROCESO: "Autorizar",
     DEVUELTA: "Volver a procesar",
-    AUTORIZADO: "Anular",
     NO_AUTORIZADO: "Volver a procesar",
 };
 
@@ -57,8 +56,6 @@ const renderProcess: Record<string, (id: number, axiosAuth: AxiosInstance, fetch
     RECIBIDA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     EN_PROCESO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
     DEVUELTA: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
-    AUTORIZADO: (id, axiosAuth, fetchInvoices) =>
-        handleApiCall("cancel", id, axiosAuth, fetchInvoices, "Para anular el comprobante en este sistema, primero debe anularlo en el SRI"),
     NO_AUTORIZADO: (id, axiosAuth, fetchInvoices) => handleApiCall("process", id, axiosAuth, fetchInvoices),
 };
 
@@ -73,16 +70,15 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
     const getOptions = () => {
         const options = [
             { label: "Ver Pdf", onClick: () => setPdf({ route: `referralguides/${referralGuide.id}/pdf`, name: `Guia ${referralGuide.atts.serie}` }) },
-            { label: "Descargar Xml", onClick: () => downloadXml(`referralguides/download/${referralGuide.id}`, axiosAuth, `Guia ${referralGuide.atts.serie}`) },
             { label: "Enviar correo", onClick: sendMail },
         ];
 
-        // Con plan vencido no se procesa (todo salvo anular usa /process)
-        const blockedByPlan = !canEmit && referralGuide.atts.state !== "AUTORIZADO";
-        if (referralGuide.atts.state !== "ANULADO" && !blockedByPlan) {
+        // Procesar solo mientras no esté autorizada (la guía no se anula); con plan vencido no se procesa
+        const state = referralGuide.atts.state.replace(' ', '_');
+        if (canEmit && renderSwitch[state]) {
             options.splice(1, 0, {
-                label: renderSwitch[referralGuide.atts.state.replace(' ', '_')],
-                onClick: () => renderProcess[referralGuide.atts.state.replace(' ', '_')](parseInt(referralGuide.id), axiosAuth, fetchReferralGuides),
+                label: renderSwitch[state],
+                onClick: () => renderProcess[state](parseInt(referralGuide.id), axiosAuth, fetchReferralGuides),
             });
         }
 
@@ -122,11 +118,19 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
         <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
 
             {/* Dropdown Button */}
-            <button onClick={() => setIsOpen(index)} className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer">&#60;</button>
+            <button
+                type="button"
+                onClick={() => setIsOpen(index)}
+                aria-label="Acciones"
+                aria-expanded={isOpen}
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-md text-ink-3 transition-colors cursor-pointer hover:bg-surface-sunken hover:text-ink-1 focus-visible:outline-2 focus-visible:outline-brand-ink ${isOpen ? 'bg-surface-sunken text-ink-1' : ''}`}
+            >
+                <FaEllipsisVertical aria-hidden="true" />
+            </button>
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className={`absolute origin-top-right right-9 z-1 w-40 bg-white breferralGuide breferralGuide-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:breferralGuide-gray-700 
+                <div className={`absolute origin-top-right right-9 z-1 w-40 bg-surface border border-line rounded-lg shadow-lg
                 ${only ? '-mt-24' : '-mt-4'}`}>
                     <div className="py-1">
                         {getOptions().map((option, indexOption) => (
@@ -136,7 +140,7 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
                                     setIsOpen(index); // Close dropdown after selection
                                     option.onClick();
                                 }}
-                                className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
                             >
                                 {option.label}
                             </button>

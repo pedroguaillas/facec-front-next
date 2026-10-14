@@ -23,7 +23,7 @@ const PageShops = () => {
 
     const { canEmit } = usePlan();
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: 'shops/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva compra' : 'Tu plan está vencido' },
+        { label: "Nueva compra", type: "link", url: 'shops/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva compra' : 'Tu plan está vencido' },
     ];
 
     return (

@@ -15,8 +15,12 @@ export const PaymentInformation = () => {
     const axiosAuth = useAxiosAuth();
     const { canUseFinance } = usePlan();
     // Crédito y anticipo requieren el plan Financiero
-    const paymentOptions = canUseFinance ? paymentTypeOptions : paymentTypeOptions.filter(option => option.value === 'CONTADO');
     const { invoice, formErrors, setInvoice, setFormErrors } = useFormInvoice();
+    const baseOptions = canUseFinance ? paymentTypeOptions : paymentTypeOptions.filter(option => option.value === 'CONTADO');
+    // Anticipo ya no se ofrece; solo se muestra al editar un documento que ya lo tenía
+    const paymentOptions = invoice.payment_type === 'ANTICIPO'
+        ? [...baseOptions, { label: 'Anticipo', value: 'ANTICIPO' as const }]
+        : baseOptions;
     const [advancesAvailable, setAdvancesAvailable] = useState<number | null>(null);
 
     useEffect(() => {
@@ -54,8 +58,9 @@ export const PaymentInformation = () => {
     // Forma de pago y origen (caja/banco) solo con plan Financiero o Gratuito
     if (!canUseFinance) return null;
 
+    // `contents`: cada campo es una celda de la grilla de PaymentSection (condición | plazo o caja/banco)
     return (
-        <div className="w-full min-w-0">
+        <div className="contents">
             <SelectOption
                 label="Condición de pago"
                 name="payment_type"
@@ -80,7 +85,7 @@ export const PaymentInformation = () => {
             )}
 
             {invoice.payment_type === 'ANTICIPO' && (
-                <p className="text-xs opacity-70 -mt-1 mb-2">
+                <p className="col-span-full text-xs text-ink-3 -mt-1 mb-2">
                     {advancesAvailable !== null
                         ? `Anticipo disponible: $${advancesAvailable.toFixed(2)}. `
                         : ''}

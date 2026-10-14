@@ -1,11 +1,8 @@
-import { TableResponsive } from "@/components"
+import { SriStatus, TableResponsive, VoucherSerie } from "@/components"
 import { useReferralGuides } from "../context/ReferralGuidesContext"
-import { FaInfoCircle, FaSpinner } from "react-icons/fa";
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
-import Link from "next/link";
-import { getStateBadgeClasses } from "@/helpers/stateBadge";
-import { isPendingVoucherState } from "@/helpers/voucherPolling";
+import { formatDate } from "@/helpers/dateHelper";
 
 const ReferrralGuidesList = () => {
     const { referralGuides } = useReferralGuides();
@@ -24,49 +21,41 @@ const ReferrralGuidesList = () => {
         <TableResponsive>
             <thead>
                 <tr>
-                    <th className="text-left">PERIODO RUTA</th>
-                    <th>SERIE</th>
-                    <th className="text-left">CLIENTE / DESTINATARIO</th>
-                    <th>ESTADO</th>
-                    <th className="text-left">TRANSPORTISTA</th>
-                    <th></th>
+                    <th className="text-left">Traslado</th>
+                    <th className="text-left">Documento</th>
+                    <th className="text-left">Destinatario</th>
+                    <th>Estado</th>
+                    <th className="text-left">Transportista</th>
+                    <th className="w-10"><span className="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>
-                {referralGuides.map((referralGuide, index) => (
+                {referralGuides.map((referralGuide, index) => {
+                    const { date_start, date_end } = referralGuide.atts;
+                    const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(referralGuide.atts?.state);
+                    return (
                     <tr key={referralGuide.id}>
-                        <td className="text-left">{`${referralGuide.atts.date_start} - ${referralGuide.atts.date_end}`}</td>
-                        <td>
-                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/referralguides/${referralGuide.id}`}>
-                                {referralGuide.atts.serie}
-                            </Link>
+                        {/* Inicio y fin del traslado; un solo día se muestra una vez */}
+                        <td className="text-left whitespace-nowrap tabular-nums text-ink-2">
+                            {formatDate(date_start)}
+                            {date_end && date_end.slice(0, 10) !== date_start?.slice(0, 10) && (
+                                <span className="text-ink-3"> – {formatDate(date_end)}</span>
+                            )}
                         </td>
-                        <td className="text-left">{referralGuide.customer.name}</td>
-                        <td>
-                            <span
-                                className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(referralGuide.atts?.state || "CREADO")}`}
-                            >
-                                {isPendingVoucherState(referralGuide.atts?.state) && (
-                                    <FaSpinner className="inline-block mr-1 animate-spin" />
-                                )}
-                                {referralGuide.atts?.state || "CREADO"}
-
-                                {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(referralGuide.atts?.state) && (
-                                    <div className="absolute -top-1 -right-1 group">
-                                        <FaInfoCircle className="text-gray-400 cursor-pointer" />
-                                        <div className="absolute -top-6 right-0 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-                                            {referralGuide.atts.extra_detail}
-                                        </div>
-                                    </div>
-                                )}
-                            </span>
+                        <td className="text-left">
+                            <VoucherSerie serie={referralGuide.atts.serie} href={`/referralguides/${referralGuide.id}`} />
                         </td>
-                        <td className="text-left">{referralGuide.carrier.name}</td>
-                        <td className="w-1">
+                        <td className="text-left min-w-48">{referralGuide.customer.name}</td>
+                        <td>
+                            <SriStatus state={referralGuide.atts?.state} detail={hasDetail ? referralGuide.atts.extra_detail : null} />
+                        </td>
+                        <td className="text-left min-w-40 text-ink-2">{referralGuide.carrier.name}</td>
+                        <td>
                             <Dropdown isOpen={dropdown[index]} index={index} referralGuide={referralGuide} only={referralGuides.length === 1 || index > referralGuides.length - 5} setIsOpen={handleDrops} />
                         </td>
                     </tr>
-                ))}
+                    );
+                })}
             </tbody>
         </TableResponsive>
     )

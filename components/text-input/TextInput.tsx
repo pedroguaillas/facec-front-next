@@ -4,7 +4,7 @@ import { ReactNode, useId } from 'react';
 import { LabelComponent } from '../label/LabelComponent';
 
 interface Props {
-    type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'month' | 'tel';
+    type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'month' | 'tel';
     value: string;
     required?: boolean;
     label: string;

@@ -36,16 +36,16 @@ export const SelectRetention = ({ index, tax, error, disabled = false }: Props) 
                 onClick={toggle}
                 disabled={tax.code === '' || disabled}
                 className={`
-                    w-full flex items-center justify-between
+                    w-full flex items-center justify-between min-w-0
                     border rounded-md px-2 py-1.5 text-sm text-left
                     transition-colors duration-150 cursor-pointer
-                    bg-[var(--background)] dark:text-gray-300
+                    bg-[var(--background)] text-ink-1
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${error ? 'border-red-400' : 'border-[var(--border-strong)] hover:border-primary'}
                 `}
             >
-                <span className={label ? 'text-[var(--foreground)]' : 'opacity-40'}>
-                    {label || 'Seleccionar...'}
+                <span className={`truncate ${label ? '' : 'text-ink-4'}`} title={label || undefined}>
+                    {label || (tax.code === '' ? 'Elige el impuesto' : 'Buscar concepto…')}
                 </span>
                 <FaSearch className="text-xs opacity-40 shrink-0 ml-2" />
             </button>

@@ -4,6 +4,7 @@ import Header from "@/components/ui/header/Header";
 import Sidebar from "@/components/ui/sidebar/Sidebar";
 import { PlanBanner } from "@/components/plan/PlanBanner";
 import { PlanErrorNotice } from "@/components/plan/PlanErrorNotice";
+import { FinanceSetupGate } from "@/components/finance-setup/FinanceSetupGate";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, ReactNode, useEffect } from "react";
@@ -55,6 +56,7 @@ export default function Main({ children }: MainProps) {
                     {children}
                 </main>
                 <PlanErrorNotice />
+                <FinanceSetupGate />
             </div>
         </div>
     );

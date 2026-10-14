@@ -13,3 +13,10 @@ export const addDaysToDate = (date: string, days: number) => {
     const [year, month, day] = date.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
 }
+
+// "2026-09-30" → "30/09/2026" (formato del SRI); tolera fecha con hora
+export const formatDate = (date?: string | null) => {
+    if (!date) return '';
+    const [year, month, day] = date.slice(0, 10).split('-');
+    return day && month && year ? `${day}/${month}/${year}` : date;
+}

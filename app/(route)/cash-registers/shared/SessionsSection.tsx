@@ -12,11 +12,12 @@ import { CashRegisterActiveSession, CashRegisterSession, CashRegisterType, Links
 interface Props {
     cashRegisterId: number;
     cashRegisterType: CashRegisterType;
+    usesSessions: boolean;
     activeSession: CashRegisterActiveSession | null;
     onActiveSessionChange: () => void;
 }
 
-export const SessionsSection = ({ cashRegisterId, cashRegisterType, activeSession, onActiveSessionChange }: Props) => {
+export const SessionsSection = ({ cashRegisterId, cashRegisterType, usesSessions, activeSession, onActiveSessionChange }: Props) => {
 
     const axiosAuth = useAxiosAuth();
     const [sessions, setSessions] = useState<CashRegisterSession[]>([]);
@@ -48,7 +49,25 @@ export const SessionsSection = ({ cashRegisterId, cashRegisterType, activeSessio
         onActiveSessionChange();
     };
 
-    const canClose = activeSession && cashRegisterType !== 'GENERAL';
+    const canClose = usesSessions && activeSession && cashRegisterType !== 'GENERAL';
+
+    // Caja sin apertura y cierre: solo saldo y movimientos (una única sesión siempre abierta)
+    if (!usesSessions) {
+        return (
+            <div>
+                <p>
+                    <strong className="font-bold">Saldo actual: </strong>
+                    {activeSession?.current_balance ?? 0}
+                </p>
+                <p className="mt-1 text-sm text-ink-3">
+                    Esta caja está siempre abierta. Si quieres cuadrarla cada día (arqueo), activa la apertura y cierre al editar la caja.
+                </p>
+                {activeSession && (
+                    <MovementsSection sourceType="cash_register_session" sourceId={activeSession.id} onChanged={onActiveSessionChange} />
+                )}
+            </div>
+        );
+    }
 
     return (
         <div>

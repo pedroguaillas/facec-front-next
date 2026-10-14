@@ -9,6 +9,12 @@ export const cashRegisterSchema = z.object({
         .transform(val => Number(val))
         .refine(val => val > 0, { message: 'Seleccione un responsable' }),
     type: z.enum(['GENERAL', 'CHICA', 'OTRO']),
+    uses_sessions: z.boolean().optional(),
+    // Solo al crear una caja sin apertura y cierre: con cuánto arranca su sesión automática
+    initial_balance: z.union([z.string(), z.number()])
+        .optional()
+        .transform(val => (val === undefined || val === '') ? undefined : Number(val))
+        .refine(val => val === undefined || val >= 0, { message: 'El monto debe ser mayor o igual a 0' }),
 });
 
 const amountField = (message: string) => z

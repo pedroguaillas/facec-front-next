@@ -9,14 +9,19 @@ import { getProviderAdvances } from "@/services/accountLedgerServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { usePlan } from "@/lib/hooks/usePlan";
 import { MovementSourceType, PaymentType } from "@/types";
+import { FormSection } from "../../orders/shared/FormSection";
 
 export const PaymentInformation = () => {
 
     const axiosAuth = useAxiosAuth();
     const { canUseFinance } = usePlan();
     // Crédito y anticipo requieren el plan Financiero
-    const paymentOptions = canUseFinance ? paymentTypeOptions : paymentTypeOptions.filter(option => option.value === 'CONTADO');
     const { shop, errorShop, setShop, setErrorShop } = useFormShop();
+    const baseOptions = canUseFinance ? paymentTypeOptions : paymentTypeOptions.filter(option => option.value === 'CONTADO');
+    // Anticipo ya no se ofrece; solo se muestra al editar un documento que ya lo tenía
+    const paymentOptions = shop.payment_type === 'ANTICIPO'
+        ? [...baseOptions, { label: 'Anticipo', value: 'ANTICIPO' as const }]
+        : baseOptions;
     const [advancesAvailable, setAdvancesAvailable] = useState<number | null>(null);
 
     useEffect(() => {
@@ -55,9 +60,10 @@ export const PaymentInformation = () => {
     if (!canUseFinance) return null;
 
     return (
-        <div className="w-full overflow-x-auto sm:max-w-sm md:max-w-md lg:max-w-lg my-2">
+        <FormSection title="Pago">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
             <SelectOption
-                label="Forma de pago"
+                label="Condición de pago"
                 name="payment_type"
                 options={paymentOptions}
                 selectedValue={shop.payment_type}
@@ -80,7 +86,7 @@ export const PaymentInformation = () => {
             )}
 
             {shop.payment_type === 'ANTICIPO' && (
-                <p className="text-xs opacity-70 -mt-1 mb-2">
+                <p className="col-span-full text-xs text-ink-3 -mt-1 mb-2">
                     {advancesAvailable !== null
                         ? `Anticipo disponible: $${advancesAvailable.toFixed(2)}. `
                         : ''}
@@ -97,5 +103,6 @@ export const PaymentInformation = () => {
                 />
             )}
         </div>
+        </FormSection>
     )
 }

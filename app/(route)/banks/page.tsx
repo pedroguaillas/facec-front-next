@@ -1,72 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import { Modal, Paginate, Title } from "@/components";
+import { useRouter } from "next/navigation";
+import { Paginate, Title } from "@/components";
 import { BanksProvider, useBanks } from "./context/BanksContext";
-import { BanksFilter, BanksTable } from "./components";
-import { BankFormModal } from "./shared/BankFormModal";
-import { BankAccountsSection } from "./shared/BankAccountsSection";
-import { Bank, BankProps } from "@/types";
-
-type ModalState =
-    | { type: 'form'; bank: Bank | null }
-    | { type: 'accounts'; bank: BankProps }
-    | null;
+import { BankAccountsList } from "./components";
+import { BankAccountFormModal } from "./shared/BankAccountFormModal";
 
 const BanksContent = () => {
-    const { meta, links, fetchBanks } = useBanks();
-    const [modal, setModal] = useState<ModalState>(null);
+    const { meta, links, fetchAccounts } = useBanks();
+    const [isCreating, setIsCreating] = useState(false);
+    const router = useRouter();
 
     const handlePageChange = (e: React.MouseEvent<HTMLButtonElement>, pageUrl: string) => {
         e.preventDefault();
-        fetchBanks(pageUrl);
-    };
-
-    const handleSaved = () => {
-        setModal(null);
-        fetchBanks();
+        fetchAccounts(pageUrl);
     };
 
     return (
         <div className="dark:text-gray-300">
             <Title
-                title='Bancos'
-                subTitle='Lista de todos los bancos'
-                actions={[{ label: "", type: "button", action: "add", onClick: () => setModal({ type: 'form', bank: null }) }]}
+                title="Bancos"
+                subTitle="Tus cuentas y cuánto hay en cada una"
+                actions={[{ label: "Agregar cuenta", type: "button", action: "add", onClick: () => setIsCreating(true) }]}
             />
-            <div className="md:mx-8 py-4">
-                <BanksFilter />
-                <BanksTable
-                    onEdit={(bank) => setModal({ type: 'form', bank: { id: bank.id, name: bank.atts.name } })}
-                    onViewAccounts={(bank) => setModal({ type: 'accounts', bank })}
-                />
+            <div className="md:mx-8 py-4 mt-4">
+                <BankAccountsList onCreate={() => setIsCreating(true)} />
                 <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />
             </div>
 
-            {modal?.type === 'form' && (
-                <BankFormModal bank={modal.bank} onClose={() => setModal(null)} onSaved={handleSaved} />
+            {isCreating && (
+                <BankAccountFormModal
+                    account={null}
+                    onClose={() => setIsCreating(false)}
+                    // Recién creada: se abre su detalle para registrar movimientos
+                    onSaved={(account) => router.push(`/banks/${account.id}`)}
+                />
             )}
-
-            <Modal
-                isOpen={modal?.type === 'accounts'}
-                onClose={() => setModal(null)}
-                title={modal?.type === 'accounts' ? `Cuentas bancarias - ${modal.bank.atts.name}` : ''}
-                modalSize="lg"
-            >
-                {modal?.type === 'accounts' && (
-                    <BankAccountsSection bankId={modal.bank.id} />
-                )}
-            </Modal>
         </div>
-    )
-}
+    );
+};
 
-const PageBanks = () => {
-    return (
-        <BanksProvider>
-            <BanksContent />
-        </BanksProvider>
-    )
-}
+const PageBanks = () => (
+    <BanksProvider>
+        <BanksContent />
+    </BanksProvider>
+);
 
 export default PageBanks;

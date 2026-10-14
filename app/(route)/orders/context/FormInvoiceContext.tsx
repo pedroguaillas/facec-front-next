@@ -50,6 +50,8 @@ const FormInvoiceContext = createContext<InvoicesContextType | undefined>(undefi
 
 interface Props {
   children: ReactNode;
+  // Plantilla recurrente: solo carga catálogos (la ruta [id] no es una venta) y sin IVA de feriado
+  recurring?: boolean;
 }
 
 const initialInvoice: OrderCreateProps = {
@@ -77,7 +79,7 @@ const initialInvoice: OrderCreateProps = {
   pay_method: 20,
 };
 
-export const FormInvoiceProvider = ({ children }: Props) => {
+export const FormInvoiceProvider = ({ children, recurring = false }: Props) => {
   const [invoice, setInvoice] = useState<OrderCreateProps>(initialInvoice);
   const [selectPoint, setSelectPoint] = useState<EmisionPoint | null>(null);
   const [selectCustom, setSelectCustom] = useState<CustomerProps | null>(null);
@@ -103,7 +105,7 @@ export const FormInvoiceProvider = ({ children }: Props) => {
     const fetchEditInvoice = async () => {
       if (status !== "authenticated") return;
 
-      if (typeof params?.id === 'string') {
+      if (typeof params?.id === 'string' && !recurring) {
         const { data } = await getInvoice(axiosAuth, params.id as string);
         if (data) {
           const { customers, methodOfPayments, order, order_aditionals, order_items, points, voucherTypes, holidays } = data;
@@ -147,26 +149,26 @@ export const FormInvoiceProvider = ({ children }: Props) => {
       }
     }
     fetchEditInvoice();
-  }, [status, axiosAuth, params?.id]);
+  }, [status, axiosAuth, params?.id, recurring]);
 
-  // La N/C replica el IVA de la factura: no se ajusta por feriado
-  const isNotaCredito = voucherTypes.find(vt => vt.id === Number(invoice.voucher_type_id))?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
+  // La N/C replica el IVA de la factura: no se ajusta por feriado. La recurrente tampoco (se emite otro día)
+  const keepIva = recurring || voucherTypes.find(vt => vt.id === Number(invoice.voucher_type_id))?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
   const activeHoliday = useMemo(
-    () => isNotaCredito ? null : findHoliday(holidays, invoice.date),
-    [holidays, invoice.date, isNotaCredito]
+    () => keepIva ? null : findHoliday(holidays, invoice.date),
+    [holidays, invoice.date, keepIva]
   );
 
   const applyHolidayIva = (items: ProductOutput[]) =>
-    isNotaCredito ? items : items.map(item => withHolidayIva(item, activeHoliday !== null));
+    keepIva ? items : items.map(item => withHolidayIva(item, activeHoliday !== null));
 
   // Al cambiar la fecha (o cargar los feriados) se ajusta la tarifa de los items ya ingresados
   useEffect(() => {
-    if (isNotaCredito) return;
+    if (keepIva) return;
     const adjusted = productOutputs.map(item => withHolidayIva(item, activeHoliday !== null));
     if (adjusted.every((item, i) => item === productOutputs[i])) return;
     setProductOutputs(adjusted);
     setInvoice(prev => ({ ...prev, ...calculateInvoiceTotals(adjusted) }));
-  }, [activeHoliday, isNotaCredito]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeHoliday, keepIva]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <FormInvoiceContext.Provider value={{

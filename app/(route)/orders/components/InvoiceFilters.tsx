@@ -4,8 +4,8 @@ import { sriFilterLabel } from "@/constants";
 
 const InvoiceFilters = () => {
     
-    const { search, setSearch, stateFilter, clearStateFilter } = useInvoices();
-    const filterLabel = sriFilterLabel(stateFilter);
+    const { search, setSearch, stateFilter, dateFrom, clearStateFilter } = useInvoices();
+    const filterLabel = sriFilterLabel(stateFilter, dateFrom);
 
     return (
         <div className="flex flex-wrap items-center justify-between gap-3">

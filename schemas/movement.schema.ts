@@ -52,6 +52,7 @@ export const otherMovementSchema = z.object({
     source_type: z.enum(['bank_account', 'cash_register_session']),
     source_id: z.number(),
     type: z.enum(['INGRESO', 'EGRESO']),
+    category: z.string().optional(),
     amount: amountField,
     ...commonMovementFields,
 });

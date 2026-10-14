@@ -18,6 +18,7 @@ interface InvoicesContextType {
     setPage: (value: number) => void;
     // Filtro por estado SRI que viene en la URL (?state=), ej. desde el dashboard
     stateFilter: string | null;
+    dateFrom: string | null;
     clearStateFilter: () => void;
     fetchInvoices: (pageUrl?: string) => Promise<void>; // Exposed for manual fetches
 }
@@ -40,6 +41,8 @@ export const InvoicesProvider = ({ children }: Props) => {
     const router = useRouter();
     const pathname = usePathname();
     const stateFilter = searchParams.get('state');
+    // Ventana del dashboard (últimos 30 días)
+    const dateFrom = searchParams.get('date_from');
 
     const clearStateFilter = useCallback(() => router.replace(pathname), [router, pathname]);
 
@@ -53,6 +56,9 @@ export const InvoicesProvider = ({ children }: Props) => {
             if (stateFilter && !pageUrl.includes('state=')) {
                 pageUrl = `${pageUrl}&state=${encodeURIComponent(stateFilter)}`;
             }
+            if (dateFrom && !pageUrl.includes('date_from=')) {
+                pageUrl = `${pageUrl}&date_from=${dateFrom}`;
+            }
 
             const { data } = await getInvoices(axiosAuth, pageUrl);
             if (data) {
@@ -61,7 +67,7 @@ export const InvoicesProvider = ({ children }: Props) => {
                 setLinks(data.links);
             }
         },
-        [status, axiosAuth, search, page, stateFilter],
+        [status, axiosAuth, search, page, stateFilter, dateFrom],
     );
 
     useEffect(() => {
@@ -86,7 +92,7 @@ export const InvoicesProvider = ({ children }: Props) => {
     return (
         <InvoicesContext.Provider
             value={{
-                invoices, search, page, meta, links, stateFilter,
+                invoices, search, page, meta, links, stateFilter, dateFrom,
                 fetchInvoices, setSearch, setPage, clearStateFilter,
             }}
         >

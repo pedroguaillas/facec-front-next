@@ -13,6 +13,7 @@ export const useGeneralInformation = () => {
         rimpe: 0,
         accounting: false,
         retention_agent: false,
+        artisan_number: '',
         pass_cert: '',
         logo: null as File | null,
         logo_dir: null as string | null,
@@ -26,6 +27,7 @@ export const useGeneralInformation = () => {
     const [isSaving, setIsSaving] = useState(false);
     // Mensaje del backend al pasar a RIMPE Negocio Popular (cambia los productos a IVA 0%)
     const [ivaConfirmMessage, setIvaConfirmMessage] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const { toast } = useToast();
 
     const optionType = [
@@ -37,6 +39,7 @@ export const useGeneralInformation = () => {
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }))
+        setFieldErrors(prev => ({ ...prev, [name]: '' }))
     }
 
     const handleCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +70,8 @@ export const useGeneralInformation = () => {
         formData.append('accounting', String(form.accounting));
         formData.append('retention_agent', form.retention_agent ? '1' : '0');
         formData.append('sign_valid_to', form.sign_valid_to);
+        // Vacío = no es artesano (el backend lo guarda como null)
+        formData.append('artisan_number', (form.artisan_number ?? '').trim());
 
         if (form.logo) {
             formData.append('logo', form.logo);
@@ -89,6 +94,7 @@ export const useGeneralInformation = () => {
             setIvaConfirmMessage(errors.confirm_iva_change);
             return;
         }
+        if (errors) setFieldErrors(errors);
         if (errors || error) {
             toast(error ?? Object.values(errors ?? {})[0] ?? 'No se pudo guardar', 'error');
             return;
@@ -98,7 +104,8 @@ export const useGeneralInformation = () => {
             setIvaConfirmMessage(null);
             toast('Datos actualizados');
             setEditingCert(false);
-            setForm(prev => ({ ...prev, cert: null, pass_cert: '', ...(data as unknown as Partial<typeof prev>) }));
+            setFieldErrors({});
+            setForm(prev => ({ ...prev, cert: null, pass_cert: '', ...(data as unknown as Partial<typeof prev>), artisan_number: (data as { artisan_number?: string | null }).artisan_number ?? '' }));
         }
     }
 
@@ -123,6 +130,7 @@ export const useGeneralInformation = () => {
                 // Guard: backend a veces manda "company" como objeto anidado (relación/accessor
                 // homónimo, ver laravel_through_key) en vez del string de razón social.
                 company: typeof data.company === 'string' ? data.company : prev.company,
+                artisan_number: data.artisan_number ?? '',
             }))
 
             setEditingCert(!data.has_cert);
@@ -165,7 +173,7 @@ export const useGeneralInformation = () => {
     const cancelIvaChange = () => setIvaConfirmMessage(null);
 
     return {
-        optionType, form, editingCert, isSaving, ivaConfirmMessage,
+        optionType, form, editingCert, isSaving, ivaConfirmMessage, fieldErrors,
         editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign,
         confirmIvaChange, cancelIvaChange,
     }

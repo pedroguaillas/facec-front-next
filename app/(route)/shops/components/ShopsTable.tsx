@@ -1,13 +1,11 @@
 "use client";
 
-import { FaCheckCircle, FaInfoCircle, FaMailBulk, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaEnvelope } from "react-icons/fa";
 import { useShops } from "../context/ShopsContext"
-import { TableResponsive } from "@/components"
+import { SriStatus, TableResponsive, VoucherSerie } from "@/components"
 import { Dropdown } from "./Dropdown";
 import { useState } from "react";
-import Link from "next/link";
-import { getStateBadgeClasses } from "@/helpers/stateBadge";
-import { isPendingVoucherState } from "@/helpers/voucherPolling";
+import { formatDate } from "@/helpers/dateHelper";
 
 export const ShopsTable = () => {
 
@@ -28,78 +26,54 @@ export const ShopsTable = () => {
         <TableResponsive>
             <thead>
                 <tr>
-                    <th>EMISION</th>
-                    <th>DOCUMENTO</th>
-                    <th className="text-left">RAZON SOCIAL</th>
-                    <th>ESTADO RET</th>
-                    <th className="text-right">TOTAL</th>
-                    <th className="text-right">RET</th>
-                    <th className="text-right">PAGAR</th>
-                    <th>
-                        <div className="flex justify-center">
-                            <FaMailBulk />
-                        </div>
+                    <th className="text-left">Emisión</th>
+                    <th className="text-left">Documento</th>
+                    <th className="text-left">Proveedor</th>
+                    <th>Retención</th>
+                    <th className="text-right">Total</th>
+                    <th className="text-right">Ret.</th>
+                    <th className="text-right">A pagar</th>
+                    <th className="w-8">
+                        <span className="flex justify-center" title="Retención enviada por correo">
+                            <FaEnvelope aria-label="Retención enviada por correo" />
+                        </span>
                     </th>
-                    <th></th>
+                    <th className="w-10"><span className="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>
-                {shops.map((shop, index) => (
+                {shops.map((shop, index) => {
+                    const total = Number(shop.atts.total);
+                    const retention = Number(shop.atts.retention ?? 0);
+                    const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion);
+                    return (
                     <tr key={shop.id}>
-                        <td>{shop.atts.date}</td>
+                        <td className="text-left whitespace-nowrap tabular-nums text-ink-2">{formatDate(shop.atts.date)}</td>
+                        <td className="text-left">
+                            <VoucherSerie serie={shop.atts.serie} href={`/shops/${shop.id}`} />
+                        </td>
+                        <td className="text-left min-w-48">{shop.provider.name}</td>
                         <td>
-                            <Link className="hover:underline cursor-pointer text-blue-500" href={`/shops/${shop.id}`}>
-                                {shop.atts.serie}
-                            </Link>
+                            {shop.atts?.state_retencion
+                                ? <SriStatus state={shop.atts.state_retencion} detail={hasDetail ? shop.atts.extra_detail_retention : null} />
+                                : <span className="text-ink-4">—</span>}
                         </td>
-                        <td className="text-left">{shop.provider.name}</td>
-                        <td className="text-center">
-                            <div className="inline-flex relative justify-center items-center">
-                                <span
-                                    className={`relative px-2 py-1 rounded-2xl text-sm text-center inline-block ${getStateBadgeClasses(shop.atts?.state_retencion)}`}
-                                >
-                                    {isPendingVoucherState(shop.atts?.state_retencion) && (
-                                        <FaSpinner className="inline-block mr-1 animate-spin" />
-                                    )}
-                                    {shop.atts?.state_retencion}
-
-                                    {["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion) && (
-                                        <div className="absolute -top-1 -right-1 group">
-                                            <FaInfoCircle className="text-gray-400 cursor-pointer" />
-                                            <div className="absolute -top-6 right-0 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-                                                {shop.atts.extra_detail_retention}
-                                            </div>
-                                        </div>
-                                    )}
-                                </span>
-                            </div>
-                        </td>
-                        <td className="text-right">{parseFloat(shop.atts.total.toString()).toFixed(2)}</td>
-                        <td className="text-right">{shop.atts.retention ?? '0.00'}</td>
-                        <td className="text-right">
-                            {(
-                                parseFloat(shop.atts.total.toString()) -
-                                parseFloat(
-                                    typeof shop.atts.retention === 'string' ? shop.atts.retention : (
-                                        shop.atts.retention === null ? '0.00' :
-                                            // Este caso significa que es un number toca hacer string
-                                            '' + shop.atts.retention
-                                    )
-                                )
-                            ).toFixed(2)}
-                        </td>
+                        <td className="text-right whitespace-nowrap tabular-nums">{total.toFixed(2)}</td>
+                        <td className={`text-right whitespace-nowrap tabular-nums ${retention > 0 ? 'text-ink-2' : 'text-ink-4'}`}>{retention.toFixed(2)}</td>
+                        <td className="text-right whitespace-nowrap tabular-nums font-medium">{(total - retention).toFixed(2)}</td>
                         <td>
                             {Number(shop.atts.send_mail_retention) === 1 && (
-                                <div className="flex justify-center text-green-600/90">
-                                    <FaCheckCircle />
-                                </div>
+                                <span className="flex justify-center text-sri-ok" title="Retención enviada por correo">
+                                    <FaCheckCircle aria-label="Retención enviada por correo" />
+                                </span>
                             )}
                         </td>
-                        <td className="w-4">
+                        <td>
                             <Dropdown index={index} shop={shop} isOpen={dropdown[index]} only={shops.length === 1 || index > shops.length - 5} setIsOpen={handleDrops} />
                         </td>
                     </tr>
-                ))}
+                    );
+                })}
             </tbody>
         </TableResponsive>
     )

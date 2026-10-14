@@ -8,11 +8,16 @@ import { nanoid } from 'nanoid';
 
 const MAX_ADITIONALS = 13;
 
-export const AditionalInformation = () => {
+interface Props {
+  // El SRI admite hasta 13; la factura recurrente hasta 10
+  max?: number;
+  hint?: string;
+}
+
+export const AditionalInformation = ({ max = MAX_ADITIONALS, hint }: Props) => {
 
   const { aditionalInformation, setAditionalInformation, errorAditionalInformation } = useFormInvoice();
-  // El SRI admite hasta 13 campos adicionales
-  const canAdd = aditionalInformation.length < MAX_ADITIONALS;
+  const canAdd = aditionalInformation.length < max;
 
   const addItem = () => {
     if (!canAdd) return;
@@ -42,8 +47,9 @@ export const AditionalInformation = () => {
   return (
     <FormSection
       title="Información adicional"
-      aside={aditionalInformation.length > 0 ? <span className="text-xs text-ink-3 tabular-nums">{aditionalInformation.length}/{MAX_ADITIONALS}</span> : undefined}
+      aside={aditionalInformation.length > 0 ? <span className="text-xs text-ink-3 tabular-nums">{aditionalInformation.length}/{max}</span> : undefined}
     >
+      {hint && <p className="mb-2 text-xs text-ink-3">{hint}</p>}
       {aditionalInformation.length > 0 && (
         <table className="w-full text-sm">
           <thead>

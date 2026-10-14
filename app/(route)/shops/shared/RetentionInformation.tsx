@@ -6,6 +6,8 @@ import { useShopVoucherType } from '../hooks/useShopVoucherType';
 import { useFormShop } from "../context/FormShopContext";
 import { SelectOption, Switch, TextInput } from '@/components';
 import { nanoid } from 'nanoid';
+import { FormSection } from '../../orders/shared/FormSection';
+import { ListTaxes } from './ListTaxes';
 
 // SRI: código de retención de renta fijo para compras registradas como
 // Nota de Venta (no emite factura, así que solo cabe retención de renta).
@@ -66,28 +68,34 @@ export const RetentionInformation = () => {
         setErrorShop((prevState) => ({ ...prevState, serie_retencion: '' }))
     }
 
+    const retained = taxes.reduce((acc, tax) => acc + (Number(tax.value) || 0), 0);
+
     return (
-        <div className='py-2'>
-            <Switch name="applieWithholding" label="Aplicar retención" checked={applieWithholding} onChange={handleToggleWithholding} />
+        <FormSection
+            title='Retención'
+            aside={applieWithholding && retained > 0 ? <span className='text-xs text-ink-3'>Retienes <span className='font-medium tabular-nums text-ink-1'>${retained.toFixed(2)}</span></span> : undefined}
+        >
+            <Switch
+                name="applieWithholding"
+                label="Emitir comprobante de retención"
+                description={applieWithholding
+                    ? (isNotaVenta ? 'Nota de venta: solo retención de renta, código 332.' : 'Se emite al SRI junto con la compra.')
+                    : 'Actívalo si eres agente de retención o la compra lo requiere.'}
+                checked={applieWithholding}
+                onChange={handleToggleWithholding}
+            />
 
-            {applieWithholding && <div className='sm:flex gap-4'>
-
-                {/* Col 1 */}
-                {points.length > 1 && (
-                    <div className='w-full'>
-                        <div className="lg:w-2/3">
-                            <SelectOption label="Punto Emi" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} required />
-                        </div>
+            {applieWithholding && (
+                <>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6 mt-2'>
+                        {points.length > 1 && (
+                            <SelectOption label="Punto de emisión" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} required />
+                        )}
+                        <TextInput type='date' label='Fecha de la retención' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} hint='Desde la fecha de la compra hasta hoy' required />
                     </div>
-                )}
-
-                {/* Col 2 */}
-                <div className='w-full'>
-                    <div className='lg:w-2/3 mx-auto'>
-                        <TextInput type='date' label='Fecha emisión' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} required />
-                    </div>
-                </div>
-            </div>}
-        </div>
+                    <ListTaxes />
+                </>
+            )}
+        </FormSection>
     )
 }

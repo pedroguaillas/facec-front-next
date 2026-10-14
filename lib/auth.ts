@@ -41,6 +41,26 @@ export const authOptions: NextAuthOptions = {
       if (user) token.user = user; // Store the token
       // useSession().update({ permissions }) tras guardar en Configuración > Permisos:
       // solo se aceptan estas banderas (el plan y demás permisos vienen únicamente del login)
+      // useSession().update({ refreshPlan: true }) tras activar la prueba Financiero:
+      // el plan se vuelve a pedir al backend con el token del usuario
+      if (trigger === "update" && session?.refreshPlan && token.user) {
+        const current = token.user as AuthUser;
+        try {
+          const { data } = await axios.get("subscription/current", { headers: { Authorization: `Bearer ${current.token}` } });
+          token.user = {
+            ...current,
+            permissions: {
+              ...current.permissions,
+              plan: data.plan ?? null,
+              plan_ends_at: data.plan_ends_at ?? null,
+              financiero: !!data.financiero,
+              financiero_trial_available: !!data.financiero_trial_available,
+            },
+          };
+        } catch {
+          // Sin respuesta se conserva el plan anterior
+        }
+      }
       if (trigger === "update" && session?.permissions && token.user) {
         const current = token.user as AuthUser;
         const updatable = SESSION_UPDATABLE_PERMISSIONS.filter(key => typeof session.permissions[key] === "boolean");

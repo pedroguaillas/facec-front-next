@@ -8,7 +8,7 @@ import { FaFileSignature, FaImage } from "react-icons/fa";
 export const GeneralInformation = () => {
 
     const {
-        optionType, form, editingCert, isSaving, ivaConfirmMessage,
+        optionType, form, editingCert, isSaving, ivaConfirmMessage, fieldErrors,
         editCert, cancelEditCert, handleChange, handleCheckbox, handleFile, clearFile, submit, downloadSign,
         confirmIvaChange, cancelIvaChange,
     } = useGeneralInformation();
@@ -37,6 +37,17 @@ export const GeneralInformation = () => {
                         <SelectOption label="Régimen" name='rimpe' options={optionType} selectedValue={form.rimpe} handleSelect={handleChange} />
                     </div>
                     <Switch name="retention_agent" label="¿Agente de retención?" checked={!!form.retention_agent} onChange={handleCheckbox} />
+                    <div className='lg:w-2/3'>
+                        <TextInput
+                            label='Nro. de calificación artesanal'
+                            name='artisan_number'
+                            value={form.artisan_number ?? ''}
+                            error={fieldErrors.artisan_number}
+                            onChange={handleChange}
+                            maxLength={30}
+                            hint='Déjalo vacío si no eres artesano calificado'
+                        />
+                    </div>
                 </div>
 
                 {/* Col 2 */}

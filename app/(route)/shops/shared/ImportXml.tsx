@@ -3,7 +3,7 @@
 import { resolveSupplier, storeSupplier } from "@/services/supplierServices";
 import { useFormShop } from "../context/FormShopContext";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
-import { PrimaryButton } from "@/components";
+import { FaFileCode } from "react-icons/fa6";
 import { useFile } from "../hooks/useFile";
 import { ChangeEvent, useState } from "react";
 import { Supplier } from "@/types";
@@ -101,8 +101,15 @@ export const ImportXml = () => {
     };
 
     return (
-        <div className="mb-3">
-            <PrimaryButton type="button" onClick={handleButton} label="Cargar XML" action="import" />
+        <div>
+            <button
+                type="button"
+                onClick={handleButton}
+                title="Llena serie, autorización, fecha, proveedor y valores desde el XML del SRI"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm font-medium text-ink-2 transition-colors cursor-pointer hover:border-brand-ink hover:text-brand-ink hover:bg-brand-soft"
+            >
+                <FaFileCode aria-hidden="true" /> Cargar XML
+            </button>
             <input type="file" id="file_invoice" onChange={handleSelectFile} className="hidden" accept=".xml" />
 
             {pendingSupplier && (

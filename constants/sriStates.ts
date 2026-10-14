@@ -2,12 +2,19 @@
 export const SRI_PENDING_STATES = ['CREADO', 'FIRMADO', 'ENVIADO', 'RECIBIDA', 'EN_PROCESO'];
 export const SRI_REJECTED_STATES = ['DEVUELTA', 'NO AUTORIZADO'];
 
-// Filtro ?state= de la lista de ventas
-export const ordersStateUrl = (states: string[]) => `/orders?state=${encodeURIComponent(states.join(','))}`;
+// Días que cuenta el dashboard en "Comprobantes en el SRI"
+export const SRI_WINDOW_DAYS = 30;
 
-export const sriFilterLabel = (state: string | null) => {
+// Filtro ?state= (y ?date_from=) de la lista de ventas
+export const ordersStateUrl = (states: string[], dateFrom?: string) =>
+    `/orders?state=${encodeURIComponent(states.join(','))}${dateFrom ? `&date_from=${dateFrom}` : ''}`;
+
+export const sriFilterLabel = (state: string | null, dateFrom?: string | null) => {
     if (!state) return null;
-    if (state === SRI_REJECTED_STATES.join(',')) return 'Rechazados por el SRI';
-    if (state === SRI_PENDING_STATES.join(',')) return 'Pendientes de autorizar';
-    return `Estado: ${state.replace(/,/g, ', ')}`;
+    const label = state === SRI_REJECTED_STATES.join(',') ? 'Rechazados por el SRI'
+        : state === SRI_PENDING_STATES.join(',') ? 'Pendientes de autorizar'
+        : `Estado: ${state.replace(/,/g, ', ')}`;
+    if (!dateFrom) return label;
+    const [y, m, d] = dateFrom.split('-');
+    return `${label} · desde ${d}/${m}/${y}`;
 };

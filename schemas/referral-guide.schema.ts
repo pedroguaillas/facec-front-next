@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { addDaysToDate, getDate } from '@/helpers/dateHelper';
+import { GUIDE_DURATION_MAX_DAYS, GUIDE_START_MAX_DAYS } from '@/constants/referralGuides';
 
 export const productOutputSchema = z.object({
 	id: z.string(), // o number si usas timestamp
@@ -31,4 +33,12 @@ export const referralGuideSchema = z.object({
 	date_invoice: z.string().optional(),
 	authorization_invoice: z.string().optional(),
 	products: z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
+}).superRefine((data, ctx) => {
+	const today = getDate();
+	if (data.date_start < today || data.date_start > addDaysToDate(today, GUIDE_START_MAX_DAYS)) {
+		ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['date_start'], message: `Desde hoy hasta ${GUIDE_START_MAX_DAYS} días después` });
+	}
+	if (data.date_end < data.date_start || data.date_end > addDaysToDate(data.date_start, GUIDE_DURATION_MAX_DAYS)) {
+		ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['date_end'], message: `Desde el inicio hasta ${GUIDE_DURATION_MAX_DAYS} días después` });
+	}
 });

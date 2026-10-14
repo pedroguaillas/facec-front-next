@@ -1,5 +1,5 @@
 import { handleApiRequest } from "@/helpers/apiHandler";
-import { ApiResponse, GeneralPaginate, Movement, MovementSourceType, MovementStatus } from "@/types";
+import { ApiResponse, GeneralPaginate, Movement, MovementCategory, MovementCategoryInfo, MovementSourceType, MovementStatus, MovementSummary } from "@/types";
 import { AxiosInstance } from "axios";
 
 interface MovementFilters {
@@ -9,7 +9,20 @@ interface MovementFilters {
     party_id?: number;
     status?: MovementStatus;
     per_page?: number;
+    paginate?: number;
     page?: number;
+    date_from?: string;
+    date_to?: string;
+    direction?: 'in' | 'out';
+    category?: MovementCategory | 'SIN_CLASIFICAR';
+    transaction_type?: string;
+}
+
+interface SummaryFilters {
+    date_from?: string;
+    date_to?: string;
+    party_type?: MovementSourceType;
+    party_id?: number;
 }
 
 export const getMovements = async (
@@ -23,6 +36,25 @@ export const getMovement = async (
     id: number,
 ): Promise<ApiResponse<Movement>> =>
     handleApiRequest<Movement>(() => axiosAuth.get(`movements/${id}`));
+
+export const getMovementsSummary = async (
+    axiosAuth: AxiosInstance,
+    filters: SummaryFilters,
+): Promise<ApiResponse<MovementSummary>> =>
+    handleApiRequest<MovementSummary>(() => axiosAuth.get("movements/summary", { params: filters }));
+
+export const getMovementCategories = async (
+    axiosAuth: AxiosInstance,
+): Promise<ApiResponse<MovementCategoryInfo[]>> =>
+    handleApiRequest<MovementCategoryInfo[]>(() => axiosAuth.get("movements/categories"));
+
+// Clasificar un movimiento "Otro" (null quita la categoría)
+export const updateMovementCategory = async (
+    axiosAuth: AxiosInstance,
+    id: number,
+    category: MovementCategory | null,
+): Promise<ApiResponse<Movement>> =>
+    handleApiRequest<Movement>(() => axiosAuth.patch(`movements/${id}/category`, { category }));
 
 const multipartConfig = { headers: { 'Content-Type': 'multipart/form-data' } };
 

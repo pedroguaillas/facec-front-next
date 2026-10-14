@@ -1,3 +1,4 @@
+import { FaEllipsisVertical } from "react-icons/fa6";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useEffect, useRef, useState } from "react";
 import { useShops } from "../context/ShopsContext";
@@ -172,16 +173,19 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
         <div ref={dropdownRef} className="relative inline-block min-w-[40px]">
             {/* Dropdown Button */}
             <button
+                type="button"
                 onClick={() => setIsOpen(index)}
-                className="rounded-full text-white bg-blue-700 px-3 py-1 m-auto font-bold cursor-pointer"
+                aria-label="Acciones"
+                aria-expanded={isOpen}
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-md text-ink-3 transition-colors cursor-pointer hover:bg-surface-sunken hover:text-ink-1 focus-visible:outline-2 focus-visible:outline-brand-ink ${isOpen ? 'bg-surface-sunken text-ink-1' : ''}`}
             >
-                &#60;
+                <FaEllipsisVertical aria-hidden="true" />
             </button>
 
             {/* Dropdown Menu */}
             {isOpen && (
                 <div
-                    className={`absolute origin-top-right right-9 z-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-700
+                    className={`absolute origin-top-right right-9 z-1 w-40 bg-surface border border-line rounded-lg shadow-lg
                 ${only ? "-mt-24" : "-mt-4"}`}
                 >
                     <div className="py-1">
@@ -192,7 +196,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                                         setIsOpen(index); // Close dropdown after selection
                                         setIsPaymentModalOpen(true);
                                     }}
-                                    className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                    className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
                                 >
                                     Registrar pago
                                 </button>
@@ -209,7 +213,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                                             setIsOpen(index); // Close dropdown after selection
                                             option.onClick();
                                         }}
-                                        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                        className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
                                     >
                                         {option.label}
                                     </button>
@@ -229,7 +233,7 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
                                             setIsOpen(index); // Close dropdown after selection
                                             option.onClick();
                                         }}
-                                        className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-white text-left"
+                                        className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
                                     >
                                         {option.label}
                                     </button>

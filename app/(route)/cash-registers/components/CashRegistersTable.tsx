@@ -32,7 +32,9 @@ export const CashRegistersTable = ({ onEdit, onOpen, onClose }: Props) => {
             </thead>
             <tbody>
                 {cashRegisters.map((cashRegister) => {
-                    const canClose = cashRegister.active_session && cashRegister.atts.type !== 'GENERAL';
+                    // Sin apertura y cierre la caja está siempre abierta: no hay botones de abrir/cerrar
+                    const usesSessions = !!cashRegister.atts.uses_sessions;
+                    const canClose = usesSessions && cashRegister.active_session && cashRegister.atts.type !== 'GENERAL';
 
                     return (
                         <tr key={cashRegister.id}
@@ -40,16 +42,16 @@ export const CashRegistersTable = ({ onEdit, onOpen, onClose }: Props) => {
                             <td className="text-left">{cashRegister.atts.name}</td>
                             <td>{typeLabel(cashRegister.atts.type)}</td>
                             <td>{cashRegister.responsible.name}</td>
-                            <td>{cashRegisterStatusLabels[cashRegister.atts.status]}</td>
+                            <td>{usesSessions ? cashRegisterStatusLabels[cashRegister.atts.status] : 'Siempre abierta'}</td>
                             <td>{cashRegister.active_session?.atts.current_balance ?? '-'}</td>
                             <td className="w-1">
                                 <div className="flex gap-1">
                                     <IconButton type="button" action="edit" onClick={() => onEdit(cashRegister)} title="Editar" />
                                     {cashRegister.active_session
                                         ? canClose && <IconButton type="button" action="close" onClick={() => onClose(cashRegister.id)} title="Cerrar caja" />
-                                        : <IconButton type="button" action="open" onClick={() => onOpen(cashRegister.id)} title="Abrir caja" />
+                                        : usesSessions && <IconButton type="button" action="open" onClick={() => onOpen(cashRegister.id)} title="Abrir caja" />
                                     }
-                                    <IconButton type="link" url={`/cash-registers/${cashRegister.id}`} action="view" title="Historial de sesiones" />
+                                    <IconButton type="link" url={`/cash-registers/${cashRegister.id}`} action="view" title={usesSessions ? 'Historial de sesiones' : 'Movimientos'} />
                                 </div>
                             </td>
                         </tr>

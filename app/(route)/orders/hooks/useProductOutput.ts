@@ -4,6 +4,7 @@ import { initialProductItem } from "@/constants/initialValues";
 import { fields, ProductOutput, ProductProps } from "@/types";
 import { calculateInvoiceTotals, calculateLineTotal } from "@/helpers/invoiceTotalsHelper";
 import { nanoid } from "nanoid";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export const useProductOutput = () => {
 
@@ -59,6 +60,7 @@ export const useProductOutput = () => {
             ...productOutputs[index],
             product_id: product.id,
             aux_cod: product.atts.aux_cod,
+            product_code: product.atts.code,
             name: product.atts.name,
             price: product.atts.price1,
             quantity: 1,
@@ -101,5 +103,14 @@ export const useProductOutput = () => {
         setInvoice(prevState => ({ ...prevState, ...calculateInvoiceTotals(productOutpus) }));
     };
 
-    return { productOutputs, addItem, updateItem, selectProduct, removeItem }
+    // Reordenar líneas (arrastrar): no cambia totales, solo el orden en el comprobante
+    const moveItem = (activeId: string, overId: string) => {
+        setProductOutputs(prev => {
+            const from = prev.findIndex(item => item.id === activeId);
+            const to = prev.findIndex(item => item.id === overId);
+            return from < 0 || to < 0 ? prev : arrayMove(prev, from, to);
+        });
+    };
+
+    return { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem }
 }

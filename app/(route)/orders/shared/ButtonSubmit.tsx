@@ -47,6 +47,8 @@ export const ButtonSubmit = () => {
             repayments,
             // Sin cartera (Facturador) la venta es siempre de contado y sin origen (caja/banco)
             ...(!canUseFinance && { payment_type: 'CONTADO' as const, due_date: undefined, source_type: undefined, source_id: undefined, without_source: true }),
+            // Con cartera la forma de pago SRI sale del cobro: efectivo en caja = 01, el resto = 20
+            ...(canUseFinance && { pay_method: invoice.payment_type === 'CONTADO' && invoice.source_type === 'cash_register_session' ? 1 : 20 }),
         };
 
         const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(form.voucher_type_id));
@@ -63,6 +65,11 @@ export const ButtonSubmit = () => {
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
             });
+            // Forma de pago oculta (plan Financiero): el límite de efectivo se muestra en caja/banco
+            if (canUseFinance && formatted.pay_method) {
+                formatted.source_id = 'Desde $500 el cobro debe ir a un banco';
+                delete formatted.pay_method;
+            }
 
             setFormErrors(formatted);
 

@@ -1,9 +1,11 @@
 "use client";
 
+import { ReactNode } from "react";
 import { fields, ProductOutput } from "@/types/order";
 import { SelectProduct } from "@/components";
 import { ProductProps } from "@/types";
 import { useFormInvoice } from "../context/FormInvoiceContext";
+import { DragHandle, useSortableItem } from "./SortableItems";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { limitDecimals } from "@/helpers/numberHelper";
 import { IconButton } from "@/components";
@@ -16,15 +18,18 @@ interface Props {
     updateItem: (index: number, field: fields, value: number | string) => void;
     selectProduct: (index: number, product: ProductProps) => void;
     removeItem: (index: number) => void;
+    sortable?: boolean;
+    extra?: ReactNode;
 }
 
 const inputBase = `${cellInput} text-right`;
 const inputError = cellInputError;
 const inputNormal = cellInputNormal;
 
-export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
+export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem, sortable = false, extra }: Props) => {
 
     const { isActiveIce } = useFormInvoice();
+    const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
 
     const baseCalculation = () => {
         let { quantity, price, discount } = productOutput;
@@ -43,9 +48,14 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
     }
 
     return (
-        <tr className={tableRow}>
+        <tr ref={setNodeRef} style={style} className={`${tableRow} ${isDragging ? 'bg-surface shadow-md' : ''}`}>
+            {/* La fila es align-top (por los errores bajo los campos); el asa va centrada */}
+            <td className="py-0.5! align-middle">
+                {sortable && <DragHandle {...handleProps} label={`Mover línea ${index + 1}`} />}
+            </td>
             <td>
                 <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
+                {extra}
             </td>
             <td>
                 <input

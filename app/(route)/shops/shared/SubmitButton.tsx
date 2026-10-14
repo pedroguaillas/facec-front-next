@@ -2,7 +2,8 @@
 
 import { useFormShop } from '../context/FormShopContext';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { FaRegSave, FaSave, FaSpinner } from 'react-icons/fa';
+import { FaPaperPlane, FaRegSave, FaSpinner } from 'react-icons/fa';
+import { useToast } from '@/context/ToastContext';
 import { shopSchema } from '@/schemas/shop-schema';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react'
@@ -11,7 +12,10 @@ import { shopStoreService, shopUpdateService } from '../services/shopsServices';
 import { usePlan } from '@/lib/hooks/usePlan';
 
 export const SubmitButton = () => {
-    const [isPending, setIsPending] = useState(false);
+    // Acción en curso: guardar (false) o guardar y procesar (true)
+    const [pendingSend, setPendingSend] = useState<boolean | null>(null);
+    const isPending = pendingSend !== null;
+    const { toast } = useToast();
     const { applieWithholding, shop, productOutputs, taxes, selectPoint, setErrorShop, setErrorTaxes } = useFormShop();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
@@ -43,7 +47,6 @@ export const SubmitButton = () => {
         const parsed = shopSchema.safeParse(form);
 
         if (!parsed.success) {
-            console.log('Validación ', parsed.error)
             const formatted: Record<string, string> = {};
             parsed.error.errors.forEach(err => {
                 formatted[err.path[0] as string] = err.message;
@@ -66,26 +69,30 @@ export const SubmitButton = () => {
                 }
             });
 
-            setErrorTaxes(errorTaxes); // ← Necesitas este estado para manejar errores por producto
-
+            setErrorTaxes(errorTaxes);
+            toast(Object.values(formatted)[0] ?? 'Revisa los campos marcados', 'error');
             return;
         }
 
         // 3. Enviar el formulario
-        setIsPending(true);
+        setPendingSend(send);
 
         const { error, data, errors } = (params?.id)
             ? await shopUpdateService(Number(params.id), axiosAuth, form)
             : await shopStoreService(axiosAuth, form);
 
         if (data) {
+            toast(send ? 'Compra guardada y enviada a procesar' : 'Compra guardada');
             router.push('/shops');
-        } else if (errors) {
-            setErrorShop(errors);
-        } else {
-            alert(error);
+            return;
         }
-        setIsPending(false);
+        setPendingSend(null);
+        if (errors) {
+            setErrorShop(errors);
+            toast(Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
+        } else {
+            toast(error ?? 'No se pudo guardar la compra', 'error');
+        }
     };
 
     if (params?.id && shop.state_retencion === 'AUTORIZADO') {
@@ -93,25 +100,24 @@ export const SubmitButton = () => {
     }
 
     return (
-        <div className='flex justify-end mt-4 gap-2'>
+        <div className="flex flex-col gap-2">
             <button
-                onClick={(e) => handleSubmit(e, false)}
-                disabled={isPending}
-                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                <FaRegSave />
-                Guardar
-            </button>
-            <button
+                type="button"
                 onClick={(e) => handleSubmit(e, true)}
                 disabled={isPending}
-                className="btn btn-primary flex items-center gap-2 bg-primary disabled:bg-primaryhover hover:bg-primary-focus text-white p-2 rounded-md cursor-pointer">
-                {isPending && (
-                    <FaSpinner className='animate-spin' />
-                )}
-                {!isPending && (
-                    <FaSave />
-                )}
-                Guardar y procesar
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+                {pendingSend === true ? <FaSpinner className="animate-spin" /> : <FaPaperPlane />}
+                {pendingSend === true ? 'Procesando…' : 'Guardar y procesar'}
+            </button>
+            <button
+                type="button"
+                onClick={(e) => handleSubmit(e, false)}
+                disabled={isPending}
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg text-sm font-medium border border-line-strong text-ink-2 transition-colors cursor-pointer hover:bg-surface hover:text-ink-1 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+                {pendingSend === false ? <FaSpinner className="animate-spin" /> : <FaRegSave />}
+                {pendingSend === false ? 'Guardando…' : 'Solo guardar'}
             </button>
         </div>
     )

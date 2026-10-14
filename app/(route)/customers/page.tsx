@@ -23,7 +23,7 @@ const CustomersContent = () => {
             <Title
                 title='Clientes'
                 subTitle='Lista de todos los clientes'
-                actions={[{ label: "", type: "button", action: "add", onClick: () => setCustomerFormId('new') }]}
+                actions={[{ label: "Nuevo cliente", type: "button", action: "add", onClick: () => setCustomerFormId('new') }]}
             />
             <div className="md:mx-8 py-4">
                 <CustomersFilter />

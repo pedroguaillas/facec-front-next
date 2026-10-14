@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { fields, ProductOutput } from "@/types/order";
 import { Modal, IconButton, SelectProduct, PrimaryButton } from "@/components";
 import { ProductProps } from "@/types";
 import { useFormInvoice } from "../context/FormInvoiceContext";
+import { DragHandle, useSortableItem } from "./SortableItems";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { limitDecimals } from "@/helpers/numberHelper";
 
@@ -15,6 +16,8 @@ interface Props {
     updateItem: (index: number, field: fields, value: number | string) => void;
     selectProduct: (index: number, product: ProductProps) => void;
     removeItem: (index: number) => void;
+    sortable?: boolean;
+    extra?: ReactNode;
 }
 
 const inputBase = "w-full border rounded-md px-2 py-1.5 text-sm text-center bg-[var(--background)] text-ink-1 tabular-nums focus:outline-none focus:border-primary transition-colors";
@@ -22,17 +25,20 @@ const inputError = "border-red-400";
 const inputNormal = "border-line-strong";
 const stepperBtn = "w-11 h-11 shrink-0 rounded-md border border-line-strong text-lg leading-none text-ink-2 cursor-pointer hover:border-primary hover:text-brand-ink";
 
-export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, removeItem }: Props) => {
+export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, removeItem, sortable = false, extra }: Props) => {
 
     const { isActiveIce } = useFormInvoice();
+    const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
     const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <div className="border border-line rounded-lg p-3 bg-surface">
+        <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 bg-surface ${isDragging ? 'border-primary shadow-md' : 'border-line'}`}>
             {/* Selección directa: no hace falta abrir el modal para elegir el producto */}
             <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
+            {extra}
 
             <div className="flex items-center gap-2 mt-2 text-sm">
+                {sortable && <div className="-my-2 -ml-2"><DragHandle {...handleProps} label={`Mover línea ${index + 1}`} /></div>}
                 <span className="text-ink-3 tabular-nums">{productOutput.quantity || 0} × ${Number(productOutput.price ?? 0).toFixed(2)}</span>
                 <span className="font-semibold text-ink-1 tabular-nums ml-auto">${Number(productOutput.total_iva ?? 0).toFixed(2)}</span>
                 <div className="flex shrink-0 gap-1 -my-2 -mr-2">

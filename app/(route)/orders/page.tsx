@@ -20,7 +20,7 @@ const InvoicesPage = () => {
     };
 
     const multipleActions: ActionsTitle[] = [
-        { label: "", type: "link", url: 'orders/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva venta' : 'Tu plan está vencido' },
+        { label: "Nueva venta", type: "link", url: 'orders/create', action: 'add', disabled: !canEmit, title: canEmit ? 'Nueva venta' : 'Tu plan está vencido' },
     ];
 
     if (session?.user.permissions.import_in_invoices) {

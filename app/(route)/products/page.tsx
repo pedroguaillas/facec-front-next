@@ -33,7 +33,7 @@ const OrdersPage = () => {
     const multipleActions: ActionsTitle[] = [
         { label: "Importar", type: "button", action: 'import', onClick: importProducts },
         { label: "Exportar", type: "button", action: 'export', onClick: handleExportProducts },
-        { label: "", type: "link", url: "products/create", action: "add" },
+        { label: "Nuevo producto", type: "link", url: "products/create", action: "add" },
     ];
 
     const { handleSelectFile } = useImportExcel();

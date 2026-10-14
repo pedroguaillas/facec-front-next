@@ -2,26 +2,30 @@
 
 import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { useListProducts } from '../hooks/useListProducts';
-import { PrimaryButton } from '@/components';
 import { ItemProduct } from './ItemProduct';
+import { SortableItems } from '../../orders/shared/SortableItems';
+import { AddRowButton, FormSection, tableHead } from '../../orders/shared/FormSection';
 
 export const ListProducts = () => {
 	const { productOutputs, errorProductOutputs, errors } = useFormReferralGuide();
-	const { addItem, updateItem, selectProduct, removeItem } = useListProducts();
+	const { addItem, updateItem, selectProduct, removeItem, moveItem } = useListProducts();
+	const ids = productOutputs.map(op => op.id);
+	// Con una sola línea no hay nada que ordenar
+	const sortable = productOutputs.length > 1;
 
 	return (
-		<>
-			<div className='flex gap-16 my-4'>
-				<span className='font-bold'>Productos</span>
-			</div>
-
-			<div className='w-full overflow-x-auto'>
-				<table className='w-full'>
+		<FormSection
+			title='Mercadería'
+			aside={productOutputs.length > 0 ? <span className='text-xs text-ink-3 tabular-nums'>{productOutputs.length} {productOutputs.length === 1 ? 'línea' : 'líneas'}</span> : undefined}
+		>
+			<SortableItems ids={ids} onMove={moveItem}>
+				<table className='w-full table-fixed text-sm'>
 					<thead>
-						<tr className='[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500'>
-							<th className='w-20 sm:w-24'>Cantidad</th>
-							<th>Nombre</th>
-							<th></th>
+						<tr className={tableHead}>
+							<th className='w-9'><span className='sr-only'>Orden</span></th>
+							<th className='text-left'>Producto</th>
+							<th className='w-24 sm:w-32 text-right'>Cantidad</th>
+							<th className='w-11'><span className='sr-only'>Acciones</span></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -30,23 +34,20 @@ export const ListProducts = () => {
 								key={op.id}
 								index={index}
 								productOutput={op}
-								error={errorProductOutputs[op.id]} // 🔴 pasamos errores por ID
+								error={errorProductOutputs[op.id]}
 								updateItem={updateItem}
 								selectProduct={selectProduct}
 								removeItem={removeItem}
+								sortable={sortable}
 							/>
 						))}
 					</tbody>
 				</table>
+			</SortableItems>
 
-				{errors && <p className='text-sm text-red-500'>{errors.products}</p>}
-			</div>
+			{errors.products && <p className='mt-2 text-xs text-red-500'>{errors.products}</p>}
 
-			<div className='flex justify-end mt-2'>
-				<div className='w-28'>
-					<PrimaryButton onClick={addItem} label='Añadir' action='add' type='button' />
-				</div>
-			</div>
-		</>
+			<AddRowButton label='Agregar producto' onClick={addItem} />
+		</FormSection>
 	);
 };

@@ -4,7 +4,8 @@ import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { referralGuideSchema } from '@/schemas/referral-guide.schema';
 import { useParams, useRouter } from 'next/navigation';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
-import { PrimaryButton } from '@/components';
+import { FaPaperPlane, FaSpinner } from 'react-icons/fa6';
+import { useToast } from '@/context/ToastContext';
 import { ProductOutput } from '@/types';
 import { useState } from 'react';
 import { referralGuideStoreServices, referralGuideUpdateServices } from '../services/referralGuidesServices';
@@ -15,6 +16,7 @@ export const ButtonSubmit = () => {
 	const router = useRouter();
 	const params = useParams();
 	const [isSaving, setIsSaving] = useState(false);
+	const { toast } = useToast();
 
 	const handleSubmit = async () => {
 		// 1. Creación del formulario
@@ -29,7 +31,6 @@ export const ButtonSubmit = () => {
 		const parsed = referralGuideSchema.safeParse(form);
 
 		if (!parsed.success) {
-			console.log('Validacion ', parsed.error);
 			const formatted: Record<string, string> = {};
 			parsed.error.errors.forEach(err => {
 				formatted[err.path[0] as string] = err.message;
@@ -52,36 +53,43 @@ export const ButtonSubmit = () => {
 			});
 
 			setErrorProductOutputs(errorProducts);
+			toast(Object.values(formatted)[0] ?? 'Revisa los campos marcados', 'error');
 			return;
 		}
 
 		// 3. Enviar formulario
 		setIsSaving(true);
-		const { data, error } = await (
+		const { data, error, errors } = await (
 			params?.id
 				? referralGuideUpdateServices(axiosAuth, params.id.toString(), parsed.data)
 				: referralGuideStoreServices(axiosAuth, form)
 		);
 
 		if (data) {
+			toast(params?.id ? 'Guía actualizada y enviada a procesar' : 'Guía guardada y enviada a procesar');
 			router.push(`/referralguides`);
-		} else if (error) {
-			console.error('Error al enviar el formulario:', error);
-			setIsSaving(false);
+			return;
+		}
+		setIsSaving(false);
+		if (errors) {
+			setErrors(errors);
+			toast(Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
+		} else {
+			toast(error ?? 'No se pudo guardar la guía', 'error');
 		}
 	};
 
 	return (
-		<div className='flex justify-end mt-4'>
-			<div>
-				<PrimaryButton
-					type='submit'
-					label='Guardar y procesar'
-					action='store'
-					onClick={handleSubmit}
-					isLoading={isSaving}
-				/>
-			</div>
+		<div className='flex justify-end pt-5'>
+			<button
+				type='button'
+				onClick={handleSubmit}
+				disabled={isSaving}
+				className='inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed'
+			>
+				{isSaving ? <FaSpinner className='animate-spin' aria-hidden='true' /> : <FaPaperPlane aria-hidden='true' />}
+				{isSaving ? 'Procesando…' : 'Guardar y procesar'}
+			</button>
 		</div>
 	);
 };

@@ -2,9 +2,9 @@
 
 import { useFormShop } from '../context/FormShopContext';
 import { useShopVoucherType } from '../hooks/useShopVoucherType';
-import { PrimaryButton } from '@/components';
 import { useTaxes } from '../hooks/useTaxes';
 import { ItemTax } from './ItemTax';
+import { AddRowButton, tableHead } from '../../orders/shared/FormSection';
 
 export const ListTaxes = () => {
 
@@ -14,19 +14,20 @@ export const ListTaxes = () => {
 
     if (!applieWithholding) return null;
 
+    const retained = taxes.reduce((acc, tax) => acc + (Number(tax.value) || 0), 0);
+
     return (
-        <>
-            {/* Table responsive */}
+        <div className="mt-3">
             <div className="w-full overflow-x-auto">
-                <table className='w-full'>
+                <table className='w-full min-w-[560px] table-fixed text-sm'>
                     <thead>
-                        <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500">
-                            <th>Impuesto</th>
-                            <th>Retención</th>
-                            <th>Porcentaje</th>
-                            <th>Base Imp</th>
-                            <th>Valor</th>
-                            <th className='w-10'></th>
+                        <tr className={tableHead}>
+                            <th className='w-32 text-left'>Impuesto</th>
+                            <th className='text-left'>Concepto</th>
+                            <th className='w-20 text-right'>%</th>
+                            <th className='w-28 text-right'>Base</th>
+                            <th className='w-24 text-right'>Retenido</th>
+                            <th className='w-11'><span className='sr-only'>Acciones</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,25 +41,17 @@ export const ListTaxes = () => {
                         ))}
                     </tbody>
                     <tfoot>
-                        <tr className="[&>th]:border [&>th]:border-gray-300 [&>th]:py-2 [&>th]:dark:border-gray-500">
-                            <th colSpan={4}>Total retenido</th>
-                            <th className='p-1 text-right'>
-                                {taxes.reduce((acc, tax) => acc + (Number(tax.value) || 0), 0).toFixed(2)}
-                            </th>
-                            <th></th>
+                        <tr className="[&>td]:px-1.5 [&>td]:pt-3 text-sm">
+                            <td colSpan={4} className='text-right text-ink-3'>Total retenido</td>
+                            <td className='text-right font-semibold tabular-nums text-ink-1'>{retained.toFixed(2)}</td>
+                            <td />
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
             {/* Nota de Venta solo admite la retención de renta 332, ya autorellenada */}
-            {!isNotaVenta && (
-                <div className="flex justify-end mt-2">
-                    <div className="w-28">
-                        <PrimaryButton onClick={addItem} label="Añadir" action="add" type="button" />
-                    </div>
-                </div>
-            )}
-        </>
+            {!isNotaVenta && <AddRowButton label="Agregar retención" onClick={addItem} />}
+        </div>
     )
 }

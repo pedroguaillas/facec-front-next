@@ -17,6 +17,7 @@ export type AuthUser = {
     plan?: PlanCode | null; // null = vencido / sin plan
     plan_ends_at?: string | null; // YYYY-MM-DD
     financiero?: boolean; // true si el plan incluye cartera (GRATUITO o FINANCIERO)
+    financiero_trial_available?: boolean; // puede activar la prueba de 30 días del plan Financiero
   };
   // usuario
   user: {

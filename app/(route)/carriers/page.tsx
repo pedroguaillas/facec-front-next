@@ -25,7 +25,7 @@ const CarriersContent = () => {
             <Title
                 title='Transportistas'
                 subTitle='Lista de todos los transportistas'
-                actions={[{ label: "", type: "button", action: "add", onClick: () => setCarrierFormId('new') }]}
+                actions={[{ label: "Nuevo transportista", type: "button", action: "add", onClick: () => setCarrierFormId('new') }]}
             />
             <div className="md:mx-8 py-4">
                 <CarriersFilter />

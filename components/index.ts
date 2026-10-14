@@ -2,6 +2,7 @@
 export * from './alert/Alert';
 export * from './notice/Notice';
 export * from './sri-status/SriStatus';
+export * from './voucher-serie/VoucherSerie';
 
 // Elements
 export * from './text-input/TextInput';

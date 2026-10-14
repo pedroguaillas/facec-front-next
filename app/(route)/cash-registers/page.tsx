@@ -33,7 +33,7 @@ const CashRegistersContent = () => {
             <Title
                 title='Cajas'
                 subTitle='Lista de todas las cajas'
-                actions={[{ label: "", type: "button", action: "add", onClick: () => setModal({ type: 'form', cashRegister: null }) }]}
+                actions={[{ label: "Nueva caja", type: "button", action: "add", onClick: () => setModal({ type: 'form', cashRegister: null }) }]}
             />
             <div className="md:mx-8 py-4">
                 <CashRegistersFilter />
@@ -52,6 +52,7 @@ const CashRegistersContent = () => {
                         name: modal.cashRegister.atts.name,
                         type: modal.cashRegister.atts.type,
                         responsible_id: modal.cashRegister.responsible.id,
+                        uses_sessions: !!modal.cashRegister.atts.uses_sessions,
                     } : null}
                     existingTypes={cashRegisters.map(cr => cr.atts.type)}
                     onClose={() => setModal(null)}

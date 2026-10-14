@@ -3,6 +3,7 @@ import { useFormShop } from "../context/FormShopContext";
 import { fields, ProductOutput, ProductProps } from "@/types";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export const useListProducts = () => {
 
@@ -33,6 +34,7 @@ export const useListProducts = () => {
             newState[index] = {
                 ...newState[index],
                 product_id: product.id,
+                name: product.atts.name,
                 quantity: 1,
                 price: product.atts.price1,
                 total_iva: product.atts.price1.toFixed(2),
@@ -66,7 +68,9 @@ export const useListProducts = () => {
             base0,
             base15,
             sub_total: subTotal,
-            iva: totalIva,
+            // IVA 15%: va en iva15 (iva es la tarifa 12%)
+            iva: 0,
+            iva15: totalIva,
             total: total
         }));
     }, [setShop]);
@@ -79,5 +83,14 @@ export const useListProducts = () => {
         });
     }
 
-    return { addItem, updateItem, selectProduct, deleteItem }
+    // Reordenar líneas (arrastrar): no cambia totales
+    const moveItem = (activeId: string, overId: string) => {
+        setProductOutputs(prev => {
+            const from = prev.findIndex(item => item.id === activeId);
+            const to = prev.findIndex(item => item.id === overId);
+            return from < 0 || to < 0 ? prev : arrayMove(prev, from, to);
+        });
+    };
+
+    return { addItem, updateItem, selectProduct, deleteItem, moveItem }
 }

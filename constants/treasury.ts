@@ -1,13 +1,13 @@
 import {
     Bank, BankAccount, BankAccountType,
     CashRegister, CashRegisterStatus, CashRegisterType,
-    DenominationKind, MovementStatus, MovementTransactionType, MovementType, PaymentMethod, PaymentType,
+    DenominationKind, MovementCategory, MovementCategoryGroup, MovementStatus, MovementTransactionType, MovementType, PaymentMethod, PaymentType,
 } from "@/types";
 
 export const paymentTypeOptions: { label: string; value: PaymentType }[] = [
     { label: 'Contado', value: 'CONTADO' },
     { label: 'Crédito', value: 'CREDITO' },
-    { label: 'Anticipo', value: 'ANTICIPO' },
+    // Anticipo deshabilitado por ahora: solo contado y crédito
 ];
 
 // Plazo sugerido al marcar Crédito (el usuario lo puede cambiar).
@@ -53,6 +53,11 @@ export const movementTransactionTypeLabels: Record<MovementTransactionType, stri
     APERTURA_CAJA: 'Apertura de caja',
     CIERRE_CAJA: 'Cierre de caja',
     OTRO: 'Otro',
+    COBRO_VENTA: 'Cobro de venta',
+    PAGO_COMPRA: 'Pago de compra',
+    SALDO_INICIAL: 'Saldo inicial',
+    ANTICIPO_CLIENTE: 'Anticipo de cliente',
+    ANTICIPO_PROVEEDOR: 'Anticipo a proveedor',
 };
 
 export const denominationTypeLabels: Record<DenominationKind, string> = {
@@ -79,5 +84,44 @@ export const initialCashRegister: CashRegister = {
     responsible_id: '',
     type: 'CHICA',
     status: 'CERRADA',
+    uses_sessions: false,
     active_session: null,
 };
+
+export const movementCategoryLabels: Record<MovementCategory | 'SIN_CLASIFICAR', string> = {
+    VENTAS: 'Ventas',
+    OTROS_INGRESOS: 'Otros ingresos',
+    APORTE_DUENO: 'Aporte del dueño',
+    PRESTAMO_RECIBIDO: 'Préstamo recibido',
+    COMPRAS: 'Compras',
+    SUELDOS: 'Sueldos',
+    IESS: 'IESS',
+    ARRIENDO: 'Arriendo',
+    SERVICIOS_BASICOS: 'Servicios básicos',
+    TRANSPORTE: 'Transporte',
+    PUBLICIDAD: 'Publicidad',
+    COMISIONES_BANCARIAS: 'Comisiones bancarias',
+    IMPUESTOS: 'Impuestos',
+    OTROS_GASTOS: 'Otros gastos',
+    RETIRO_DUENO: 'Retiro del dueño',
+    PAGO_PRESTAMO: 'Pago de préstamo',
+    SIN_CLASIFICAR: 'Sin clasificar',
+};
+
+// Ejemplos para que el usuario sepa dónde va cada gasto
+export const movementCategoryHints: Partial<Record<MovementCategory, string>> = {
+    SERVICIOS_BASICOS: 'luz, agua, internet, teléfono',
+    TRANSPORTE: 'combustible, fletes',
+    COMISIONES_BANCARIAS: 'transferencias, datafast',
+    IMPUESTOS: 'SRI, municipio, patentes',
+};
+
+export const movementCategoryGroupLabels: Record<MovementCategoryGroup, string> = {
+    NEGOCIO: 'Del negocio',
+    FINANCIAMIENTO: 'Dueño y préstamos',
+};
+
+// Movimientos entre cajas/cuentas propias: no son ingreso ni gasto del negocio
+export const INTERNAL_TRANSACTION_TYPES: MovementTransactionType[] = [
+    'TRANSFERENCIA', 'DEPOSITO', 'RETIRO', 'APERTURA_CAJA', 'CIERRE_CAJA', 'SALDO_INICIAL',
+];
