@@ -3,8 +3,8 @@ import { FaCircleInfo } from "react-icons/fa6";
 // Estado del comprobante electrónico en el SRI: verde autorizado, ámbar en camino, rojo rechazado
 type Stage = 'ok' | 'wait' | 'fail' | 'void';
 
-// Estados en camino al SRI: el punto late mientras se consulta
-const PENDING = ['FIRMADO', 'ENVIADO', 'RECIBIDA', 'EN PROCESO', 'PENDIENTE DE ANULAR'];
+// Estados en camino al SRI: la etiqueta muestra que se está procesando
+const PENDING = ['CREADO', 'FIRMADO', 'ENVIADO', 'RECIBIDA', 'RECIBIDO', 'EN PROCESO', 'PENDIENTE DE ANULAR'];
 
 const stageOf = (state: string, isElectronic: boolean): Stage => {
     const value = state.toUpperCase().replace(/_/g, ' ');
@@ -44,10 +44,18 @@ export const SriStatus = ({ state, isElectronic = true, detail }: Props) => {
 
     return (
         <span
-            title={detail ?? undefined}
-            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide ${styles[stage]} ${detail ? 'cursor-help' : ''}`}
+            title={detail ?? (pending ? 'Procesando en el SRI…' : undefined)}
+            aria-busy={pending || undefined}
+            className={`relative overflow-hidden inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-wide ${styles[stage]} ${detail ? 'cursor-help' : ''}`}
         >
-            <span className={`w-1.5 h-1.5 rounded-full ${dots[stage]} ${pending ? 'animate-pulse' : ''}`} aria-hidden="true" />
+            {pending ? (
+                <>
+                    <span className="w-2.5 h-2.5 rounded-full border-[1.5px] border-current border-t-transparent animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                    <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-sri-shimmer" aria-hidden="true" />
+                </>
+            ) : (
+                <span className={`w-1.5 h-1.5 rounded-full ${dots[stage]}`} aria-hidden="true" />
+            )}
             {label}
             {detail && <FaCircleInfo className="text-[10px] opacity-70" aria-label={detail} />}
         </span>

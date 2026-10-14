@@ -169,6 +169,7 @@ body {
   --animate-confetti-fall: confetti-fall var(--fall, 2600ms) linear both;
   --animate-rise-in: rise-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-gift-rain: gift-rain var(--fall, 5s) linear infinite;
+  --animate-sri-shimmer: sri-shimmer 1.8s ease-in-out infinite;
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -234,6 +235,12 @@ body {
     100% { opacity: 0; transform: translate3d(0, var(--drop, 320px), 0) rotate(8deg); }
   }
 
+  /* Brillo que cruza la etiqueta del SRI mientras el comprobante se procesa */
+  @keyframes sri-shimmer {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -255,5 +262,8 @@ body {
   }
   .animate-gift-drop, .animate-gift-pop, .animate-rise-in {
     animation: none;
+  }
+  .animate-sri-shimmer {
+    display: none;
   }
 }
