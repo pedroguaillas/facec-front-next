@@ -37,7 +37,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         <ToastContext.Provider value={{ toast }}>
             {children}
             <div
-                className="fixed bottom-4 right-4 left-4 sm:left-auto z-[110] flex flex-col items-end gap-2 pointer-events-none"
+                className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 left-4 sm:left-auto z-[110] flex flex-col items-end gap-2 pointer-events-none"
                 role="status"
                 aria-live="polite"
             >

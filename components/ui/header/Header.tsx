@@ -16,7 +16,7 @@ const Header = ({ menu, setMenu }: Props) => {
     return (
         <header
             className="
-                h-14 z-40 sticky top-0
+                h-[calc(3.5rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] z-40 sticky top-0
                 flex justify-between items-center px-4
                 border-b
             "

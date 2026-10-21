@@ -12,7 +12,7 @@ export default function ErrorPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center text-center p-6">
+    <div className="min-h-dvh flex flex-col justify-center items-center text-center p-6">
       <h1 className="text-3xl font-bold text-red-600 mb-4">⚠️ Error</h1>
       <p className="text-lg text-gray-700 mb-6">{message}</p>
 

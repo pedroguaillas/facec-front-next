@@ -1,3 +1,4 @@
+import { limitDecimals } from "@/helpers/numberHelper";
 import { useProductCreateContext } from "../context/ProductFormContext";
 import { useEffect, useState } from "react";
 
@@ -56,7 +57,9 @@ export const useProductForm = () => {
     }, [ivaRate, canBreakdown]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
+        const { name, value: raw } = event.target;
+        // Stock y mínimo admiten hasta 6 decimales en el backend (igual que el kardex)
+        const value = name === 'stock' || name === 'min_stock' ? limitDecimals(raw, 6) : raw;
         setProduct((prevState) => ({ ...prevState, [name]: value }))
         setErrorProduct(prev => ({ ...prev, [name]: '' }))
     }

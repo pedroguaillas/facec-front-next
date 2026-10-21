@@ -1,6 +1,6 @@
 "use client";
 
-import { useProductCreateContext } from "../context/ProductFormContext";
+import { DraftPresentationErrors, useProductCreateContext } from "../context/ProductFormContext";
 import { productSchema } from "@/schemas/product.schema";
 import { useRouter, useParams } from "next/navigation";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
@@ -11,7 +11,7 @@ import { parseZodErrors } from "@/helpers/zodHelper";
 import { useInventory } from "@/lib/hooks/useInventory";
 
 export const ButtonSubmit = () => {
-    const { product, setErrorProduct } = useProductCreateContext();
+    const { product, setErrorProduct, draftPresentations, setDraftErrors } = useProductCreateContext();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
@@ -31,18 +31,39 @@ export const ButtonSubmit = () => {
             return;
         }
 
+        // Al crear, las presentaciones van en el mismo POST (una transacción). Solo productos:
+        // con un servicio el backend rechaza la clave aunque venga vacía, así que no se envía
+        const presentations = !params?.id && inventory && product.type_product === 1 && draftPresentations.length > 0
+            ? draftPresentations.map(({ name, conversion_factor, price, code, active }) => ({ name, conversion_factor, price, code, active }))
+            : undefined;
+
         // 3. Enviar el formulario
         setIsPending(true);
+        setDraftErrors({ rows: {} });
 
         const { error, data, errors } = params?.id
             ? await updateProduct(Number(params.id), axiosAuth, form)
-            : await storeProduct(axiosAuth, form);
+            : await storeProduct(axiosAuth, presentations ? { ...form, presentations } : form);
 
         if (data) {
             router.push("/products");
         } else if (errors) {
-            console.log(errors);
-            setErrorProduct(errors);
+            // presentations.N.campo → fila N de los borradores; el resto son campos del producto
+            const productErrors: Record<string, string> = {};
+            const presentationErrors: DraftPresentationErrors = { rows: {} };
+            Object.entries(errors).forEach(([field, message]) => {
+                const match = field.match(/^presentations\.(\d+)\.(\w+)$/);
+                const draft = match ? draftPresentations[Number(match[1])] : undefined;
+                if (draft && match) {
+                    presentationErrors.rows[draft.key] = { ...presentationErrors.rows[draft.key], [match[2]]: message };
+                } else if (field.startsWith('presentations')) {
+                    presentationErrors.general = message;
+                } else {
+                    productErrors[field] = message;
+                }
+            });
+            setErrorProduct(productErrors);
+            setDraftErrors(presentationErrors);
         } else {
             console.log(error);
         }

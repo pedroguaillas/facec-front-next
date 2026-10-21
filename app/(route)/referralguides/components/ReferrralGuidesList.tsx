@@ -21,6 +21,7 @@ const ReferrralGuidesList = () => {
         <TableResponsive>
             <thead>
                 <tr>
+                    <th className="text-left">Emisión</th>
                     <th className="text-left">Traslado</th>
                     <th className="text-left">Documento</th>
                     <th className="text-left">Destinatario</th>
@@ -31,10 +32,12 @@ const ReferrralGuidesList = () => {
             </thead>
             <tbody>
                 {referralGuides.map((referralGuide, index) => {
-                    const { date_start, date_end } = referralGuide.atts;
+                    const { date, date_start, date_end } = referralGuide.atts;
                     const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(referralGuide.atts?.state);
                     return (
                     <tr key={referralGuide.id}>
+                        {/* La que va en la clave de acceso y el RIDE */}
+                        <td className="text-left whitespace-nowrap tabular-nums text-ink-2">{formatDate(date)}</td>
                         {/* Inicio y fin del traslado; un solo día se muestra una vez */}
                         <td className="text-left whitespace-nowrap tabular-nums text-ink-2">
                             {formatDate(date_start)}

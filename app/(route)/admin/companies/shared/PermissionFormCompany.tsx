@@ -62,7 +62,7 @@ const PermissionFormCompany = () => {
 
                     <div className='lg:w-2/3'>
                         <TextInput
-                            type='number'
+                            type='number' inputMode='numeric'
                             name='retention_agent'
                             label='Es agente de retención?'
                             value={(company.retention_agent ?? '').toString()}

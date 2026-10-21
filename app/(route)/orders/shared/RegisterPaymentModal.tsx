@@ -90,7 +90,7 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
                         Total: <strong>{total.toFixed(2)}</strong> · Pagado: <strong>{paid.toFixed(2)}</strong> · Pendiente: <strong>{pending?.toFixed(2)}</strong>
                     </p>
 
-                    <TextInput type="number" label="Monto a abonar" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
+                    <TextInput type="number" inputMode="decimal" label="Monto a abonar" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
                     <SelectPaymentSource sourceType={sourceType} sourceId={sourceId} error={errors.source_type || errors.source_id} onChange={handleSelectSource} />
                     <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={getDate()} />
 

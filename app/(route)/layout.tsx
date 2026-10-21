@@ -5,6 +5,7 @@ import Sidebar from "@/components/ui/sidebar/Sidebar";
 import { PlanBanner } from "@/components/plan/PlanBanner";
 import { PlanErrorNotice } from "@/components/plan/PlanErrorNotice";
 import { FinanceSetupGate } from "@/components/finance-setup/FinanceSetupGate";
+import { OfflineBanner } from "@/components/pwa/OfflineBanner";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, ReactNode, useEffect } from "react";
@@ -27,7 +28,7 @@ export default function Main({ children }: MainProps) {
 
     if (status === "loading") {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+            <div className="min-h-dvh flex items-center justify-center" style={{ background: 'var(--background)' }}>
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primaryhover to-primary flex items-center justify-center">
                         <span className="text-white font-bold text-lg">F</span>
@@ -43,14 +44,15 @@ export default function Main({ children }: MainProps) {
     }
 
     return (
-        <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+        <div className="min-h-dvh flex flex-col" style={{ background: 'var(--background)' }}>
             <Sidebar menu={menu} setMenu={setMenu} />
             <div className={`
-                flex flex-col flex-1 min-h-screen
+                flex flex-col flex-1 min-h-dvh
                 transition-all ease-out duration-300
                 ${menu ? 'md:ml-64' : 'md:ml-[4.5rem]'}
             `}>
                 <Header menu={menu} setMenu={setMenu} />
+                <OfflineBanner />
                 <PlanBanner />
                 <main className="flex-1 flex flex-col">
                     {children}

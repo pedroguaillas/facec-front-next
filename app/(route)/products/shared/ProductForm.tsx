@@ -71,7 +71,7 @@ export const ProductForm = () => {
                                 <input type='text' value={total} onChange={handleTotal} placeholder='Total con IVA' maxLength={15} inputMode='decimal' aria-label='Total con IVA'
                                     className={`border rounded-l-lg px-3 py-2 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors border-[var(--border-strong)]
                                     ${breakdown ? 'block' : 'hidden'}`} />
-                                <input type='number' value={product.price1} onChange={handleChange} name='price1'
+                                <input type='number' inputMode='decimal' value={product.price1} onChange={handleChange} name='price1'
                                     className={`border px-3 py-2 text-sm bg-[var(--background)] dark:text-gray-300 focus:outline-none focus:border-primary transition-colors
                                     ${breakdown ? 'rounded-r-lg' : 'rounded-lg'}
                                     ${errorProduct.price1 ? 'border-red-400' : 'border-[var(--border-strong)]'}

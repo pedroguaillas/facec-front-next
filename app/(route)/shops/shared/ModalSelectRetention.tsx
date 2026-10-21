@@ -3,20 +3,26 @@
 import { useFormShop } from '../context/FormShopContext';
 import { Modal } from '@/components/modal/Modal'
 import { TableResponsive } from '@/components';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TaxInput } from '@/types';
 
 interface Props {
   show: boolean;
   code: number;
+  // Lo escrito en el buscador de la línea al abrir la lista completa
+  initialSearch?: string;
   onClose: () => void;
   selectRetetion: (tax: TaxInput) => void;
 }
 
-const ModalSelectRetention = ({ show, code, onClose, selectRetetion }: Props) => {
+const ModalSelectRetention = ({ show, code, initialSearch = '', onClose, selectRetetion }: Props) => {
 
   const [search, setSearch] = useState('');
   const { taxInputs } = useFormShop();
+
+  useEffect(() => {
+    if (show) setSearch(initialSearch);
+  }, [show, initialSearch]);
 
   const filterTaxInputs = taxInputs.filter(retention => {
     const matchesType = code === 2 ? retention.type === 'iva' : retention.type === 'renta';
@@ -37,11 +43,12 @@ const ModalSelectRetention = ({ show, code, onClose, selectRetetion }: Props) =>
         placeholder="Buscar retención ..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        autoFocus
         className="w-full mb-2 border border-gray-300 dark:border-slate-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
       {/* Scroll */}
-      <div className='max-h-[calc(100vh-20em)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary'>
+      <div className='max-h-[calc(100dvh-20em)] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-primary'>
 
         <TableResponsive>
           <thead>

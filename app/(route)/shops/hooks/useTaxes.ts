@@ -64,6 +64,7 @@ export const useTaxes = () => {
         newTaxes[index] = {
             ...newTaxes[index],
             tax_code: retention.code,
+            tax_name: retention.conception,
             porcentage: retention.porcentage,
             editable_porcentage: retention.porcentage === null,
         };

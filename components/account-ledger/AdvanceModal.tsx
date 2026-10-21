@@ -70,7 +70,7 @@ export const AdvanceModal = ({ partyType, partyId, onClose, onSaved }: Props) =>
                 Dinero recibido {partyType === 'customer' ? 'del cliente' : 'del proveedor'} antes de la factura/compra. Se aplicará automáticamente a la próxima venta o compra a crédito.
             </p>
             <form onSubmit={handleSubmit}>
-                <TextInput type="number" label="Monto" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
+                <TextInput type="number" inputMode="decimal" label="Monto" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
                 <SelectPaymentSource sourceType={sourceType} sourceId={sourceId} error={errors.source_type || errors.source_id} onChange={handleSelectSource} />
                 <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={getDate()} />
 

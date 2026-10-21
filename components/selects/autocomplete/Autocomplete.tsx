@@ -18,6 +18,7 @@ interface Props<T> {
     onBrowse?: (search: string) => void;
     // Tras elegir, pasa el foco al siguiente campo (ej. cantidad de la línea)
     focusNextOnSelect?: boolean;
+    disabled?: boolean;
 }
 
 const DEBOUNCE_MS = 250;
@@ -35,7 +36,7 @@ const focusNext = (from: HTMLElement) => {
 
 // Buscador con sugerencias: se escribe y se elige con flechas + Enter sin abrir el modal.
 // Enter con la búsqueda aún en curso (lector de código de barras) espera el resultado y toma el primero
-export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchItems, getKey, renderItem, onSelect, onBrowse, focusNextOnSelect = false }: Props<T>) => {
+export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchItems, getKey, renderItem, onSelect, onBrowse, focusNextOnSelect = false, disabled = false }: Props<T>) => {
     const listId = useId();
     const inputRef = useRef<HTMLInputElement>(null);
     // null = no se está escribiendo: se muestra value
@@ -46,7 +47,7 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(0);
-    const [position, setPosition] = useState<{ top: number; left: number; width: number; up: boolean } | null>(null);
+    const [position, setPosition] = useState<{ top: number; left: number; width: number; up: boolean; maxHeight: number } | null>(null);
     const requestId = useRef(0);
 
     const search = useCallback(async (term: string) => {
@@ -71,8 +72,20 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
     const updatePosition = useCallback(() => {
         const rect = inputRef.current?.getBoundingClientRect();
         if (!rect) return;
-        const up = window.innerHeight - rect.bottom < MAX_HEIGHT && rect.top > window.innerHeight - rect.bottom;
-        setPosition({ top: up ? rect.top - 4 : rect.bottom + 4, left: rect.left, width: rect.width, up });
+        // Zona visible real: en iOS el teclado no achica window.innerHeight, solo el visualViewport
+        const viewport = window.visualViewport;
+        const visibleTop = viewport?.offsetTop ?? 0;
+        const visibleBottom = visibleTop + (viewport?.height ?? window.innerHeight);
+        const below = visibleBottom - rect.bottom - 8;
+        const above = rect.top - visibleTop - 8;
+        const up = below < MAX_HEIGHT && above > below;
+        setPosition({
+            top: up ? rect.top - 4 : rect.bottom + 4,
+            left: rect.left,
+            width: rect.width,
+            up,
+            maxHeight: Math.max(120, Math.min(MAX_HEIGHT, up ? above : below)),
+        });
     }, []);
 
     // La lista va en un portal (fixed) para no quedar recortada por tablas o modales con overflow
@@ -81,9 +94,14 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
         updatePosition();
         window.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
+        // El teclado al abrirse/cerrarse solo mueve el visualViewport
+        window.visualViewport?.addEventListener('resize', updatePosition);
+        window.visualViewport?.addEventListener('scroll', updatePosition);
         return () => {
             window.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
+            window.visualViewport?.removeEventListener('resize', updatePosition);
+            window.visualViewport?.removeEventListener('scroll', updatePosition);
         };
     }, [open, updatePosition]);
 
@@ -172,6 +190,7 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
                 aria-activedescendant={showList && items[active] ? `${listId}-${active}` : undefined}
                 aria-invalid={error ? 'true' : 'false'}
                 autoComplete="off"
+                disabled={disabled}
                 value={query ?? value}
                 placeholder={placeholder}
                 onFocus={(e) => e.target.select()}
@@ -192,6 +211,7 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
                     ${onBrowse ? 'pr-9' : 'pr-8'}
                     transition-colors duration-150
                     bg-[var(--background)] dark:text-gray-300
+                    disabled:opacity-50 disabled:cursor-not-allowed
                     focus:outline-none focus:ring-2
                     ${error ? 'border-red-400 focus:border-red-500 focus:ring-red-500/15' : 'border-[var(--border-strong)] focus:border-primary focus:ring-primary/15'}
                 `}
@@ -200,6 +220,7 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
                 <button
                     type="button"
                     tabIndex={-1}
+                    disabled={disabled}
                     title="Ver lista completa (F2)"
                     aria-label="Ver lista completa"
                     // mousedown: evita el blur del input antes del click
@@ -221,10 +242,10 @@ export const Autocomplete = <T,>({ value, placeholder, ariaLabel, error, fetchIt
                         position: 'fixed',
                         left: position.left,
                         width: Math.max(position.width, 280),
-                        maxHeight: MAX_HEIGHT,
+                        maxHeight: position.maxHeight,
                         ...(position.up ? { bottom: window.innerHeight - position.top } : { top: position.top }),
                     }}
-                    className="z-[110] overflow-y-auto rounded-lg border border-line bg-surface shadow-lg py-1 text-sm"
+                    className="z-[110] overflow-y-auto overscroll-contain rounded-lg border border-line bg-surface shadow-lg py-1 text-sm"
                     onMouseDown={(e) => e.preventDefault()}
                 >
                     {items.map((item, index) => (

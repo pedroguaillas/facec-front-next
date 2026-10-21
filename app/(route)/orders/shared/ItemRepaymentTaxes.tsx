@@ -40,7 +40,7 @@ export const ItemRepaymentTaxes = ({ indexRepayment, repaymentTaxes, updateRepay
                             </td>
                             <td className="p-1.5 border border-[var(--border)]">
                                 <input
-                                    type="number"
+                                    type="number" inputMode="decimal"
                                     step="0.01"
                                     value={tax.base}
                                     onChange={(e) => updateRepaymentTax(indexRepayment, taxIndex, 'base', e.target.value)}
@@ -50,7 +50,7 @@ export const ItemRepaymentTaxes = ({ indexRepayment, repaymentTaxes, updateRepay
                             </td>
                             <td className="p-1.5 border border-[var(--border)]">
                                 <input
-                                    type="number"
+                                    type="number" inputMode="decimal"
                                     step="0.01"
                                     value={tax.iva}
                                     onChange={(e) => updateRepaymentTax(indexRepayment, taxIndex, 'iva', e.target.value)}

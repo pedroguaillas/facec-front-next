@@ -1,6 +1,8 @@
 export interface ReferralGuideProps {
     id: string,
     atts: {
+        // Fecha de emisión (d-m-Y): al enviar al SRI pasa a ser la del día, puede diferir del traslado
+        date: string,
         date_start: string,
         date_end: string,
         serie: string,

@@ -13,6 +13,8 @@ import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoice
 import { calculateInvoiceTotals } from '@/helpers/invoiceTotalsHelper';
 import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
 import { usePlan } from '@/lib/hooks/usePlan';
+import { useSession } from 'next-auth/react';
+import { PrintTicketPanel } from './PrintTicketPanel';
 
 export const ButtonSubmit = () => {
 
@@ -25,6 +27,9 @@ export const ButtonSubmit = () => {
     const { toast } = useToast();
     const params = useParams();
     const { canUseFinance } = usePlan();
+    const { data: session } = useSession();
+    // Venta recién guardada cuyo ticket se imprime antes de volver a la lista
+    const [printOrder, setPrintOrder] = useState<{ id: string | number; serie?: string } | null>(null);
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -133,6 +138,14 @@ export const ButtonSubmit = () => {
         const { data, error, errors } = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), form) : invoiceStoreServices(axiosAuth, form));
         if (data) {
             toast(send ? 'Venta guardada y enviada a procesar' : 'Venta guardada');
+            // Imprime tickets y está en computadora (mouse): ticket listo e impresión automática.
+            // En celular/tablet se sigue imprimiendo desde la lista (compartir/abrir el PDF)
+            const savedId = data.id ?? params.id?.toString();
+            const printsTickets = !!session?.user.permissions.printf && window.matchMedia('(pointer: fine)').matches;
+            if (printsTickets && savedId) {
+                setPrintOrder({ id: savedId, serie: (data as { serie?: string }).serie });
+                return;
+            }
             router.push(`/orders`);
             return;
         }
@@ -148,6 +161,9 @@ export const ButtonSubmit = () => {
 
     return (
         <div className="flex flex-col gap-2">
+            {printOrder && (
+                <PrintTicketPanel orderId={printOrder.id} serie={printOrder.serie} onDone={() => router.push('/orders')} />
+            )}
             <button
                 type="button"
                 onClick={(e) => handleSubmit(e, true)}

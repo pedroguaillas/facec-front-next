@@ -20,9 +20,13 @@ const emptyForm: ProductPresentationForm = { name: '', conversion_factor: '', pr
 
 const decimals = (value: number | string) => (String(value).split('.')[1] ?? '').length;
 
-// Presentaciones de venta/compra (ej. "Cubeta x30"): se agregan una vez creado el producto
+// Fila de la tabla: presentación guardada o borrador (al crear; id = key temporal)
+type Row = Pick<ProductPresentation, 'id' | 'name' | 'code' | 'conversion_factor' | 'active'> & { price: number | string | null };
+
+// Presentaciones de venta/compra (ej. "Cubeta x30"). Al editar se guardan al momento;
+// al crear quedan como borrador y viajan en el mismo POST products (ButtonSubmit)
 export const PresentationsSection = () => {
-    const { product, isEdit } = useProductCreateContext();
+    const { product, isEdit, draftPresentations, setDraftPresentations, draftErrors, setDraftErrors } = useProductCreateContext();
     const axiosAuth = useAxiosAuth();
     const { toast } = useToast();
     const [presentations, setPresentations] = useState<ProductPresentation[]>([]);
@@ -48,23 +52,25 @@ export const PresentationsSection = () => {
         fetchPresentations();
     }, [fetchPresentations]);
 
-    if (!isEdit) {
-        return (
-            <>
-                <Separate />
-                <strong className='font-bold'>Presentaciones</strong>
-                <p className="text-sm text-ink-3 mt-1">Guarda el producto para agregar presentaciones (ej. Cubeta x30, Caja x12).</p>
-            </>
-        );
-    }
+    const rows: Row[] = isEdit
+        ? presentations
+        : draftPresentations.map(draft => ({ ...draft, id: draft.key, code: draft.code ?? null, price: draft.price ?? null, conversion_factor: Number(draft.conversion_factor) }));
 
-    const open = (presentation?: ProductPresentation) => {
+    // Al corregir o quitar un borrador se limpian sus errores (y el general, que depende del conjunto)
+    const clearDraftErrors = (key: number) => setDraftErrors(prev => {
+        const rowsLeft = { ...prev.rows };
+        delete rowsLeft[key];
+        return { rows: rowsLeft };
+    });
+
+    const open = (presentation?: Row) => {
         const values: ProductPresentationForm = presentation
             ? { name: presentation.name, conversion_factor: String(presentation.conversion_factor), price: String(presentation.price ?? ''), code: presentation.code ?? '', active: presentation.active !== false }
             : emptyForm;
         setForm(values);
         setEditing({ id: presentation?.id ?? 0, snapshot: values });
-        setErrors({});
+        // Borrador rechazado por el backend: sus errores aparecen bajo cada campo al abrirlo
+        setErrors(!isEdit && presentation ? draftErrors.rows[presentation.id] ?? {} : {});
         setMessage(undefined);
     };
 
@@ -78,6 +84,12 @@ export const PresentationsSection = () => {
         if (!editing) return;
         const found: Record<string, string> = {};
         if (!form.name.trim()) found.name = 'Nombre requerido';
+        // Al crear no hay backend que valide aún: se evita repetir código entre borradores y con el del producto
+        const code = form.code?.trim().toLowerCase();
+        if (!isEdit && code && (code === product.code.trim().toLowerCase()
+            || draftPresentations.some(d => d.key !== editing.id && d.code?.trim().toLowerCase() === code))) {
+            found.code = 'El código ya se usa en este producto';
+        }
         if (!(Number(form.conversion_factor) >= 0.000001)) found.conversion_factor = 'Mínimo 0.000001';
         else if (decimals(form.conversion_factor) > 6) found.conversion_factor = 'Máximo 6 decimales';
         if (form.price !== '' && Number(form.price) < 0) found.price = 'Inválido';
@@ -94,6 +106,16 @@ export const PresentationsSection = () => {
             code: form.code?.trim() || null,
             active: form.active !== false,
         };
+
+        if (!isEdit) {
+            setDraftPresentations(prev => editing.id
+                ? prev.map(draft => draft.key === editing.id ? { ...payload, key: draft.key } : draft)
+                : [...prev, { ...payload, key: Date.now() }]);
+            clearDraftErrors(editing.id);
+            setEditing(null);
+            return;
+        }
+
         setIsPending(true);
         const response = editing.id
             ? await updatePresentation(axiosAuth, productId, editing.id, payload)
@@ -112,6 +134,12 @@ export const PresentationsSection = () => {
 
     const confirmDelete = async (accept: boolean) => {
         if (!accept || deleteId === null) return;
+        if (!isEdit) {
+            setDraftPresentations(prev => prev.filter(draft => draft.key !== deleteId));
+            clearDraftErrors(deleteId);
+            setDeleteId(null);
+            return;
+        }
         const { data, error, errors: deleteErrors } = await deletePresentation(axiosAuth, productId, deleteId);
         setDeleteId(null);
         if (data) {
@@ -131,6 +159,7 @@ export const PresentationsSection = () => {
                 <div>
                     <strong className='font-bold'>Presentaciones</strong>
                     <p className="text-xs text-ink-3 mt-0.5">Vende o compra en cubetas, cajas, etc. El stock se lleva en la unidad del producto.</p>
+                    {draftErrors.general && <p className="text-xs text-red-500 mt-1">{draftErrors.general}</p>}
                 </div>
                 <button
                     type="button"
@@ -141,7 +170,7 @@ export const PresentationsSection = () => {
                 </button>
             </div>
 
-            {presentations.length > 0 && (
+            {rows.length > 0 && (
                 <TableResponsive>
                     <thead>
                         <tr>
@@ -153,17 +182,25 @@ export const PresentationsSection = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {presentations.map(presentation => (
+                        {rows.map(presentation => (
                             <tr key={presentation.id}>
                                 <td className="text-left">
                                     {presentation.name}
                                     {presentation.active === false && (
                                         <span className="ml-2 inline-flex items-center rounded-full bg-surface-sunken px-2 py-0.5 text-xs font-medium text-ink-3">Inactiva</span>
                                     )}
+                                    {!isEdit && draftErrors.rows[presentation.id] && (
+                                        <p className="text-xs text-red-500 mt-0.5">{Object.values(draftErrors.rows[presentation.id]).join(' · ')}</p>
+                                    )}
                                 </td>
                                 <td>{presentation.code ?? '—'}</td>
                                 <td className="text-right tabular-nums">{formatFactor(presentation.conversion_factor)}</td>
-                                <td className="text-right tabular-nums">${Number(presentation.price).toFixed(2)}</td>
+                                <td className="text-right tabular-nums">
+                                    {/* Borrador sin precio propio: precio del producto × unidades */}
+                                    ${(presentation.price === null || presentation.price === ''
+                                        ? Number(product.price1) * Number(presentation.conversion_factor)
+                                        : Number(presentation.price)).toFixed(2)}
+                                </td>
                                 <td className="w-1">
                                     <div className="flex gap-1">
                                         <IconButton type="button" action="edit" onClick={() => open(presentation)} title="Editar" />
@@ -179,7 +216,7 @@ export const PresentationsSection = () => {
             {editing && (
                 <FormModal
                     title={editing.id ? 'Editar presentación' : 'Nueva presentación'}
-                    subtitle={`${product.code} - ${product.name}`}
+                    subtitle={product.code || product.name ? `${product.code} - ${product.name}` : 'Producto nuevo'}
                     onClose={() => setEditing(null)}
                     onSubmit={submit}
                     isPending={isPending}
@@ -229,7 +266,7 @@ export const PresentationsSection = () => {
                 itemId={deleteId}
                 confirmation={confirmDelete}
                 title="¿Eliminar esta presentación?"
-                sutTitle="Solo se pueden eliminar las presentaciones que no se han usado en ventas o compras."
+                sutTitle={isEdit ? "Solo se pueden eliminar las presentaciones que no se han usado en ventas o compras." : "Aún no se ha guardado; se quita de la lista."}
             />
         </>
     );

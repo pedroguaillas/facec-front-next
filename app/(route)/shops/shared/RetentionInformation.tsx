@@ -1,10 +1,9 @@
 "use client";
 
 import { getDate, getMinDate } from "@/helpers/dateHelper";
-import { useSelectPoint } from '../hooks/useSelectPoint';
 import { useShopVoucherType } from '../hooks/useShopVoucherType';
 import { useFormShop } from "../context/FormShopContext";
-import { SelectOption, Switch, TextInput } from '@/components';
+import { Switch, TextInput } from '@/components';
 import { nanoid } from 'nanoid';
 import { FormSection } from '../../orders/shared/FormSection';
 import { ListTaxes } from './ListTaxes';
@@ -15,16 +14,8 @@ const NOTA_VENTA_RETENTION_CODE = '332';
 
 export const RetentionInformation = () => {
 
-    const { shop, errorShop, points, taxes, taxInputs, selectPoint, applieWithholding, setShop, setSelectPoint, setErrorShop, setApplieWithholding, setTaxes } = useFormShop();
+    const { shop, errorShop, taxes, taxInputs, applieWithholding, setShop, setErrorShop, setApplieWithholding, setTaxes } = useFormShop();
     const { isNotaVenta } = useShopVoucherType();
-
-    const optionPoints = points.map((point) => ({
-        value: point.id,
-        label: `${point.store} - ${point.point} - ${point.recognition}`
-    }));
-
-    // Solo le llamo a este Hooks para que se ejecute el useEffect que tiene dentro
-    useSelectPoint();
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -62,12 +53,6 @@ export const RetentionInformation = () => {
         }
     }
 
-    const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedPoint = points.find(point => point.id === Number(event.target.value));
-        setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
-        setErrorShop((prevState) => ({ ...prevState, serie_retencion: '' }))
-    }
-
     const retained = taxes.reduce((acc, tax) => acc + (Number(tax.value) || 0), 0);
 
     return (
@@ -88,9 +73,6 @@ export const RetentionInformation = () => {
             {applieWithholding && (
                 <>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6 mt-2'>
-                        {points.length > 1 && (
-                            <SelectOption label="Punto de emisión" name='serie_retencion' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ""} error={errorShop.serie_retencion} handleSelect={handleSelectPoint} required />
-                        )}
                         <TextInput type='date' label='Fecha de la retención' value={shop.date_retention ?? ''} error={errorShop.date_retention} onChange={handleChange} name='date_retention' min={shop.date ?? getMinDate()} max={getDate()} hint='Desde la fecha de la compra hasta hoy' required />
                     </div>
                     <ListTaxes />

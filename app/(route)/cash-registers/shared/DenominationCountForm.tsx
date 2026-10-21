@@ -60,7 +60,7 @@ export const DenominationCountForm = ({ onChange }: Props) => {
                         <td>{denominationTypeLabels[denomination.atts.type]}</td>
                         <td>
                             <input
-                                type="number"
+                                type="number" inputMode="numeric"
                                 min={0}
                                 className="w-20 border rounded-lg px-2 py-1 text-sm text-center bg-[var(--background)] border-[var(--border-strong)] focus:border-primary focus:outline-none dark:text-gray-300"
                                 value={quantities[denomination.id] ?? 0}

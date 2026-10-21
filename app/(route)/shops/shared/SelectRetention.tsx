@@ -1,10 +1,11 @@
 "use client";
 
-import { FaSearch } from 'react-icons/fa';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ModalSelectRetention from './ModalSelectRetention';
 import { Tax, TaxInput } from '@/types';
 import { useTaxes } from '../hooks/useTaxes';
+import { useFormShop } from '../context/FormShopContext';
+import { Autocomplete } from '@/components/selects/autocomplete/Autocomplete';
 
 interface Props {
     index: number;
@@ -13,43 +14,57 @@ interface Props {
     disabled?: boolean;
 }
 
+const MAX_SUGGESTIONS = 30;
+
+// Concepto de retención: se escribe código o texto y se elige de las sugerencias (filtra en memoria,
+// los conceptos ya vienen con el formulario). La lista completa sigue en el modal (F2)
 export const SelectRetention = ({ index, tax, error, disabled = false }: Props) => {
 
-    const [label, setlabel] = useState(tax.tax_name || '');
-    const [modal, setModal] = useState<boolean>(false);
+    const [modal, setModal] = useState(false);
+    const [browseSearch, setBrowseSearch] = useState('');
     const { selectRetention } = useTaxes();
+    const { taxInputs } = useFormShop();
+    // 1 = renta, 2 = IVA
+    const code = Number(tax.code);
 
-    const toggle = () => {
-        setModal(!modal);
-    }
+    const fetchConcepts = useCallback(async (term: string) => {
+        const search = term.toLowerCase();
+        return taxInputs
+            .filter(input => (code === 2 ? input.type === 'iva' : input.type === 'renta')
+                && (input.code.includes(search) || input.conception.toLowerCase().includes(search)))
+            .slice(0, MAX_SUGGESTIONS);
+    }, [taxInputs, code]);
 
-    const selectRetetion = (taxInput: TaxInput) => {
-        selectRetention(index, taxInput)
-        setlabel(taxInput.conception);
-        toggle();
-    }
+    const select = (taxInput: TaxInput) => {
+        selectRetention(index, taxInput);
+        setModal(false);
+    };
 
     return (
-        <div className='flex flex-col w-full'>
-            <button
-                type="button"
-                onClick={toggle}
+        <div className='flex flex-col w-full min-w-0'>
+            <Autocomplete<TaxInput>
+                value={tax.tax_code ? (tax.tax_name ?? tax.tax_code) : ''}
+                placeholder={tax.code === '' ? 'Elige el impuesto' : 'Código o concepto…'}
+                ariaLabel={`Concepto de retención línea ${index + 1}`}
+                error={error}
                 disabled={tax.code === '' || disabled}
-                className={`
-                    w-full flex items-center justify-between min-w-0
-                    border rounded-md px-2 py-1.5 text-sm text-left
-                    transition-colors duration-150 cursor-pointer
-                    bg-[var(--background)] text-ink-1
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    ${error ? 'border-red-400' : 'border-[var(--border-strong)] hover:border-primary'}
-                `}
-            >
-                <span className={`truncate ${label ? '' : 'text-ink-4'}`} title={label || undefined}>
-                    {label || (tax.code === '' ? 'Elige el impuesto' : 'Buscar concepto…')}
-                </span>
-                <FaSearch className="text-xs opacity-40 shrink-0 ml-2" />
-            </button>
-            <ModalSelectRetention show={modal} code={Number(tax.code)} selectRetetion={selectRetetion} onClose={toggle} />
+                fetchItems={fetchConcepts}
+                getKey={(input) => `${input.type}-${input.code}`}
+                renderItem={(input) => (
+                    <div className="flex items-baseline gap-2">
+                        <span className="shrink-0 text-xs text-ink-3 tabular-nums w-10">{input.code}</span>
+                        <span className="flex-1 truncate" title={input.conception}>{input.conception}</span>
+                        <span className="shrink-0 text-xs tabular-nums">{input.porcentage !== null ? `${input.porcentage}%` : 'Variable'}</span>
+                    </div>
+                )}
+                onSelect={select}
+                onBrowse={(term) => {
+                    setBrowseSearch(term);
+                    setModal(true);
+                }}
+                focusNextOnSelect
+            />
+            <ModalSelectRetention show={modal} code={code} initialSearch={browseSearch} selectRetetion={select} onClose={() => setModal(false)} />
         </div>
     )
 }

@@ -9,6 +9,18 @@ import { Product, SriCategory, ProductEditResponse } from "@/types";
 import { CodeErrors } from "@/constants/codeErrors";
 import { redirect } from "next/navigation";
 import { useInventory } from "@/lib/hooks/useInventory";
+import { ProductPresentationForm } from "@/services/productPresentationServices";
+
+// Presentación agregada al crear el producto: viaja en `presentations[]` del POST products
+export interface DraftPresentation extends ProductPresentationForm {
+    key: number;
+}
+
+// Errores 422 de `presentations.N.campo` (por key del borrador) y de `presentations` en general
+export interface DraftPresentationErrors {
+    rows: Record<number, Record<string, string>>;
+    general?: string;
+}
 
 interface ProductCreateContextType {
     product: Product;
@@ -22,6 +34,11 @@ interface ProductCreateContextType {
     isEdit: boolean;
     setProduct: Dispatch<SetStateAction<Product>>;
     setErrorProduct: Dispatch<SetStateAction<Partial<Record<keyof Product, string>>>>;
+    // Solo al crear: presentaciones aún sin producto (al editar se guardan directo en el backend)
+    draftPresentations: DraftPresentation[];
+    setDraftPresentations: Dispatch<SetStateAction<DraftPresentation[]>>;
+    draftErrors: DraftPresentationErrors;
+    setDraftErrors: Dispatch<SetStateAction<DraftPresentationErrors>>;
 }
 
 const ProductCreateContext = createContext<ProductCreateContextType | undefined>(undefined);
@@ -49,6 +66,8 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     const [sriCategories, setSriCategories] = useState<SriCategory[]>([]);
     const [transport, setTransport] = useState(false);
     const [base8, setBase8] = useState(false);
+    const [draftPresentations, setDraftPresentations] = useState<DraftPresentation[]>([]);
+    const [draftErrors, setDraftErrors] = useState<DraftPresentationErrors>({ rows: {} });
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
     const { enabled: inventory } = useInventory();
@@ -99,6 +118,10 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 isEdit: id !== undefined,
                 setProduct,
                 setErrorProduct,
+                draftPresentations,
+                setDraftPresentations,
+                draftErrors,
+                setDraftErrors,
             }}
         >
             {children}

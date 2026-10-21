@@ -6,6 +6,7 @@ import { getDate, getMinDate } from "@/helpers/dateHelper";
 import { useFormShop } from "../context/FormShopContext";
 import { FormSection } from "../../orders/shared/FormSection";
 import { ImportXml } from "./ImportXml";
+import { useSelectPoint } from "../hooks/useSelectPoint";
 
 // "001001000000123" → "001-001-000000123" mientras se escribe
 const formatSerie = (raw: string) => {
@@ -18,6 +19,10 @@ export const GeneralInformation = () => {
     const { invoiceTypes, isLiquidacion, isFactura, handleChange, handleSelectProvider } = useGeneralInformation();
     const { shop, errorShop, selectProvider, points, selectPoint, setShop, setSelectPoint, setErrorShop } = useFormShop();
 
+    // El punto de emisión vive en la cabecera: arma la serie de la retención (y de la liquidación)
+    // sin obligar a activar la retención para poder elegirlo
+    useSelectPoint();
+
     const optionPoints = points.map((point) => ({
         value: point.id,
         label: `${point.store} - ${point.point} - ${point.recognition}`
@@ -26,8 +31,13 @@ export const GeneralInformation = () => {
     const handleSelectPoint = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedPoint = points.find(point => point.id === Number(event.target.value));
         setSelectPoint(selectedPoint !== undefined ? selectedPoint : null);
-        setErrorShop(prev => ({ ...prev, serie: '' }));
+        setErrorShop(prev => ({ ...prev, serie_retencion: '', ...(isLiquidacion && { serie: '' }) }));
     }
+
+    // Errores ligados al punto: el de la retención, y en liquidación el de la serie (no hay campo de número)
+    const pointError = (errorShop as Record<string, string | undefined>).point_id
+        || errorShop.serie_retencion
+        || (isLiquidacion ? errorShop.serie : undefined);
 
     const handleSerie = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShop(prev => ({ ...prev, serie: formatSerie(event.target.value) }));
@@ -54,9 +64,9 @@ export const GeneralInformation = () => {
                     <SelectProvider selectProvider={handleSelectProvider} label={selectProvider?.atts.name} error={errorShop.provider_id} />
                 </div>
 
-                {/* La liquidación la emite la empresa: el número sale del punto de emisión */}
-                {isLiquidacion && points.length > 1 && (
-                    <SelectOption label="Punto de emisión" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={errorShop.serie} handleSelect={handleSelectPoint} required />
+                {/* Con un solo punto se elige solo. Numera la liquidación y la retención */}
+                {points.length > 1 && (
+                    <SelectOption label="Punto de emisión" name='emision_point_id' options={optionPoints} select={true} selectedValue={selectPoint?.id ?? ''} error={pointError} handleSelect={handleSelectPoint} required />
                 )}
 
                 {!isLiquidacion && (

@@ -22,10 +22,6 @@ export const useInstallPrompt = () => {
     useEffect(() => {
         if (typeof window === "undefined") return;
 
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/service-worker.js").catch(() => { });
-        }
-
         setIsStandalone(
             (window.navigator as NavigatorExtended).standalone === true ||
             window.matchMedia("(display-mode: standalone)").matches

@@ -27,7 +27,7 @@ export const ListProducts = () => {
             {isInventoryEntry && (
                 <p className="mb-2 text-xs text-ink-3">
                     Opcional. Detalla los productos del comprobante con su costo unitario sin IVA para sumarlos al stock.
-                    No cambia los totales: copia las bases del comprobante en el resumen.
+                    Las bases del resumen se calculan con estas líneas; ajústalas si el comprobante trae otros valores.
                 </p>
             )}
             <div className="w-full overflow-x-auto">

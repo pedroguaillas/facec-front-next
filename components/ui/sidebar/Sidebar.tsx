@@ -30,7 +30,8 @@ const Sidebar = ({ menu, setMenu }: Props) => {
 
             <aside
                 className={`
-                    group h-screen min-h-screen flex flex-col fixed left-0 z-60
+                    group h-dvh flex flex-col fixed top-0 left-0 z-60
+                    pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]
                     transition-all ease-in-out duration-300
                     border-r border-[var(--border)]
                     md:hover:shadow-2xl md:hover:shadow-black/20
@@ -58,7 +59,7 @@ const Sidebar = ({ menu, setMenu }: Props) => {
                 </header>
 
                 {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-2">
+                <nav className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-2">
                     <ul className="flex flex-col gap-0.5">
                         {session?.user.user.user !== 'admin' ? (
                             <>

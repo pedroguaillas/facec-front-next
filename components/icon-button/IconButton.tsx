@@ -33,13 +33,13 @@ export const IconButton = ({ action, type, url = "/", onClick, title }: IconButt
 
     if (type === "link")
         return (
-            <Link href={url} className={baseClasses} title={title}>
+            <Link href={url} className={baseClasses} title={title} aria-label={title}>
                 <Icon className="text-sm" />
             </Link>
         );
 
     return (
-        <button type="button" onClick={onClick} className={baseClasses} title={title}>
+        <button type="button" onClick={onClick} className={baseClasses} title={title} aria-label={title}>
             <Icon className="text-sm" />
         </button>
     );

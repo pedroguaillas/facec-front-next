@@ -44,7 +44,7 @@ const SelectModalSriCategory = ({ show, onClose, selectSriCategory }: Props) => 
       />
 
       {/* Scroll */}
-      <div className='max-h-[calc(100vh-20em)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary'>
+      <div className='max-h-[calc(100dvh-20em)] overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-primary'>
 
         <TableResponsive>
           <thead>

@@ -12,8 +12,8 @@ export const useListProducts = () => {
     const { enabled: inventory } = useInventory();
 
     const { setShop, setProductOutputs } = useFormShop();
-    // Factura / nota de venta con inventario: las bases se copian del comprobante, las líneas no las tocan
-    const { isInventoryEntry } = useShopVoucherType();
+    // Factura / nota de venta con inventario: las líneas son el ingreso al kardex (costo sin IVA)
+    const { isInventoryEntry, isNotaVenta } = useShopVoucherType();
 
     const addItem = () => {
         setProductOutputs((prevState) => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -61,35 +61,37 @@ export const useListProducts = () => {
         });
     }
 
+    // Las líneas calculan las bases del resumen (también al ingresar inventario; ahí el costo es sin IVA).
+    // Nota de venta no maneja IVA: todo va a 0%. El resto de bases (no objeto, 5%, 12%) e ICE se conservan
     const calculateTotals = useCallback((products: ProductOutput[]) => {
-        if (isInventoryEntry) return;
         let base0 = 0;
         let base15 = 0;
 
         products.forEach(({ iva, total_iva }) => {
-            if (iva === 0) {
-                base0 += Number(total_iva);
-            }
-            if (iva === 4) {
-                base15 += Number(total_iva);
-            }
+            if (iva === 4 && !isNotaVenta) base15 += Number(total_iva);
+            else if (iva === 0 || iva === 4) base0 += Number(total_iva);
         });
 
-        const subTotal = base0 + base15;
-        const totalIva = Number((base15 * 0.15).toFixed(2));
-        const total = Number((subTotal + totalIva).toFixed(2));
+        // Ingreso de inventario sin costos aún: no se pisan las bases tipeadas o importadas del XML
+        if (isInventoryEntry && base0 + base15 === 0) return;
 
-        setShop(prevState => ({
-            ...prevState,
-            base0,
-            base15,
-            sub_total: subTotal,
-            // IVA 15%: va en iva15 (iva es la tarifa 12%)
-            iva: 0,
-            iva15: totalIva,
-            total: total
-        }));
-    }, [setShop, isInventoryEntry]);
+        base0 = Number(base0.toFixed(2));
+        base15 = Number(base15.toFixed(2));
+
+        setShop(prev => {
+            const iva15 = Number((base15 * 0.15).toFixed(2));
+            const subTotal = Number(prev.no_iva ?? 0) + base0 + Number(prev.base5 ?? 0) + Number(prev.base12 ?? 0) + base15;
+            return {
+                ...prev,
+                base0,
+                base15,
+                sub_total: subTotal,
+                iva15,
+                // Igual que el resumen: el total incluye lo no objeto de IVA y el ICE
+                total: Number((subTotal + Number(prev.ice ?? 0) + Number(prev.iva ?? 0) + Number(prev.iva5 ?? 0) + iva15).toFixed(2)),
+            };
+        });
+    }, [setShop, isInventoryEntry, isNotaVenta]);
 
     const deleteItem = (index: number) => {
         setProductOutputs((prevState) => {
