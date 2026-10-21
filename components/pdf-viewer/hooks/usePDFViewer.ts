@@ -56,11 +56,11 @@ export const usePDFViewer = ({ pdf }: { pdf: { route: string, name: string } }) 
                 const blob = new Blob([response.data], { type: 'application/pdf' });
                 url = URL.createObjectURL(blob);
 
-                // Teléfono en el navegador con visor de PDF propio (Safari iOS): se muestra directo en la
-                // pestaña, como antes; Safari tiene botón atrás. En la app instalada no (no hay atrás) y
-                // Android Chrome no muestra PDF en pestaña (lo descarga): ahí quedan Compartir/Descargar
+                // Teléfono: se abre directo, como antes. En la app instalada el sistema muestra el PDF con
+                // su visor (se vuelve con el gesto atrás); en el navegador, si tiene visor propio (Safari iOS).
+                // Android Chrome sin instalar no muestra PDF en pestaña (lo descarga): ahí quedan Compartir/Descargar
                 const touch = window.matchMedia('(pointer: coarse)').matches;
-                if (touch && !isStandalonePWA() && navigator.pdfViewerEnabled) {
+                if (touch && (isStandalonePWA() || navigator.pdfViewerEnabled)) {
                     window.location.href = url;
                     return;
                 }
