@@ -10,6 +10,7 @@ import React, { useState } from 'react'
 import { Tax } from '@/types';
 import { shopStoreService, shopUpdateService } from '../services/shopsServices';
 import { usePlan } from '@/lib/hooks/usePlan';
+import { useShopVoucherType } from '../hooks/useShopVoucherType';
 
 export const SubmitButton = () => {
     // Acción en curso: guardar (false) o guardar y procesar (true)
@@ -21,6 +22,7 @@ export const SubmitButton = () => {
     const router = useRouter();
     const params = useParams();
     const { canUseFinance } = usePlan();
+    const { withProducts } = useShopVoucherType();
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -28,7 +30,9 @@ export const SubmitButton = () => {
         // 1. Creación del formulario
         const form = {
             ...shop,
-            products: productOutputs,
+            // Con la lista visible se manda completa (el backend reemplaza las líneas y re-sincroniza el kardex);
+            // sin ella se omite la clave para que el backend conserve las líneas guardadas
+            products: withProducts ? productOutputs : undefined,
             taxes,
             app_retention: applieWithholding,
             send: send,

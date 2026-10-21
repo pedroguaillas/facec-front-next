@@ -1,5 +1,6 @@
 import { states, PaymentType } from "./general";
 import { MovementSourceType } from "./movement";
+import { ProductPresentation } from "./product";
 
 interface OrderProps {
     atts: {
@@ -94,6 +95,17 @@ interface ProductOutput {
     // Solo factura recurrente: código y descripción propios de la línea (admiten marcadores)
     custom_code?: string;
     custom_description?: string;
+    // Presentación de la línea (null = unidad base). quantity y price van en la presentación
+    presentation_id?: number | null;
+    // Copia del factor (viene al editar); 1 o vacío = unidad base
+    conversion_factor?: number | string | null;
+    // Solo UI: precio de la unidad base, para volver a "Unidad" desde una presentación
+    unit_price?: number | string;
+    // Solo UI: presentaciones del producto elegido (al editar no vienen y se piden aparte)
+    presentations?: ProductPresentation[];
+    // Solo UI (inventario): stock del producto al seleccionarlo, para avisar si la cantidad lo supera
+    available_stock?: number | string | null;
+    type_product?: number;
 }
 
 type fields = 'quantity' | 'price' | 'discount' | 'total_iva' | 'ice';

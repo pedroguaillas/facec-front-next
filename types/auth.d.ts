@@ -7,6 +7,8 @@ export type AuthUser = {
   // permisos
   permissions: {
     inventory: boolean;
+    // Con inventario: permite vender / sacar más de lo disponible (stock negativo)
+    allow_negative_stock?: boolean;
     decimal: number;
     printf: boolean;
     guia_in_invoice: boolean;

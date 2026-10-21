@@ -40,6 +40,7 @@ export * from './plan/PlanBadge';
 
 // Selects
 export * from './selects/product/SelectProduct';
+export * from './selects/presentation/PresentationLabel';
 export * from './selects/customer/SelectCustomer';
 export * from './selects/provider/SelectProvider';
 export * from './selects/carrier/SelectCarrier';

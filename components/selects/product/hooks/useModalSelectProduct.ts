@@ -1,5 +1,5 @@
 import { initialLinks, initialMeta } from "@/constants/initialValues";
-import { Links, Meta, ProductProps } from "@/types";
+import { Links, Meta, ProductPresentation, ProductProps } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { getProducts } from "@/services/productServices";
@@ -7,7 +7,9 @@ import { getProducts } from "@/services/productServices";
 // type_product: 1 = producto, 2 = servicio
 const TYPE_PRODUCT = 1;
 
-export const useModalSelectProduct = (handleSelect: (product: ProductProps) => void, onlyProducts: boolean = false) => {
+// handleSelect recibe además el texto buscado y la fila elegida: presentación, null = unidad base,
+// undefined = sin fila de presentación (se preselecciona por código buscado)
+export const useModalSelectProduct = (handleSelect: (product: ProductProps, search: string, presentation?: ProductPresentation | null) => void, onlyProducts: boolean = false) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [meta, setMeta] = useState<Meta>({ ...initialMeta });
@@ -48,8 +50,8 @@ export const useModalSelectProduct = (handleSelect: (product: ProductProps) => v
     );
 
     // handleSelectLocal es necesario porque toca resetear los valores iniciales
-    const handleSelectLocal = (product: ProductProps) => {
-        handleSelect(product);
+    const handleSelectLocal = (product: ProductProps, presentation?: ProductPresentation | null) => {
+        handleSelect(product, search, presentation);
         toggle();
     };
 

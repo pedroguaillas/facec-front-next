@@ -10,7 +10,11 @@ export const productSchema = z.object({
     .max(300, "Máximo 300 caracteres"),
   iva: z.number(),
   ice: z.string().nullable().optional(),
-  stock: z.number().nullable().optional(),
+  // Decimal (puede ser negativo en productos con kardex); vacío = sin stock
+  stock: z.union([z.string(), z.number()]).nullable().optional()
+    .refine(val => val === null || val === undefined || val === '' || Number.isFinite(Number(val)), { message: "Stock inválido" }),
+  min_stock: z.union([z.string(), z.number()]).nullable().optional()
+    .refine(val => val === null || val === undefined || val === '' || Number(val) >= 0, { message: "Stock mínimo debe ser mayor o igual a 0" }),
   differentiated_iva: z.boolean().optional(),
   price1: z
     .union([

@@ -8,6 +8,7 @@ import { PrimaryButton } from "@/components";
 import { useState } from "react";
 import { storeProduct, updateProduct } from "../services/productServices";
 import { parseZodErrors } from "@/helpers/zodHelper";
+import { useInventory } from "@/lib/hooks/useInventory";
 
 export const ButtonSubmit = () => {
     const { product, setErrorProduct } = useProductCreateContext();
@@ -15,10 +16,13 @@ export const ButtonSubmit = () => {
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
     const params = useParams();
+    const { enabled: inventory } = useInventory();
 
     const handleSubmit = async () => {
         // 1. Crear el formulario
-        const form = { ...product };
+        const form: Partial<typeof product> = { ...product };
+        // Con inventario el backend ignora el stock al editar (se mueve con ajustes): no se envía
+        if (inventory && params?.id) delete form.stock;
 
         // 2. Validar el formulario
         const parsed = productSchema.safeParse(form);

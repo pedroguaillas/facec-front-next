@@ -2,8 +2,8 @@
 
 import { ReactNode, useState } from "react";
 import { fields, ProductOutput } from "@/types/order";
-import { Modal, IconButton, SelectProduct, PrimaryButton } from "@/components";
-import { ProductProps } from "@/types";
+import { Modal, IconButton, PresentationLabel, SelectProduct, PrimaryButton } from "@/components";
+import { ProductPresentation, ProductProps } from "@/types";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { DragHandle, useSortableItem } from "./SortableItems";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
@@ -14,7 +14,9 @@ interface Props {
     productOutput: ProductOutput;
     error?: Partial<Record<keyof ProductOutput, string>>;
     updateItem: (index: number, field: fields, value: number | string) => void;
-    selectProduct: (index: number, product: ProductProps) => void;
+    selectProduct: (index: number, product: ProductProps, search?: string, presentation?: ProductPresentation | null) => void;
+    // Muestra la presentación elegida (solo ventas/compras; guías e inventario van en unidad base)
+    withPresentations?: boolean;
     removeItem: (index: number) => void;
     sortable?: boolean;
     extra?: ReactNode;
@@ -25,7 +27,7 @@ const inputError = "border-red-400";
 const inputNormal = "border-line-strong";
 const stepperBtn = "w-11 h-11 shrink-0 rounded-md border border-line-strong text-lg leading-none text-ink-2 cursor-pointer hover:border-primary hover:text-brand-ink";
 
-export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, removeItem, sortable = false, extra }: Props) => {
+export const ItemProductCard = ({ index, productOutput, error, updateItem, selectProduct, withPresentations = false, removeItem, sortable = false, extra }: Props) => {
 
     const { isActiveIce } = useFormInvoice();
     const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
@@ -34,7 +36,15 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
     return (
         <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 bg-surface ${isDragging ? 'border-primary shadow-md' : 'border-line'}`}>
             {/* Selección directa: no hace falta abrir el modal para elegir el producto */}
-            <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
+            <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} withPresentations={withPresentations} />
+                {withPresentations && productOutput.product_id > 0 && (
+                    <PresentationLabel
+                        productId={productOutput.product_id}
+                        presentations={productOutput.presentations}
+                        value={productOutput.presentation_id}
+                        conversionFactor={productOutput.conversion_factor}
+                    />
+                )}
             {extra}
 
             <div className="flex items-center gap-2 mt-2 text-sm">

@@ -28,6 +28,8 @@ export interface Company {
     base8: boolean,
     ice: boolean,
     inventory: boolean,
+    // Con inventario: permite vender sin stock (lo cambia el cliente)
+    allow_negative_stock?: boolean,
     printf: boolean,
     guia_in_invoice: boolean,
     import_in_invoice: boolean,

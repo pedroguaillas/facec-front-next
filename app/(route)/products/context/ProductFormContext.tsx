@@ -8,6 +8,7 @@ import { nanoid } from "nanoid";
 import { Product, SriCategory, ProductEditResponse } from "@/types";
 import { CodeErrors } from "@/constants/codeErrors";
 import { redirect } from "next/navigation";
+import { useInventory } from "@/lib/hooks/useInventory";
 
 interface ProductCreateContextType {
     product: Product;
@@ -17,6 +18,8 @@ interface ProductCreateContextType {
     sriCategories: SriCategory[];
     transport: boolean;
     base8: boolean;
+    // Editando un producto existente (con inventario el stock ya no se cambia desde aquí)
+    isEdit: boolean;
     setProduct: Dispatch<SetStateAction<Product>>;
     setErrorProduct: Dispatch<SetStateAction<Partial<Record<keyof Product, string>>>>;
 }
@@ -48,6 +51,14 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     const [base8, setBase8] = useState(false);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
+    const { enabled: inventory } = useInventory();
+
+    // Con inventario el stock al crear es el saldo inicial del kardex: no se precarga 1
+    useEffect(() => {
+        if (inventory && id === undefined) {
+            setProduct(prev => (prev.stock === initialProduct.stock ? { ...prev, stock: '' } : prev));
+        }
+    }, [inventory, id]);
 
     useEffect(() => {
         const fetchFormProduct = async () => {
@@ -85,6 +96,7 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 sriCategories,
                 transport,
                 base8,
+                isEdit: id !== undefined,
                 setProduct,
                 setErrorProduct,
             }}

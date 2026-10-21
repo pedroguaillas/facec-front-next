@@ -4,10 +4,16 @@ import { LabelComponent, SelectOption, Separate, Switch, TextInput } from '@/com
 import { useProductForm } from '../hooks/useProductForm';
 import { SelectSriCategory } from './SelectSriCategory';
 import { useProductCreateContext } from '../context/ProductFormContext';
+import { useInventory } from '@/lib/hooks/useInventory';
+import Link from 'next/link';
+import { PresentationsSection } from './PresentationsSection';
 
 export const ProductForm = () => {
 
-    const { product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport, base8 } = useProductCreateContext();
+    const { product, errorProduct, ivaTaxes, iceCataloges, sriCategories, transport, base8, isEdit } = useProductCreateContext();
+    const { enabled: inventory } = useInventory();
+    // El kardex solo lleva productos; los servicios (2) no tienen stock
+    const showInventory = inventory && product.type_product === 1;
     const {
         optionType, breakdown, total, ivaRate, canBreakdown,
         handleChange, handleSelect, onChangeCheckbox, handleTotal, toggleDifferentiatedIva
@@ -44,7 +50,7 @@ export const ProductForm = () => {
                         </div>
                     )}
                     <div className='lg:w-2/3'>
-                        <SelectOption label="Tipo" name='type_product' options={optionType} selectedValue={product.type_product} handleSelect={handleSelect} />
+                        <SelectOption label="Tipo" name='type_product' options={optionType} selectedValue={product.type_product} error={errorProduct.type_product} handleSelect={handleSelect} />
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput type='text' label='Nombre' value={product.name} error={errorProduct.name} onChange={handleChange} name='name' maxLength={300} required />
@@ -114,6 +120,66 @@ export const ProductForm = () => {
                     </div>
                 )}
             </div>
+
+            {showInventory && (
+                <>
+                    <Separate />
+
+                    <strong className='font-bold'>Inventario</strong>
+
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                        <div className='w-full'>
+                            <div className='lg:w-2/3'>
+                                {isEdit ? (
+                                    <div className='flex flex-col gap-1.5 my-2'>
+                                        <span className='text-sm font-medium'>Stock actual</span>
+                                        <p className={`text-sm font-semibold tabular-nums ${Number(product.stock) < 0 ? 'text-sri-fail' : ''}`}>
+                                            {product.stock === null || product.stock === undefined || product.stock === '' ? '—' : Number(product.stock).toLocaleString('es-EC', { maximumFractionDigits: 6 })}
+                                        </p>
+                                        <p className='text-xs text-ink-3'>
+                                            Se modifica con <Link href={`/inventory/adjustments?product_id=${product.id}`} className='text-primary hover:underline'>ajustes de inventario</Link>
+                                            {' · '}
+                                            <Link href={`/inventory/kardex/${product.id}`} className='text-primary hover:underline'>Ver kardex</Link>
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <TextInput
+                                        type='number'
+                                        label='Stock inicial'
+                                        name='stock'
+                                        value={product.stock?.toString() ?? ''}
+                                        error={errorProduct.stock}
+                                        onChange={handleChange}
+                                        inputMode='decimal'
+                                        min='0'
+                                        placeholder='0'
+                                        hint='Entra al kardex como inventario inicial con costo 0. Para cargarlo con costo usa Inventario > Inventario inicial.'
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className='w-full'>
+                            <div className='lg:w-2/3'>
+                                <TextInput
+                                    type='number'
+                                    label='Stock mínimo'
+                                    name='min_stock'
+                                    value={product.min_stock?.toString() ?? ''}
+                                    error={errorProduct.min_stock}
+                                    onChange={handleChange}
+                                    inputMode='decimal'
+                                    min='0'
+                                    placeholder='Opcional'
+                                    hint='Avisa en el inventario cuando el stock baja de este valor'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {/* Presentaciones (cubeta, caja...): solo con inventario, el stock se lleva en unidad base */}
+            {showInventory && <PresentationsSection />}
         </>
     )
 }

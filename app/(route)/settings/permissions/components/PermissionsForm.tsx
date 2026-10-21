@@ -7,13 +7,14 @@ import { getCompany, updateCompany } from "../../services/companyServices";
 import { useToast } from "@/context/ToastContext";
 import { SESSION_UPDATABLE_PERMISSIONS } from "@/constants/sessionPermissions";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { useInventory } from "@/lib/hooks/useInventory";
 import { Company } from "@/types";
 
-type PermissionKey = 'base5' | 'base8' | 'ice' | 'transport' | 'repayment' | 'printf' | 'guia_in_invoice' | 'import_in_invoice' | 'import_in_invoices';
+type PermissionKey = 'base5' | 'base8' | 'ice' | 'transport' | 'repayment' | 'printf' | 'guia_in_invoice' | 'import_in_invoice' | 'import_in_invoices' | 'allow_negative_stock';
 type Permissions = Record<PermissionKey, boolean>;
 
 // Mismos permisos del admin (PermissionFormCompany), sin contabilidad / agente de retención (tab General)
-const groups: { title: string; items: { name: PermissionKey; label: string }[] }[] = [
+const groups: { title: string; items: { name: PermissionKey; label: string; description?: string; requiresInventory?: boolean }[] }[] = [
     {
         title: 'Impuestos',
         items: [
@@ -33,6 +34,12 @@ const groups: { title: string; items: { name: PermissionKey; label: string }[] }
             { name: 'import_in_invoices', label: 'Hace carga masiva de ventas?' },
         ],
     },
+    {
+        title: 'Inventario',
+        items: [
+            { name: 'allow_negative_stock', label: 'Permitir vender sin stock', description: 'Si está apagado, una venta o salida mayor al stock disponible no se guarda', requiresInventory: true },
+        ],
+    },
 ];
 
 const keys = groups.flatMap(group => group.items.map(item => item.name));
@@ -48,6 +55,11 @@ export const PermissionsForm = () => {
     const [form, setForm] = useState<Permissions | null>(null);
     const [snapshot, setSnapshot] = useState<Permissions | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    // `inventory` solo lo activa el admin; sin él las opciones de inventario no aplican
+    const { enabled: inventory } = useInventory();
+    const visibleGroups = groups
+        .map(group => ({ ...group, items: group.items.filter(item => !item.requiresInventory || inventory) }))
+        .filter(group => group.items.length > 0);
 
     useEffect(() => {
         getCompany(axiosAuth).then(({ data }) => {
@@ -94,11 +106,11 @@ export const PermissionsForm = () => {
     return (
         <div className="py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                {groups.map(group => (
+                {visibleGroups.map(group => (
                     <section key={group.title}>
                         <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-3">{group.title}</p>
                         {group.items.map(item => (
-                            <Switch key={item.name} name={item.name} label={item.label} checked={form[item.name]} onChange={handleChange} />
+                            <Switch key={item.name} name={item.name} label={item.label} description={item.description} checked={form[item.name]} onChange={handleChange} />
                         ))}
                     </section>
                 ))}

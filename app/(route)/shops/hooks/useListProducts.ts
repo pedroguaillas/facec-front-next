@@ -1,13 +1,19 @@
 import { initialProductItem } from "@/constants/initialValues";
 import { useFormShop } from "../context/FormShopContext";
-import { fields, ProductOutput, ProductProps } from "@/types";
+import { fields, ProductOutput, ProductPresentation, ProductProps } from "@/types";
 import { nanoid } from "nanoid";
 import { useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
+import { presentationBySearch } from "@/helpers/presentationHelper";
+import { useInventory } from "@/lib/hooks/useInventory";
+import { useShopVoucherType } from "./useShopVoucherType";
 
 export const useListProducts = () => {
+    const { enabled: inventory } = useInventory();
 
     const { setShop, setProductOutputs } = useFormShop();
+    // Factura / nota de venta con inventario: las bases se copian del comprobante, las líneas no las tocan
+    const { isInventoryEntry } = useShopVoucherType();
 
     const addItem = () => {
         setProductOutputs((prevState) => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -28,7 +34,11 @@ export const useListProducts = () => {
         });
     }
 
-    const selectProduct = (index: number, product: ProductProps) => {
+    const selectProduct = (index: number, product: ProductProps, search?: string, chosen?: ProductPresentation | null) => {
+        // Fila elegida en el modal (null = unidad base); si no hubo fila, la presentación cuyo código se buscó.
+        // Las presentaciones son parte del inventario: sin él la línea va siempre en unidad base
+        const presentation = !inventory ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
+        const salePrice = presentation ? Number(presentation.price) : product.atts.price1;
         setProductOutputs((prevState) => {
             const newState = [...prevState];
             newState[index] = {
@@ -36,10 +46,15 @@ export const useListProducts = () => {
                 product_id: product.id,
                 name: product.atts.name,
                 quantity: 1,
-                price: product.atts.price1,
-                total_iva: product.atts.price1.toFixed(2),
+                // En la factura del proveedor el precio es el costo de compra: no se precarga el precio de venta
+                price: isInventoryEntry ? '' : salePrice,
+                total_iva: isInventoryEntry ? '0.00' : salePrice.toFixed(2),
                 iva: product.iva.code,
-                percentage: product.iva.percentage
+                percentage: product.iva.percentage,
+                presentation_id: presentation?.id ?? null,
+                conversion_factor: presentation?.conversion_factor ?? null,
+                unit_price: product.atts.price1,
+                presentations: product.presentations ?? [],
             };
             calculateTotals(newState);
             return newState;
@@ -47,6 +62,7 @@ export const useListProducts = () => {
     }
 
     const calculateTotals = useCallback((products: ProductOutput[]) => {
+        if (isInventoryEntry) return;
         let base0 = 0;
         let base15 = 0;
 
@@ -73,7 +89,7 @@ export const useListProducts = () => {
             iva15: totalIva,
             total: total
         }));
-    }, [setShop]);
+    }, [setShop, isInventoryEntry]);
 
     const deleteItem = (index: number) => {
         setProductOutputs((prevState) => {

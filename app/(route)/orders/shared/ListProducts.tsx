@@ -10,13 +10,20 @@ import { useSession } from "next-auth/react";
 import { SortableItems } from "./SortableItems";
 import { ReactNode } from "react";
 import { ProductOutput } from "@/types";
+import { useInventory } from "@/lib/hooks/useInventory";
 
 interface Props {
     // Contenido extra bajo el producto de cada línea (ej. código/descripción propios en la recurrente)
     renderLineExtra?: (item: ProductOutput, index: number) => ReactNode;
+    // Selector de presentación por línea (la factura recurrente aún no lo admite)
+    withPresentations?: boolean;
 }
 
-export const ListProducts = ({ renderLineExtra }: Props = {}) => {
+export const ListProducts = ({ renderLineExtra, withPresentations: allowPresentations = true }: Props = {}) => {
+
+    // Presentaciones solo con inventario activo
+    const { enabled: inventory } = useInventory();
+    const withPresentations = allowPresentations && inventory;
 
     const { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem } = useProductOutput();
     const { errorProductOutputs, isActiveIce } = useFormInvoice();
@@ -42,6 +49,7 @@ export const ListProducts = ({ renderLineExtra }: Props = {}) => {
                         error={errorProductOutputs[op.id]} // 🔴 pasamos errores por ID
                         updateItem={updateItem}
                         selectProduct={selectProduct}
+                        withPresentations={withPresentations}
                         removeItem={removeItem}
                         sortable={sortable}
                         extra={renderLineExtra?.(op, index)}
@@ -77,6 +85,7 @@ export const ListProducts = ({ renderLineExtra }: Props = {}) => {
                                 error={errorProductOutputs[op.id]} // 🔴 pasamos errores por ID
                                 updateItem={updateItem}
                                 selectProduct={selectProduct}
+                                withPresentations={withPresentations}
                                 removeItem={removeItem}
                                 sortable={sortable}
                                 extra={renderLineExtra?.(op, index)}

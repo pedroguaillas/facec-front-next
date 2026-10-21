@@ -10,7 +10,8 @@ export interface ProductProps {
         iva: number,
         ice: null,
         irbpnr: null,
-        stock: null,
+        stock: number | string | null,
+        min_stock?: number | string | null,
         // Factura al 8% en feriados (solo empresas con base8 y tarifa 15%)
         differentiated_iva?: boolean,
     },
@@ -18,6 +19,8 @@ export interface ProductProps {
         code: number,
         percentage: number,
     },
+    // Presentaciones del producto (vienen en GET products)
+    presentations?: ProductPresentation[],
 }
 
 interface Product {
@@ -29,7 +32,9 @@ interface Product {
     unity_id?: number,
     iva: number,
     ice?: string,
-    stock?: number,
+    // Decimal: puede venir 12.5 o negativo. Con inventario solo se usa al crear (saldo inicial)
+    stock?: number | string | null,
+    min_stock?: number | string | null,
     price1: string | number,
     // Factura al 8% en feriados (solo empresas con base8 y tarifa 15%)
     differentiated_iva?: boolean,
@@ -52,4 +57,18 @@ interface ProductCreateResponse {
 
 interface ProductEditResponse extends ProductCreateResponse {
     product: Product;
+}
+// Presentación de venta/compra (ej. "Cubeta x30"): quantity y price de la línea van en la presentación,
+// el kardex mueve quantity × conversion_factor en unidad base
+interface ProductPresentation {
+    id: number;
+    product_id?: number;
+    name: string;
+    code: string | null;
+    // Hasta 6 decimales (ej. 0.083333)
+    conversion_factor: number;
+    // Solo viene en GET products/{id}/presentations; lookup trae solo activas y sin este campo
+    active?: boolean;
+    // Precio propio o, si no tiene, price1 × factor
+    price: number;
 }

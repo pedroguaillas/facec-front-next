@@ -4,7 +4,7 @@ import { useShopVoucherType } from "./useShopVoucherType";
 
 export const useSelectPoint = () => {
     const { shop, points, applieWithholding, selectPoint, setShop, setSelectPoint, setProductOutputs } = useFormShop();
-    const { isLiquidacion } = useShopVoucherType();
+    const { isLiquidacion, withProducts } = useShopVoucherType();
 
     // 4to Selección manual del Punto del Emisión
     const handleSelectPoint = useCallback(() => {
@@ -18,7 +18,7 @@ export const useSelectPoint = () => {
         // asigna el backend al guardar, no se genera/adivina en el frontend.
         if (isLiquidacion) {
             updates.serie = null;
-        } else {
+        } else if (!withProducts) {
             setProductOutputs([])
         }
 
@@ -27,7 +27,7 @@ export const useSelectPoint = () => {
         }
 
         setShop((prev) => ({ ...prev, ...updates }));
-    }, [selectPoint, shop.voucher_type_id, isLiquidacion, setShop, applieWithholding, setProductOutputs]);
+    }, [selectPoint, shop.voucher_type_id, isLiquidacion, withProducts, setShop, applieWithholding, setProductOutputs]);
 
     useEffect(() => {
         // 3ro en ejecutar

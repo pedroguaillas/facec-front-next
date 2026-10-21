@@ -77,11 +77,11 @@ export const ModalFormEmisionPoint = ({ branch_id, fetchGetEmisionPoints, editPo
                 modalSize="sm"
             >
                 <TextInput type='text' label='Punto de emisión' value={emisionPoint.point + ''} error={errors.point} onChange={handleChange} name='point' maxLength={3} required/>
-                <TextInput type='text' label='Factura' value={emisionPoint.invoice + ''} error={errors.invoice} onChange={handleChange} name='invoice' maxLength={3} required/>
-                <TextInput type='text' label='Nota de crédito' value={emisionPoint.creditnote + ''} error={errors.creditnote} onChange={handleChange} name='creditnote' maxLength={3} required/>
-                <TextInput type='text' label='Retención' value={emisionPoint.retention + ''} error={errors.retention} onChange={handleChange} name='retention' maxLength={3} required/>
-                <TextInput type='text' label='Guias de remisión' value={emisionPoint.referralguide + ''} error={errors.referralguide} onChange={handleChange} name='referralguide' maxLength={3} required/>
-                <TextInput type='text' label='Liquidaciones en compra' value={emisionPoint.settlementonpurchase + ''} error={errors.settlementonpurchase} onChange={handleChange} name='settlementonpurchase' maxLength={3} required/>
+                <TextInput type='text' label='Factura' value={emisionPoint.invoice + ''} error={errors.invoice} onChange={handleChange} name='invoice' maxLength={9} required/>
+                <TextInput type='text' label='Nota de crédito' value={emisionPoint.creditnote + ''} error={errors.creditnote} onChange={handleChange} name='creditnote' maxLength={9} required/>
+                <TextInput type='text' label='Retención' value={emisionPoint.retention + ''} error={errors.retention} onChange={handleChange} name='retention' maxLength={9} required/>
+                <TextInput type='text' label='Guias de remisión' value={emisionPoint.referralguide + ''} error={errors.referralguide} onChange={handleChange} name='referralguide' maxLength={9} required/>
+                <TextInput type='text' label='Liquidaciones en compra' value={emisionPoint.settlementonpurchase + ''} error={errors.settlementonpurchase} onChange={handleChange} name='settlementonpurchase' maxLength={9} required/>
                 <TextInput type='text' label='Reconocimiento' value={emisionPoint.recognition ?? ''} error={errors.recognition} onChange={handleChange} name='recognition' maxLength={25} />
 
                 <div className='flex justify-end py-2'>

@@ -2,21 +2,25 @@
 
 import { ReactNode } from "react";
 import { fields, ProductOutput } from "@/types/order";
-import { SelectProduct } from "@/components";
-import { ProductProps } from "@/types";
+import { PresentationLabel, SelectProduct } from "@/components";
+import { ProductPresentation, ProductProps } from "@/types";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { DragHandle, useSortableItem } from "./SortableItems";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { limitDecimals } from "@/helpers/numberHelper";
 import { IconButton } from "@/components";
 import { cellInput, cellInputError, cellInputNormal, tableRow } from "./FormSection";
+import { useInventory } from "@/lib/hooks/useInventory";
+import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
 
 interface Props {
     index: number;
     productOutput: ProductOutput;
     error?: Partial<Record<keyof ProductOutput, string>>;
     updateItem: (index: number, field: fields, value: number | string) => void;
-    selectProduct: (index: number, product: ProductProps) => void;
+    selectProduct: (index: number, product: ProductProps, search?: string, presentation?: ProductPresentation | null) => void;
+    // Muestra la presentación elegida (solo ventas/compras; guías e inventario van en unidad base)
+    withPresentations?: boolean;
     removeItem: (index: number) => void;
     sortable?: boolean;
     extra?: ReactNode;
@@ -26,9 +30,19 @@ const inputBase = `${cellInput} text-right`;
 const inputError = cellInputError;
 const inputNormal = cellInputNormal;
 
-export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, removeItem, sortable = false, extra }: Props) => {
+export const ItemProduct = ({ index, productOutput, error, updateItem, selectProduct, withPresentations = false, removeItem, sortable = false, extra }: Props) => {
 
-    const { isActiveIce } = useFormInvoice();
+    const { isActiveIce, invoice, voucherTypes } = useFormInvoice();
+    const { enabled: inventory, allowNegativeStock } = useInventory();
+
+    // Solo factura y nota de venta descuentan stock (proforma y notas no)
+    const voucherSlug = voucherTypes.find(vt => vt.id === Number(invoice.voucher_type_id))?.slug;
+    const movesStock = voucherSlug === ORDER_VOUCHER_TYPE_SLUG.FACTURA || voucherSlug === ORDER_VOUCHER_TYPE_SLUG.NOTA_VENTA;
+    const stock = productOutput.available_stock;
+    const exceedsStock = inventory && movesStock && productOutput.type_product === 1
+        && stock !== null && stock !== undefined
+        // La cantidad va en la presentación; el stock siempre en unidad base
+        && Number(productOutput.quantity) * (Number(productOutput.conversion_factor) || 1) > Number(stock);
     const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
 
     const baseCalculation = () => {
@@ -54,7 +68,15 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 {sortable && <DragHandle {...handleProps} label={`Mover línea ${index + 1}`} />}
             </td>
             <td>
-                <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} />
+                <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} withPresentations={withPresentations} />
+                {withPresentations && productOutput.product_id > 0 && (
+                    <PresentationLabel
+                        productId={productOutput.product_id}
+                        presentations={productOutput.presentations}
+                        value={productOutput.presentation_id}
+                        conversionFactor={productOutput.conversion_factor}
+                    />
+                )}
                 {extra}
             </td>
             <td>
@@ -66,6 +88,11 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                     step="0.000001"
                     className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
                 />
+                {exceedsStock && (
+                    <p className={`text-xs mt-1 text-right ${allowNegativeStock ? 'text-sri-wait' : 'text-red-500'}`} role="status">
+                        Stock: {Number(stock).toLocaleString('es-EC', { maximumFractionDigits: 6 })}
+                    </p>
+                )}
             </td>
             <td>
                 <input

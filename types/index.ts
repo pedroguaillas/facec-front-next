@@ -27,3 +27,4 @@ export * from './shop.d';
 export * from './supplier.d';
 export * from './subscription.d';
 export * from './recurring-invoice.d';
+export * from './inventory.d';

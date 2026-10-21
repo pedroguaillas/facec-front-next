@@ -7,7 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { OrderProps } from "@/types/order";
 import { PDFViewer } from "@/components";
-import { AxiosInstance } from "axios";
+import { AxiosError, AxiosInstance } from "axios";
+import { LaravelErrorResponse } from "@/types";
+import { useToast } from "@/context/ToastContext";
 import { ORDER_SERIE_PREFIX } from "@/constants";
 import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
 import { usePlan } from "@/lib/hooks/usePlan";
@@ -39,6 +41,7 @@ const handleApiCall = async (
     axiosAuth: AxiosInstance,
     fetchInvoices: () => void,
     alertMessage?: string,
+    onError?: (message: string) => void,
 ): Promise<void> => {
     try {
         const response = await axiosAuth.get(`orders/${id}/${endpoint}`);
@@ -49,6 +52,10 @@ const handleApiCall = async (
         }
     } catch (error) {
         console.error(error);
+        // Ej. convertir proforma con inventario y sin stock: 422 con errors.products
+        const data = (error as AxiosError<LaravelErrorResponse>).response?.data;
+        const message = data?.errors?.products?.[0] ?? data?.message;
+        if (onError && message) onError(message);
     }
 };
 
@@ -61,6 +68,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const { canEmit } = usePlan();
     const router = useRouter();
+    const { toast } = useToast();
 
     // La lista (GET orders) no manda voucher_type por fila; el tipo se lee del
     // prefijo que el backend ya arma en `serie` (ej. "FAC 001-001-000000001").
@@ -101,7 +109,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         if (isProforma && canEmit) {
             options.push({
                 label: "Convertir en Factura",
-                onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices),
+                onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices, undefined, (message) => toast(message, 'error')),
             });
         }
 

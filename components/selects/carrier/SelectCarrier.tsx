@@ -1,10 +1,11 @@
 "use client";
 
-import { CarrierProps } from '@/types';
+import { CarrierProps, GeneralPaginate } from '@/types';
 import { useModalSelectCarrier } from './hooks/useModalSelectCarrier';
 import { Modal, Paginate, TableResponsive } from "@/components";
-import { FaSearch } from "react-icons/fa";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import { Autocomplete } from '../autocomplete/Autocomplete';
 
 interface Props {
     label?: string;
@@ -23,6 +24,35 @@ export const SelectCarrier = ({ label, error, selectCarrier }: Props) => {
 
     const { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCarrier, handleSelectLocal: modalSelect } = useModalSelectCarrier(handleSelect);
 
+
+    const axiosAuth = useAxiosAuth();
+
+
+    const fetchSuggestions = useCallback(async (term: string) => {
+
+        try {
+
+            const res = await axiosAuth.get<GeneralPaginate<CarrierProps>>('carriers', { params: { search: term, page: 1, paginate: 8 } });
+
+            return res.data.data;
+
+        } catch {
+
+            return [];
+
+        }
+
+    }, [axiosAuth]);
+
+
+    const browse = (term: string) => {
+
+        toggle();
+
+        setSearch(term);
+
+    };
+
     useEffect(() => {
         if (label) setDisplayValue(label);
     }, [label]);
@@ -34,23 +64,22 @@ export const SelectCarrier = ({ label, error, selectCarrier }: Props) => {
 
     return (
         <div className='flex flex-col w-full'>
-            <button
-                type="button"
-                onClick={toggle}
-                className={`
-                    w-full flex items-center justify-between
-                    border rounded-lg px-3 py-2 text-sm text-left
-                    transition-colors duration-150 cursor-pointer
-                    bg-[var(--background)]
-                    ${error ? 'border-red-400' : 'border-[var(--border-strong)] hover:border-primary'}
-                    dark:text-gray-300
-                `}
-            >
-                <span className={displayValue ? 'text-[var(--foreground)]' : 'opacity-40'}>
-                    {displayValue || 'Seleccionar transportista...'}
-                </span>
-                <FaSearch className="text-xs opacity-40 shrink-0 ml-2" />
-            </button>
+            <Autocomplete<CarrierProps>
+                value={displayValue}
+                placeholder="Buscar transportista por identificación o nombre..."
+                ariaLabel="Transportista"
+                error={error}
+                fetchItems={fetchSuggestions}
+                getKey={(item) => String(item.id)}
+                renderItem={(item) => (
+                    <div className="flex items-baseline gap-2">
+                        <span className="shrink-0 text-xs text-ink-3 tabular-nums">{item.atts.identication}</span>
+                        <span className="flex-1 truncate">{item.atts.name}</span>
+                    </div>
+                )}
+                onSelect={(item) => handleSelect(item)}
+                onBrowse={browse}
+            />
 
             {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
 

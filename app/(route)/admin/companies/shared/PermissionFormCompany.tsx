@@ -131,6 +131,13 @@ const PermissionFormCompany = () => {
                         checked={company.import_in_invoices}
                         onChange={handleChangeCheckbox}
                     />
+                    <Switch
+                        name="inventory"
+                        label="Lleva inventario (kardex)?"
+                        description="Ventas y compras mueven stock. Al activarlo, el stock actual de los productos pasa al kardex como inventario inicial."
+                        checked={company.inventory}
+                        onChange={handleChangeCheckbox}
+                    />
                 </div>
             </div>
         </>

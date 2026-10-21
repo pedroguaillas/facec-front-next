@@ -139,7 +139,8 @@ export const ButtonSubmit = () => {
         setPendingSend(null);
         if (errors) {
             setFormErrors(errors);
-            toast(Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
+            // Con inventario: "Stock insuficiente de ..." (errors.products) tiene prioridad
+            toast(errors.products ?? Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
         } else {
             toast(error ?? 'No se pudo guardar la venta', 'error');
         }

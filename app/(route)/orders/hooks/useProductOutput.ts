@@ -1,12 +1,15 @@
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { productOutputSchema } from "@/schemas/product-output.schema";
 import { initialProductItem } from "@/constants/initialValues";
-import { fields, ProductOutput, ProductProps } from "@/types";
+import { fields, ProductOutput, ProductPresentation, ProductProps } from "@/types";
 import { calculateInvoiceTotals, calculateLineTotal } from "@/helpers/invoiceTotalsHelper";
 import { nanoid } from "nanoid";
 import { arrayMove } from "@dnd-kit/sortable";
+import { presentationBySearch } from "@/helpers/presentationHelper";
+import { useInventory } from "@/lib/hooks/useInventory";
 
 export const useProductOutput = () => {
+    const { enabled: inventory } = useInventory();
 
     const { productOutputs, applyHolidayIva, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
 
@@ -55,21 +58,32 @@ export const useProductOutput = () => {
     };
 
     // Seleccionar producto para un Item
-    const selectProduct = (index: number, product: ProductProps) => {
+    const selectProduct = (index: number, product: ProductProps, search?: string, chosen?: ProductPresentation | null) => {
+        // Fila elegida en el modal (null = unidad base); si no hubo fila, la presentación cuyo código se buscó.
+        // Las presentaciones son parte del inventario: sin él la línea va siempre en unidad base
+        const presentation = !inventory ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
+        const price = presentation ? Number(presentation.price) : product.atts.price1;
         const selected: ProductOutput = {
             ...productOutputs[index],
             product_id: product.id,
             aux_cod: product.atts.aux_cod,
             product_code: product.atts.code,
             name: product.atts.name,
-            price: product.atts.price1,
+            price,
             quantity: 1,
             discount: 0,
             stock: 1,
-            total_iva: (product.atts.price1 * (1 + product.iva.percentage / 100)).toFixed(2),
+            total_iva: (price * (1 + product.iva.percentage / 100)).toFixed(2),
             iva: product.iva.code,
             percentage: product.iva.percentage,
             differentiated_iva: !!product.atts.differentiated_iva,
+            available_stock: product.atts.stock,
+            // Arranca en unidad base; la presentación se elige en la línea
+            presentation_id: presentation?.id ?? null,
+            conversion_factor: presentation?.conversion_factor ?? null,
+            unit_price: product.atts.price1,
+            presentations: product.presentations ?? [],
+            type_product: product.atts.type_product,
         };
         // En feriado un servicio turístico (IVA diferenciado) pasa del 15% al 8%
         const [updated] = applyHolidayIva([selected]);

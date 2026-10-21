@@ -4,9 +4,11 @@ import { useProducts } from "../context/ProductContext";
 import { Dialog, IconButton, TableResponsive } from "@/components";
 import { axiosAuth } from "@/lib/axios";
 import { deleteProduct } from "../services/productServices";
+import { useInventory } from "@/lib/hooks/useInventory";
 
 export const ProductsTable = () => {
     const { products, productDeleteId, fetchProducts, setProductDeleteId } = useProducts();
+    const { enabled: inventory } = useInventory();
 
     const confirmation = (accept: boolean) => {
         if (accept) {
@@ -26,6 +28,7 @@ export const ProductsTable = () => {
                         <th className="text-left">PRODUCTO/SERVICIO</th>
                         <th className="text-right">PRECIO</th>
                         <th className="text-right">IVA</th>
+                        {inventory && <th className="text-right">STOCK</th>}
                         <th></th>
                     </tr>
                 </thead>
@@ -36,6 +39,13 @@ export const ProductsTable = () => {
                             <td className="text-left">{product.atts.name}</td>
                             <td className="text-right">${product.atts.price1.toFixed(2)}</td>
                             <td className="text-right">{product.atts.iva}%</td>
+                            {inventory && (
+                                <td className={`text-right tabular-nums ${Number(product.atts.stock) < 0 ? 'text-sri-fail' : ''}`}>
+                                    {product.atts.type_product === 1 && product.atts.stock !== null
+                                        ? Number(product.atts.stock).toLocaleString('es-EC', { maximumFractionDigits: 6 })
+                                        : '—'}
+                                </td>
+                            )}
                             <td className="w-1">
                                 <div className="flex gap-2">
                                     <IconButton
@@ -44,6 +54,9 @@ export const ProductsTable = () => {
                                         url={`/products/${product.id.toString()}`}
                                         title="Editar"
                                     />
+                                    {inventory && product.atts.type_product === 1 && (
+                                        <IconButton type="link" action="view" url={`/inventory/kardex/${product.id}`} title="Kardex" />
+                                    )}
                                     <IconButton
                                         type="button"
                                         action="delete"

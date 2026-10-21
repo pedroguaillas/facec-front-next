@@ -1,11 +1,12 @@
 "use client";
 
-import { CustomerProps } from '@/types';
+import { CustomerProps, GeneralPaginate } from '@/types';
 import { ModalCreateCustomer } from './ModalCreateCustomer';
 import { useModalSelectCustomer } from './hooks/useModalSelectCustomer';
 import { Modal, TableResponsive, Paginate } from "@/components";
-import { FaSearch } from "react-icons/fa";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
+import { Autocomplete } from '../autocomplete/Autocomplete';
 
 interface Props {
     label?: string;
@@ -18,6 +19,22 @@ export const SelectCustomer = ({ label, error, optionCreate = true, selectCustom
 
     const [displayValue, setDisplayValue] = useState(label ?? "");
     const { isOpen, search, meta, links, suggestions, toggle, setSearch, fetchCustomer, handleSelectLocal: modalSelect } = useModalSelectCustomer(handleSelect);
+
+    const axiosAuth = useAxiosAuth();
+
+    const fetchSuggestions = useCallback(async (term: string) => {
+        try {
+            const res = await axiosAuth.get<GeneralPaginate<CustomerProps>>('customers', { params: { search: term, page: 1, paginate: 8 } });
+            return res.data.data;
+        } catch {
+            return [];
+        }
+    }, [axiosAuth]);
+
+    const browse = (term: string) => {
+        toggle();
+        setSearch(term);
+    };
 
     function handleSelect(customer: CustomerProps) {
         setDisplayValue(`${customer.atts.identication} - ${customer.atts.name}`);
@@ -36,23 +53,22 @@ export const SelectCustomer = ({ label, error, optionCreate = true, selectCustom
     return (
         <div className='flex flex-col w-full'>
             <div className='flex w-full items-center gap-1.5'>
-                <button
-                    type="button"
-                    onClick={toggle}
-                    className={`
-                        w-full flex items-center justify-between
-                        border rounded-lg px-3 py-2 text-sm text-left
-                        transition-colors duration-150 cursor-pointer
-                        bg-[var(--background)]
-                        ${error ? 'border-red-400' : 'border-[var(--border-strong)] hover:border-primary'}
-                        dark:text-gray-300
-                    `}
-                >
-                    <span className={displayValue ? 'text-[var(--foreground)]' : 'opacity-40'}>
-                        {displayValue || 'Seleccionar cliente...'}
-                    </span>
-                    <FaSearch className="text-xs opacity-40 shrink-0 ml-2" />
-                </button>
+                <Autocomplete<CustomerProps>
+                    value={displayValue}
+                    placeholder="Buscar cliente por identificación o nombre..."
+                    ariaLabel="Cliente"
+                    error={error}
+                    fetchItems={fetchSuggestions}
+                    getKey={(item) => String(item.id)}
+                    renderItem={(item) => (
+                        <div className="flex items-baseline gap-2">
+                            <span className="shrink-0 text-xs text-ink-3 tabular-nums">{item.atts.identication}</span>
+                            <span className="flex-1 truncate">{item.atts.name}</span>
+                        </div>
+                    )}
+                    onSelect={(item) => handleSelect(item)}
+                    onBrowse={browse}
+                />
                 {optionCreate && <ModalCreateCustomer handleSelect={handleSelect} />}
             </div>
 

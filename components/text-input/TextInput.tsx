@@ -32,6 +32,7 @@ interface Props {
     autoComplete?: string;
     min?: string;
     max?: string;
+    step?: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
@@ -62,6 +63,7 @@ export const TextInput = ({
     onBlur,
     min,
     max,
+    step,
 }: Props) => {
 
     const generatedId = useId();
@@ -105,6 +107,7 @@ export const TextInput = ({
                     inputMode={inputMode}
                     min={min}
                     max={max}
+                    step={step}
                     aria-required={required ? 'true' : 'false'}
                     aria-disabled={disabled ? 'true' : 'false'}
                     aria-invalid={error ? 'true' : 'false'}

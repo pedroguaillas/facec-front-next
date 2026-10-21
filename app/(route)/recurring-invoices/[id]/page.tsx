@@ -83,14 +83,15 @@ const RecurringInvoiceDetailPage = () => {
     const emit = async () => {
         setConfirmEmit(false);
         setBusy('emit');
-        const { data, error, code } = await emitRecurringInvoice(axiosAuth, recurring.id);
+        const { data, error, errors, code } = await emitRecurringInvoice(axiosAuth, recurring.id);
         setBusy(null);
         if (data) {
             toast(`Factura ${data.order.serie} emitida`);
             fetchRecurring();
         } else if (!code) {
             // 403 de plan: el aviso global ya se muestra (PlanErrorNotice)
-            toast(error ?? 'No se pudo emitir', 'error');
+            // Con inventario y sin stock: 422 con errors.products
+            toast(error ?? errors?.products ?? Object.values(errors ?? {})[0] ?? 'No se pudo emitir', 'error');
         }
     };
 

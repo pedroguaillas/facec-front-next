@@ -325,7 +325,7 @@ export const RecurringInvoiceForm = ({ recurring, fromOrderId }: Props) => {
             setErrors(formatted);
             setErrorProductOutputs(productErrors);
             setErrorAditionalInformation(aditionalErrors);
-            toast(Object.values(response.errors)[0] ?? 'Revisa los datos del formulario', 'error');
+            toast(response.errors.products ?? Object.values(response.errors)[0] ?? 'Revisa los datos del formulario', 'error');
             return;
         }
         toast(response.error ?? 'No se pudo guardar la plantilla', 'error');
@@ -430,7 +430,7 @@ export const RecurringInvoiceForm = ({ recurring, fromOrderId }: Props) => {
                     </div>
                 </FormSection>
 
-                <ListProducts renderLineExtra={item => <RecurringLineText item={item} previewDate={upcoming[0]} />} />
+                <ListProducts withPresentations={false} renderLineExtra={item => <RecurringLineText item={item} previewDate={upcoming[0]} />} />
                 {errors.products && <p className="-mt-3 mb-3 text-xs text-red-500">{errors.products}</p>}
 
                 <FormSection title="Cobro">
