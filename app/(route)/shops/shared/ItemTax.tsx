@@ -40,7 +40,7 @@ export const ItemTax = ({ index, tax, error }: Props) => {
                 {tax.editable_porcentage ? (
                     <input
                         aria-label={`Porcentaje línea ${index + 1}`}
-                        type="number"
+                        type="text"
                         inputMode="decimal"
                         value={tax.porcentage ?? ''}
                         className={`${cellInput} text-right ${error?.porcentage ? cellInputError : cellInputNormal}`}
@@ -51,7 +51,7 @@ export const ItemTax = ({ index, tax, error }: Props) => {
             <td>
                 <input
                     aria-label={`Base línea ${index + 1}`}
-                    type="number"
+                    type="text"
                     inputMode="decimal"
                     value={tax.base}
                     className={`${cellInput} text-right ${error?.base ? cellInputError : cellInputNormal}`}

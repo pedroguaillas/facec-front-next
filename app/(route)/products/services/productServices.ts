@@ -27,18 +27,14 @@ export const deleteProduct = async (id: number, axiosAuth: AxiosInstance) =>
     handleApiRequest(() => axiosAuth.delete(`products/${id}`));
 
 export const importProducts = async (axiosAuth: AxiosInstance, file: File) => {
-    try {
-        const formData = new FormData();
-        formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-        const response = await axiosAuth.post("products/import", formData, {
+    return handleApiRequest<{ message?: string }>(() =>
+        axiosAuth.post("products/import", formData, {
             headers: { "Content-Type": "multipart/form-data" },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error al importar productos:", error);
-        return {};
-    }
+        }),
+    );
 };
 
 export const exportProducts = async (axiosAuth: AxiosInstance) => {

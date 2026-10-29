@@ -9,9 +9,10 @@ import { useState } from "react";
 import { storeProduct, updateProduct } from "../services/productServices";
 import { parseZodErrors } from "@/helpers/zodHelper";
 import { useInventory } from "@/lib/hooks/useInventory";
+import { pickTemplateDetails, templateFieldsOf, validateTemplateDetails } from "@/helpers/productTemplateHelper";
 
 export const ButtonSubmit = () => {
-    const { product, setErrorProduct, draftPresentations, setDraftErrors } = useProductCreateContext();
+    const { product, setErrorProduct, draftPresentations, setDraftErrors, productTemplates } = useProductCreateContext();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     const [isPending, setIsPending] = useState(false);
@@ -24,10 +25,27 @@ export const ButtonSubmit = () => {
         // Con inventario el backend ignora el stock al editar (se mueve con ajustes): no se envía
         if (inventory && params?.id) delete form.stock;
 
+        // Plantilla: se envían siempre product_template_id y details (solo campos de nivel modelo).
+        // Una unidad hereda las del modelo: el backend las ignora y no se envían
+        let detailErrors: Record<string, string> = {};
+        delete form.details;
+        delete form.parent_product_id;
+        if (product.parent_product_id) {
+            delete form.product_template_id;
+        } else {
+            const template = productTemplates.find(t => t.id === product.product_template_id);
+            const modelFields = templateFieldsOf(template, 'modelo');
+            form.product_template_id = product.product_template_id ?? null;
+            form.details = pickTemplateDetails(modelFields, product.details);
+            detailErrors = Object.fromEntries(Object.entries(validateTemplateDetails(modelFields, form.details)).map(([key, msg]) => [`details.${key}`, msg]));
+            // Un modelo con campos por unidad no admite stock: lo dan sus unidades
+            if (templateFieldsOf(template, 'unidad').length > 0 && form.stock !== undefined) form.stock = 0;
+        }
+
         // 2. Validar el formulario
         const parsed = productSchema.safeParse(form);
-        if (!parsed.success) {
-            setErrorProduct(parseZodErrors(parsed.error));
+        if (!parsed.success || Object.keys(detailErrors).length > 0) {
+            setErrorProduct({ ...(parsed.success ? {} : parseZodErrors(parsed.error)), ...detailErrors });
             return;
         }
 

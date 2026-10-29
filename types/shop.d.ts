@@ -40,6 +40,9 @@ interface ShopCreateProps {
     due_date?: string, // Requerido si payment_type = CREDITO (YYYY-MM-DD)
     source_type?: MovementSourceType, // Requerido si payment_type = CONTADO
     source_id?: number, // Requerido si payment_type = CONTADO
+    receipt?: File | null, // Comprobante del pago con banco (solo al crear): se sube aparte y va como receipt_id
+    receipt_id?: number,
+    receipt_number?: string,
     paid?: number, // Solo lectura: viene del backend al editar
     voucher_type_id: number,
     no_iva: number,

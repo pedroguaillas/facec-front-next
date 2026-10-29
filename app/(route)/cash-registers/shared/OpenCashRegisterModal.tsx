@@ -52,7 +52,7 @@ export const OpenCashRegisterModal = ({ cashRegisterId, onClose, onSaved }: Prop
     return (
         <Modal isOpen title="Abrir caja" onClose={onClose} modalSize="lg">
             <form onSubmit={handleSubmit}>
-                <TextInput type="number" inputMode="decimal" label="Saldo inicial" name="initial_balance" value={initialBalance} error={errors.initial_balance} onChange={(e) => setInitialBalance(e.target.value)} required />
+                <TextInput type="text" inputMode="decimal" label="Saldo inicial" name="initial_balance" value={initialBalance} error={errors.initial_balance} onChange={(e) => setInitialBalance(e.target.value)} required />
 
                 <p className="text-sm opacity-70 my-2">Arqueo de apertura (opcional). Total contado: <strong>{countedTotal.toFixed(2)}</strong></p>
                 <DenominationCountForm onChange={(counts, total) => { setDenominations(counts); setCountedTotal(total); setInitialBalance(total > 0 ? String(total) : ''); }} />

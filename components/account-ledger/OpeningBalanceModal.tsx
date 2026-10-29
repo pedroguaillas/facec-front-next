@@ -56,7 +56,7 @@ export const OpeningBalanceModal = ({ partyType, partyId, onClose, onSaved }: Pr
                 Lo que {partyType === 'customer' ? 'este cliente ya debía' : 'ya le debías a este proveedor'} antes de usar el sistema. Solo se puede registrar una vez.
             </p>
             <form onSubmit={handleSubmit}>
-                <TextInput type="number" inputMode="decimal" label="Monto" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
+                <TextInput type="text" inputMode="decimal" label="Monto" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
                 <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={getDate()} />
 
                 <div className='flex justify-end mt-4'>

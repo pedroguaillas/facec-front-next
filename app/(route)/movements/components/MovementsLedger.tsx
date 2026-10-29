@@ -6,6 +6,7 @@ import { INTERNAL_TRANSACTION_TYPES, movementTransactionTypeLabels } from "@/con
 import { Movement, MovementParty, MovementSourceType } from "@/types";
 import { money } from "../../banks/shared/bankUi";
 import { CategoryPicker } from "./CategoryPicker";
+import { ReceiptButton } from "@/components/payment-receipt/ReceiptButton";
 
 interface Props {
     movements: Movement[];
@@ -109,6 +110,8 @@ const MovementRow = ({ movement, onUpdated }: { movement: Movement; onUpdated: (
                     {origin && (
                         <Link href={origin.href} className="text-primary hover:underline">· {origin.label}</Link>
                     )}
+                    {atts.receipt_number && <span className="tabular-nums">· Comp. {atts.receipt_number}</span>}
+                    <ReceiptButton movement={movement} onUpdated={onUpdated} />
                     {atts.status === 'PENDIENTE' && (
                         <span className="rounded-full bg-sri-wait-soft px-2 py-0.5 text-sri-wait">Pendiente</span>
                     )}

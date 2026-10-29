@@ -34,6 +34,10 @@ const SERVICE_TYPE = 2;
 
 const formatPrice = (price: number | string) => Number(price).toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
 
+// Chasis, motor, etc. de una unidad (o marca/año de un modelo) para distinguirla en la búsqueda
+const characteristicsText = (product: ProductProps) =>
+    [...(product.characteristics ?? [])].sort((a, b) => a.sort - b.sort).filter(c => c.value).map(c => `${c.label} ${c.value}`).join(' · ');
+
 // Producto sin presentaciones (o servicio) = una fila; con presentaciones = Unidad + una fila por presentación
 const buildRows = (products: ProductProps[], withPresentations: boolean): SuggestionRow[] =>
     products.flatMap((product) => {
@@ -99,6 +103,7 @@ export const SelectProduct = ({ label, error, index, selectProduct, onlyProducts
                             {presentation !== undefined && (
                                 <span className="text-ink-3"> · {presentation === null ? 'Unidad' : `${presentation.name} (x${formatFactor(presentation.conversion_factor)})`}</span>
                             )}
+                            {characteristicsText(product) && <span className="text-ink-3"> · {characteristicsText(product)}</span>}
                         </span>
                         {withPresentations && (
                             <span className="shrink-0 text-xs tabular-nums">${formatPrice(presentation ? presentation.price : product.atts.price1)}</span>
@@ -148,7 +153,10 @@ export const SelectProduct = ({ label, error, index, selectProduct, onlyProducts
                                 >
                                     <td className="hidden sm:block">{indexItem + 1}</td>
                                     <td>{presentation?.code || product.atts.code}</td>
-                                    <td className="text-left">{product.atts.name}</td>
+                                    <td className="text-left">
+                                        {product.atts.name}
+                                        {characteristicsText(product) && <span className="block text-xs text-ink-3">{characteristicsText(product)}</span>}
+                                    </td>
                                     {withPresentations && (
                                         <td className="text-left whitespace-nowrap">
                                             {presentation === undefined

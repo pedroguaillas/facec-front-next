@@ -1,17 +1,29 @@
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { productOutputSchema } from "@/schemas/product-output.schema";
 import { initialProductItem } from "@/constants/initialValues";
-import { fields, ProductOutput, ProductPresentation, ProductProps } from "@/types";
+import { fields, ProductOutput, ProductPresentation, ProductProps, ProductUnit } from "@/types";
 import { calculateInvoiceTotals, calculateLineTotal } from "@/helpers/invoiceTotalsHelper";
 import { nanoid } from "nanoid";
 import { arrayMove } from "@dnd-kit/sortable";
 import { presentationBySearch } from "@/helpers/presentationHelper";
 import { useInventory } from "@/lib/hooks/useInventory";
+import { useProductTemplates } from "@/lib/hooks/useProductTemplates";
+import { isUnitLine, requiresUnit } from "@/helpers/productTemplateHelper";
+import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
+import { useState } from "react";
+
 
 export const useProductOutput = () => {
     const { enabled: inventory } = useInventory();
 
-    const { productOutputs, applyHolidayIva, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
+    const { productOutputs, invoice, voucherTypes, applyHolidayIva, setInvoice, setProductOutputs, setErrorProductOutputs, setIsActiveIce } = useFormInvoice();
+    const templates = useProductTemplates();
+    // Modelo con campos por unidad elegido en una línea: se abre el buscador de sus unidades en stock
+    const [unitPicker, setUnitPicker] = useState<{ index: number; product: ProductProps } | null>(null);
+
+    // Factura y nota de venta exigen la unidad; la proforma (cotización) y la nota de crédito aceptan el modelo
+    const voucherSlug = voucherTypes.find(vt => vt.id === Number(invoice.voucher_type_id))?.slug;
+    const sellsUnits = voucherSlug === ORDER_VOUCHER_TYPE_SLUG.FACTURA || voucherSlug === ORDER_VOUCHER_TYPE_SLUG.NOTA_VENTA;
 
     const addItem = () => {
         setProductOutputs((prev) => ([...prev, { ...initialProductItem, id: nanoid(), }]));
@@ -20,6 +32,7 @@ export const useProductOutput = () => {
     // Modificar campos del Item Product
     const updateItem = (index: number, field: fields, value: string | number) => {
         if (value && Number(value) < 0) return
+        if (field === 'quantity' && isUnitLine(productOutputs[index])) return
         const updated: ProductOutput = { ...productOutputs[index], [field]: value };
 
         // Validar ese campo
@@ -59,9 +72,16 @@ export const useProductOutput = () => {
 
     // Seleccionar producto para un Item
     const selectProduct = (index: number, product: ProductProps, search?: string, chosen?: ProductPresentation | null) => {
+        const isUnit = !!product.parent_product_id;
+        if (!isUnit && sellsUnits && product.product_template_id
+            && requiresUnit(templates.find(t => t.id === product.product_template_id))) {
+            setUnitPicker({ index, product });
+            return;
+        }
         // Fila elegida en el modal (null = unidad base); si no hubo fila, la presentación cuyo código se buscó.
-        // Las presentaciones son parte del inventario: sin él la línea va siempre en unidad base
-        const presentation = !inventory ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
+        // Las presentaciones son parte del inventario: sin él la línea va siempre en unidad base.
+        // Una unidad no se vende por presentación
+        const presentation = !inventory || isUnit ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
         const price = presentation ? Number(presentation.price) : product.atts.price1;
         const selected: ProductOutput = {
             ...productOutputs[index],
@@ -82,8 +102,10 @@ export const useProductOutput = () => {
             presentation_id: presentation?.id ?? null,
             conversion_factor: presentation?.conversion_factor ?? null,
             unit_price: product.atts.price1,
-            presentations: product.presentations ?? [],
+            presentations: isUnit ? [] : product.presentations ?? [],
             type_product: product.atts.type_product,
+            parent_product_id: product.parent_product_id ?? null,
+            characteristics: product.characteristics ?? [],
         };
         // En feriado un servicio turístico (IVA diferenciado) pasa del 15% al 8%
         const [updated] = applyHolidayIva([selected]);
@@ -103,6 +125,21 @@ export const useProductOutput = () => {
         const prods = productOutputs.map((item, i) => i === index ? updated : item);
         recalculate(prods);
     }
+
+    // Unidad elegida en el buscador del modelo: la línea va con el product_id de la unidad
+    const selectUnit = (unit: ProductUnit) => {
+        if (!unitPicker) return;
+        const { index, product } = unitPicker;
+        setUnitPicker(null);
+        selectProduct(index, {
+            ...product,
+            id: unit.id,
+            atts: { ...product.atts, code: unit.code, name: unit.name || product.atts.name, price1: Number(unit.price1), stock: unit.stock },
+            presentations: [],
+            parent_product_id: unit.parent_product_id,
+            characteristics: unit.characteristics,
+        });
+    };
 
     // Eliminar producto
     const removeItem = (index: number) => {
@@ -126,5 +163,5 @@ export const useProductOutput = () => {
         });
     };
 
-    return { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem }
+    return { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem, unitPicker, selectUnit, closeUnitPicker: () => setUnitPicker(null) }
 }

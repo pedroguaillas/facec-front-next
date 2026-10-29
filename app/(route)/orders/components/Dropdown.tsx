@@ -80,7 +80,7 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {
-        const options = [{ label: "Ver Pdf", onClick: showOrderPdf }];
+        const options: { label: string; onClick: () => void; disabled?: boolean; title?: string }[] = [{ label: "Ver Pdf", onClick: showOrderPdf }];
 
         // Con plan vencido no se procesa/envía al SRI; anular sí se permite
         const canProcess = canEmit || order.atts.state === "AUTORIZADO";
@@ -106,7 +106,16 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         }
         options.push({ label: "Enviar correo", onClick: sendMail });
 
-        if (isProforma && canEmit) {
+        // Ya convertida: no se vuelve a facturar (evita facturas duplicadas)
+        const convertedInvoice = order.atts.converted_invoice;
+        if (isProforma && convertedInvoice) {
+            options.push({
+                label: "Ya convertida en factura",
+                disabled: true,
+                title: `Factura ${convertedInvoice.serie}`,
+                onClick: () => undefined,
+            });
+        } else if (isProforma && canEmit) {
             options.push({
                 label: "Convertir en Factura",
                 onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices, undefined, (message) => toast(message, 'error')),
@@ -214,13 +223,17 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
                             {getOptions().map((option, indexOption) => (
                                 <button
                                     key={indexOption}
+                                    type="button"
+                                    disabled={option.disabled}
+                                    title={option.title}
                                     onClick={() => {
                                         setIsOpen(index); // Close dropdown after selection
                                         option.onClick();
                                     }}
-                                    className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer"
+                                    className="block w-full px-4 py-2 text-sm text-ink-2 hover:bg-surface-sunken hover:text-ink-1 text-left cursor-pointer disabled:cursor-not-allowed disabled:text-ink-4 disabled:hover:bg-transparent"
                                 >
                                     {option.label}
+                                    {option.disabled && option.title && <span className="block text-xs text-ink-3 tabular-nums break-all">{option.title}</span>}
                                 </button>
                             ))}
                         </div>

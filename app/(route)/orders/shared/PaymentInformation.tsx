@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SelectOption, SelectPaymentSource, TextInput } from "@/components";
+import { useParams } from "next/navigation";
+import { PaymentReceiptInput, SelectOption, SelectPaymentSource, TextInput } from "@/components";
 import { useFormInvoice } from "../context/FormInvoiceContext";
 import { paymentTypeOptions, DEFAULT_CREDIT_TERM_DAYS } from "@/constants";
 import { addDaysToDate, getDate } from "@/helpers/dateHelper";
@@ -13,6 +14,8 @@ import { MovementSourceType, PaymentType } from "@/types";
 export const PaymentInformation = () => {
 
     const axiosAuth = useAxiosAuth();
+    // Al editar ya no se crea el movimiento: el comprobante va solo al crear
+    const params = useParams();
     const { canUseFinance } = usePlan();
     // Crédito y anticipo requieren el plan Financiero
     const { invoice, formErrors, setInvoice, setFormErrors } = useFormInvoice();
@@ -40,6 +43,8 @@ export const PaymentInformation = () => {
             payment_type,
             source_type: undefined,
             source_id: undefined,
+            receipt: null,
+            receipt_number: undefined,
             due_date: payment_type !== 'CONTADO' ? addDaysToDate(prev.date, DEFAULT_CREDIT_TERM_DAYS) : undefined,
         }));
         setFormErrors(prev => ({ ...prev, payment_type: '', source_type: '', source_id: '', due_date: '' }));
@@ -51,7 +56,8 @@ export const PaymentInformation = () => {
     };
 
     const handleSelectSource = (source_type: MovementSourceType, source_id: number) => {
-        setInvoice(prev => ({ ...prev, source_type, source_id }));
+        // El comprobante solo va con cuenta bancaria
+        setInvoice(prev => ({ ...prev, source_type, source_id, ...(source_type !== 'bank_account' && { receipt: null, receipt_number: undefined }) }));
         setFormErrors(prev => ({ ...prev, source_type: '', source_id: '' }));
     };
 
@@ -100,6 +106,25 @@ export const PaymentInformation = () => {
                     error={formErrors.source_type || formErrors.source_id}
                     onChange={handleSelectSource}
                 />
+            )}
+
+            {invoice.payment_type === 'CONTADO' && invoice.source_type === 'bank_account' && !params?.id && (
+                <div className="col-span-full">
+                    <PaymentReceiptInput
+                        number={invoice.receipt_number ?? ''}
+                        numberError={formErrors.receipt_number}
+                        onNumberChange={(receipt_number) => {
+                            setInvoice(prev => ({ ...prev, receipt_number }));
+                            setFormErrors(prev => ({ ...prev, receipt_number: '' }));
+                        }}
+                        file={invoice.receipt ?? null}
+                        error={formErrors.receipt || formErrors.receipt_id}
+                        onChange={(receipt) => {
+                            setInvoice(prev => ({ ...prev, receipt }));
+                            setFormErrors(prev => ({ ...prev, receipt: '', receipt_id: '' }));
+                        }}
+                    />
+                </div>
             )}
         </div>
     )

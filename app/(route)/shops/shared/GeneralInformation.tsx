@@ -17,7 +17,7 @@ const formatSerie = (raw: string) => {
 export const GeneralInformation = () => {
 
     const { invoiceTypes, isLiquidacion, isFactura, handleChange, handleSelectProvider } = useGeneralInformation();
-    const { shop, errorShop, selectProvider, points, selectPoint, setShop, setSelectPoint, setErrorShop } = useFormShop();
+    const { shop, errorShop, selectProvider, points, selectPoint, xmlImported, setShop, setSelectPoint, setErrorShop, setXmlImported } = useFormShop();
 
     // El punto de emisión vive en la cabecera: arma la serie de la retención (y de la liquidación)
     // sin obligar a activar la retención para poder elegirlo
@@ -55,9 +55,15 @@ export const GeneralInformation = () => {
             // Factura electrónica: el XML del SRI llena serie, autorización, fecha, proveedor y valores
             aside={isFactura ? <ImportXml /> : undefined}
         >
+            {xmlImported && (
+                <p className='mb-1 flex flex-wrap items-center gap-x-2 text-xs text-ink-3'>
+                    Fecha, número, autorización y valores cargados del XML.
+                    <button type='button' onClick={() => setXmlImported(false)} className='font-medium text-primary hover:underline cursor-pointer'>Editar manualmente</button>
+                </p>
+            )}
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-6'>
-                <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={shop.voucher_type_id} error={errorShop.voucher_type_id} handleSelect={handleChange} name='voucher_type_id' />
-                <TextInput type='date' label='Fecha de emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} required />
+                <SelectOption label="Tipo de comprobante" options={invoiceTypes} selectedValue={shop.voucher_type_id} error={errorShop.voucher_type_id} handleSelect={handleChange} name='voucher_type_id' disabled={xmlImported} />
+                <TextInput type='date' label='Fecha de emisión' value={shop.date} error={errorShop.date} onChange={handleChange} name='date' min={getMinDate()} max={getDate()} readOnly={xmlImported} required />
 
                 <div className='flex flex-col gap-1.5 my-2 sm:col-span-2'>
                     <LabelComponent name="provider_id" label="Proveedor" required />
@@ -77,6 +83,7 @@ export const GeneralInformation = () => {
                             error={errorShop.serie}
                             onChange={handleSerie}
                             name='serie'
+                            readOnly={xmlImported}
                             maxLength={17}
                             inputMode='numeric'
                             placeholder='001-001-000000001'
@@ -89,6 +96,7 @@ export const GeneralInformation = () => {
                             error={errorShop.authorization}
                             onChange={handleAuthorization}
                             name='authorization'
+                            readOnly={xmlImported}
                             maxLength={49}
                             inputMode='numeric'
                             placeholder='Clave de acceso de 49 dígitos'

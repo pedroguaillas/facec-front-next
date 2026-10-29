@@ -82,7 +82,7 @@ export const ChangePlanModal = ({ companyId, currentPlan, onClose, onSaved }: Pr
                     required
                 />
                 <TextInput
-                    type="number"
+                    type="text"
                     label="Monto pagado"
                     name="amount"
                     value={form.amount}

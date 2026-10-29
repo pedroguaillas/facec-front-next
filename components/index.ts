@@ -11,6 +11,8 @@ export * from './switch/Switch';
 export * from './primary-button/PrimaryButton';
 export * from './icon-button/IconButton';
 export * from './file-drop-input/FileDropInput';
+export * from './payment-receipt/PaymentReceiptInput';
+export * from './payment-receipt/usePaymentReceipt';
 export * from './title/Title';
 export * from './separate/Separate';
 export * from './legend-required/RequiredFields';

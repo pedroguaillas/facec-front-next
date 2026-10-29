@@ -28,3 +28,4 @@ export * from './supplier.d';
 export * from './subscription.d';
 export * from './recurring-invoice.d';
 export * from './inventory.d';
+export * from './product-template.d';

@@ -43,8 +43,11 @@ const InvoicesTable = () => {
                     const seriePrefix = order.atts.serie?.trim().split(" ")[0] ?? "";
                     const isElectronic = seriePrefix === ORDER_SERIE_PREFIX.FACTURA || seriePrefix === ORDER_SERIE_PREFIX.NOTA_CREDITO;
                     const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(order.atts?.state);
+                    // Crédito con saldo por cobrar (misma regla que "Registrar pago"); la anulada no se cobra
+                    const pending = order.atts.payment_type === "CREDITO" && order.atts.state !== "ANULADO"
+                        ? Number((order.atts.total - Number(order.atts.paid ?? 0)).toFixed(2)) : 0;
                     return (
-                    <tr key={order.id}>
+                    <tr key={order.id} className={pending > 0 ? "bg-sri-wait-soft" : undefined}>
                         <td className="text-left whitespace-nowrap tabular-nums text-ink-2">{formatDate(order.atts.date)}</td>
                         <td className="text-left">
                             <VoucherSerie serie={order.atts?.serie} href={`/orders/${order.id}`} />
@@ -53,7 +56,10 @@ const InvoicesTable = () => {
                         <td>
                             <SriStatus state={order.atts?.state} isElectronic={isElectronic} detail={hasDetail ? order.atts.extra_detail : null} />
                         </td>
-                        <td className="text-right whitespace-nowrap tabular-nums font-medium">${order.atts.total.toFixed(2)}</td>
+                        <td className="text-right whitespace-nowrap tabular-nums font-medium">
+                            ${order.atts.total.toFixed(2)}
+                            {pending > 0 && <span className="block text-xs font-normal text-sri-wait">Pendiente ${pending.toFixed(2)}</span>}
+                        </td>
                         <td>
                             {Number(order.atts.send_mail) === 1 && (
                                 <span className="flex justify-center text-sri-ok" title="Enviado por correo">

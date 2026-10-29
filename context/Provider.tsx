@@ -5,6 +5,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ToastProvider } from './ToastContext';
 import { StaleSessionGuard } from './StaleSessionGuard';
 import { ServiceWorkerRegister } from '@/components/pwa/ServiceWorkerRegister';
+import { DecimalCommaFix } from '@/components/decimal-input/DecimalCommaFix';
 
 interface Props {
     children: React.ReactNode;
@@ -15,6 +16,7 @@ export default function Provider({ children }: Props) {
         <SessionProvider>
             <StaleSessionGuard />
             <ServiceWorkerRegister />
+            <DecimalCommaFix />
             <ToastProvider>
                 {children}
             </ToastProvider>

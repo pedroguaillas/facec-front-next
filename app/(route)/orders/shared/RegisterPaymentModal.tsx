@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Modal, PrimaryButton, SelectPaymentSource, TextInput } from "@/components";
+import { Modal, PaymentReceiptInput, PrimaryButton, SelectPaymentSource, TextInput, usePaymentReceipt } from "@/components";
 import { registerPaymentSchema } from "@/schemas/payment.schema";
 import { getInvoice, registerOrderPayment } from "../services/invoiceServices";
 import { parseZodErrors } from "@/helpers/zodHelper";
@@ -27,13 +27,19 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
     const [date, setDate] = useState(getDate());
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSaving, setIsSaving] = useState(false);
+    const { receipt, setReceipt, uploadReceipt } = usePaymentReceipt();
+    const [receiptNumber, setReceiptNumber] = useState('');
 
     useEffect(() => {
         const fetchOrder = async () => {
             const { data } = await getInvoice(axiosAuth, String(orderId));
             if (data) {
-                setTotal(Number(data.order.total));
-                setPaid(Number(data.order.paid ?? 0));
+                const orderTotal = Number(data.order.total);
+                const orderPaid = Number(data.order.paid ?? 0);
+                setTotal(orderTotal);
+                setPaid(orderPaid);
+                // Por defecto se abona todo lo pendiente; el usuario puede bajarlo
+                setAmount(String(Number(Math.max(0, orderTotal - orderPaid).toFixed(2))));
                 setIsCredit(data.order.payment_type === 'CREDITO');
             }
         };
@@ -45,6 +51,8 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
     const handleSelectSource = (type: MovementSourceType, id: number) => {
         setSourceType(type);
         setSourceId(id);
+        // El comprobante solo va con cuenta bancaria
+        if (type !== 'bank_account') setReceipt(null);
         setErrors(prev => ({ ...prev, source_type: '', source_id: '' }));
     };
 
@@ -63,7 +71,14 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
         }
 
         setIsSaving(true);
-        const response = await registerOrderPayment(axiosAuth, orderId, parsed.data);
+        const { receipt_id, error: receiptUploadError }: { receipt_id?: number; error?: string } =
+            sourceType === 'bank_account' ? await uploadReceipt() : {};
+        if (receiptUploadError) {
+            setIsSaving(false);
+            setErrors({ receipt: receiptUploadError });
+            return;
+        }
+        const response = await registerOrderPayment(axiosAuth, orderId, { ...parsed.data, receipt_id, ...(sourceType === 'bank_account' && receiptNumber.trim() && { receipt_number: receiptNumber.trim() }) });
         setIsSaving(false);
 
         if (response.errors) {
@@ -90,8 +105,11 @@ export const RegisterPaymentModal = ({ orderId, onClose, onSaved }: Props) => {
                         Total: <strong>{total.toFixed(2)}</strong> · Pagado: <strong>{paid.toFixed(2)}</strong> · Pendiente: <strong>{pending?.toFixed(2)}</strong>
                     </p>
 
-                    <TextInput type="number" inputMode="decimal" label="Monto a abonar" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
+                    <TextInput type="text" inputMode="decimal" label="Monto a abonar" name="amount" value={amount} error={errors.amount} onChange={(e) => setAmount(e.target.value)} required />
                     <SelectPaymentSource sourceType={sourceType} sourceId={sourceId} error={errors.source_type || errors.source_id} onChange={handleSelectSource} />
+                    {sourceType === 'bank_account' && (
+                        <PaymentReceiptInput number={receiptNumber} numberError={errors.receipt_number} onNumberChange={(value) => { setReceiptNumber(value); setErrors(prev => ({ ...prev, receipt_number: '' })); }} file={receipt} error={errors.receipt || errors.receipt_id} onChange={(file) => { setReceipt(file); setErrors(prev => ({ ...prev, receipt: '', receipt_id: '' })); }} />
+                    )}
                     <TextInput type="date" label="Fecha" name="date" value={date} onChange={(e) => setDate(e.target.value)} max={getDate()} />
 
                     <div className='flex justify-end mt-4'>

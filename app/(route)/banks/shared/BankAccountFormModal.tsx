@@ -135,7 +135,7 @@ export const BankAccountFormModal = ({ account, onClose, onSaved }: Props) => {
 
                 {!account && (
                     <TextInput
-                        type="number"
+                        type="text"
                         label="Saldo actual"
                         value={form.opening_balance?.toString() ?? ''}
                         error={errors.opening_balance}

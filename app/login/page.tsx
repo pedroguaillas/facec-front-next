@@ -65,7 +65,7 @@ export default function LoginPage() {
     } else {
       const session = await getSession(); // 🔄 Asegura que obtienes la sesión actualizada
         if (session?.user.user.user === 'admin') {
-          router.push("/admin/companies");
+          router.push("/admin/dashboard");
         } else {
           router.push("/dashboard");
         }

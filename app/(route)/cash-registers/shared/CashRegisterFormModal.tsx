@@ -106,7 +106,7 @@ export const CashRegisterFormModal = ({ cashRegister, existingTypes, onClose, on
                 </div>
                 {!cashRegister && !form.uses_sessions && (
                     <TextInput
-                        type="number"
+                        type="text"
                         label="Efectivo con el que arranca"
                         name="initial_balance"
                         value={initialBalance}

@@ -18,8 +18,15 @@ export const useImportExcel = ({ onSuccess }: UseImportExcelOptions = {}) => {
 
         setMessage(undefined);
         setIsPending(true);
-        const { error, errors } = await storeLotServices(axiosAuth, formData);
+        const { data, error, errors } = await storeLotServices(axiosAuth, formData);
         setIsPending(false);
+
+        // El backend rechaza el lote con 200 y { msm } (ej. "El lote no admite productos por unidad: M5452")
+        const rejected = (data as { msm?: string } | undefined)?.msm;
+        if (rejected) {
+            setMessage(rejected);
+            return;
+        }
 
         if (error) {
             setMessage(error);

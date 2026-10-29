@@ -11,7 +11,7 @@ const money = (value: number | string) => Number(value || 0).toFixed(2);
 // Recibo de la compra: bases (editables salvo en liquidación), IVA calculado, total y lo que queda por pagar
 export const Totals = () => {
 
-    const { shop, taxes, applieWithholding, setShop, errorShop, setErrorShop } = useFormShop();
+    const { shop, taxes, applieWithholding, xmlImported, setShop, errorShop, setErrorShop } = useFormShop();
     const { isLiquidacion, isNotaVenta } = useShopVoucherType();
     const params = useParams();
     // Con la retención autorizada la compra ya no se puede modificar
@@ -56,19 +56,21 @@ export const Totals = () => {
         <div className="rounded-xl border border-line bg-surface">
             <div className="p-4 lg:p-5">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-ink-3">Resumen</h2>
-                {!isLiquidacion && <p className="mt-1 text-xs text-ink-3">Copia las bases tal como están en el comprobante.</p>}
+                {!isLiquidacion && (
+                    <p className="mt-1 text-xs text-ink-3">{xmlImported ? 'Bases cargadas del XML.' : 'Copia las bases tal como están en el comprobante.'}</p>
+                )}
 
                 <dl className="mt-3 space-y-1.5 text-sm">
                     {baseRows.map(({ name, label, value, error }) => (
                         <div key={name} className="flex items-center justify-between gap-4">
                             <dt className="text-ink-2"><label htmlFor={`shop-${name}`}>{label}</label></dt>
                             <dd>
-                                {isLiquidacion ? (
+                                {isLiquidacion || xmlImported ? (
                                     <span className="tabular-nums text-ink-1">{money(value)}</span>
                                 ) : (
                                     <input
                                         id={`shop-${name}`}
-                                        type="number"
+                                        type="text"
                                         inputMode="decimal"
                                         value={value}
                                         name={name}

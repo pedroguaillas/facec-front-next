@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { addDaysToDate, getDate } from '@/helpers/dateHelper';
-import { GUIDE_DURATION_MAX_DAYS, GUIDE_START_MAX_DAYS } from '@/constants/referralGuides';
+import { GUIDE_DURATION_MAX_DAYS } from '@/constants/referralGuides';
 
 export const productOutputSchema = z.object({
 	id: z.string(), // o number si usas timestamp
@@ -19,7 +19,8 @@ export const referralGuideSchema = z.object({
 	serie: z.string().regex(/^\d{3}-\d{3}-\d{9}$/, {
 		message: 'Seleccione el punto de emisión',
 	}),
-	date_start: z.string().min(1, { message: 'Escriba una fecha correcta' }),
+	// Lo fija el backend (fecha de emisión); solo se usa para validar el fin
+	date_start: z.string().optional(),
 	date_end: z.string().min(1, { message: 'Escriba una fecha correcta' }),
 	carrier_id: z.number().min(1, { message: 'Seleccione el transportista' }),
 	customer_id: z.number().min(1, { message: 'Seleccione el destinatario o cliente' }),
@@ -34,11 +35,8 @@ export const referralGuideSchema = z.object({
 	authorization_invoice: z.string().optional(),
 	products: z.array(productOutputSchema).min(1, { message: 'Debe agregar al menos un producto' }),
 }).superRefine((data, ctx) => {
-	const today = getDate();
-	if (data.date_start < today || data.date_start > addDaysToDate(today, GUIDE_START_MAX_DAYS)) {
-		ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['date_start'], message: `Desde hoy hasta ${GUIDE_START_MAX_DAYS} días después` });
-	}
-	if (data.date_end < data.date_start || data.date_end > addDaysToDate(data.date_start, GUIDE_DURATION_MAX_DAYS)) {
+	const start = data.date_start || getDate();
+	if (data.date_end < start || data.date_end > addDaysToDate(start, GUIDE_DURATION_MAX_DAYS)) {
 		ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['date_end'], message: `Desde el inicio hasta ${GUIDE_DURATION_MAX_DAYS} días después` });
 	}
 });

@@ -7,13 +7,20 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { presentationBySearch } from "@/helpers/presentationHelper";
 import { useInventory } from "@/lib/hooks/useInventory";
 import { useShopVoucherType } from "./useShopVoucherType";
+import { useProductTemplates } from "@/lib/hooks/useProductTemplates";
+import { templateFieldsOf } from "@/helpers/productTemplateHelper";
+import { xmlLineOutputs } from "./useXmlLines";
+
+// Línea de una unidad (nueva o ya existente): una por línea, cantidad fija 1
+export const isUnitLine = (item: ProductOutput) => !!item.unit_template_id || !!item.parent_product_id;
 
 export const useListProducts = () => {
     const { enabled: inventory } = useInventory();
 
-    const { setShop, setProductOutputs } = useFormShop();
+    const { productOutputs, xmlImported, setShop, setProductOutputs, setErrorShop, setXmlImported } = useFormShop();
     // Factura / nota de venta con inventario: las líneas son el ingreso al kardex (costo sin IVA)
     const { isInventoryEntry, isNotaVenta } = useShopVoucherType();
+    const templates = useProductTemplates();
 
     const addItem = () => {
         setProductOutputs((prevState) => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -22,6 +29,9 @@ export const useListProducts = () => {
     const updateItem = (index: number, field: fields, value: string | number) => {
         if (value && Number(value) < 0) return;
         setProductOutputs((prevState) => {
+            if (field === 'quantity' && isUnitLine(prevState[index])) return prevState;
+            // Cantidad y costo de una línea del XML van tal como vienen
+            if (prevState[index].xml) return prevState;
             const newState = [...prevState];
             newState[index] = {
                 ...newState[index],
@@ -35,9 +45,24 @@ export const useListProducts = () => {
     }
 
     const selectProduct = (index: number, product: ProductProps, search?: string, chosen?: ProductPresentation | null) => {
+        // Línea del XML: se vincula el producto y se conservan cantidad y costo del XML
+        // (un modelo con campos por unidad se separa en una línea por unidad)
+        const xml = productOutputs[index]?.xml;
+        if (xml) {
+            const presentation = !inventory ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
+            const lines = xmlLineOutputs({ ...xml, match: 'manual', remember: true }, product, templates, presentation);
+            setProductOutputs(prev => [...prev.slice(0, index), ...lines, ...prev.slice(index + 1)]);
+            setErrorShop(prev => ({ ...prev, [`products.${index}.product_id`]: '' }));
+            return;
+        }
         // Fila elegida en el modal (null = unidad base); si no hubo fila, la presentación cuyo código se buscó.
         // Las presentaciones son parte del inventario: sin él la línea va siempre en unidad base
-        const presentation = !inventory ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
+        // Modelo con campos por unidad (ej. moto): la línea da de alta una unidad nueva, sin presentación
+        const template = !product.parent_product_id && product.product_template_id
+            ? templates.find(t => t.id === product.product_template_id)
+            : undefined;
+        const unitTemplateId = templateFieldsOf(template, 'unidad').length > 0 ? template!.id : null;
+        const presentation = !inventory || unitTemplateId ? null : chosen !== undefined ? chosen : presentationBySearch(product, search);
         const salePrice = presentation ? Number(presentation.price) : product.atts.price1;
         setProductOutputs((prevState) => {
             const newState = [...prevState];
@@ -54,7 +79,12 @@ export const useListProducts = () => {
                 presentation_id: presentation?.id ?? null,
                 conversion_factor: presentation?.conversion_factor ?? null,
                 unit_price: product.atts.price1,
-                presentations: product.presentations ?? [],
+                presentations: unitTemplateId ? [] : product.presentations ?? [],
+                unit_template_id: unitTemplateId,
+                unit: unitTemplateId ? {} : undefined,
+                unit_code: unitTemplateId ? '' : undefined,
+                parent_product_id: product.parent_product_id ?? null,
+                characteristics: product.characteristics ?? [],
             };
             calculateTotals(newState);
             return newState;
@@ -74,6 +104,8 @@ export const useListProducts = () => {
 
         // Ingreso de inventario sin costos aún: no se pisan las bases tipeadas o importadas del XML
         if (isInventoryEntry && base0 + base15 === 0) return;
+        // Cargada del XML: las bases son las del comprobante
+        if (xmlImported) return;
 
         base0 = Number(base0.toFixed(2));
         base15 = Number(base15.toFixed(2));
@@ -91,10 +123,29 @@ export const useListProducts = () => {
                 total: Number((subTotal + Number(prev.ice ?? 0) + Number(prev.iva ?? 0) + Number(prev.iva5 ?? 0) + iva15).toFixed(2)),
             };
         });
-    }, [setShop, isInventoryEntry, isNotaVenta]);
+    }, [setShop, isInventoryEntry, isNotaVenta, xmlImported]);
+
+    // Valor de un campo de la unidad nueva (chasis, motor) o su código manual
+    const updateUnit = (index: number, key: string | null, value: string) => {
+        setProductOutputs(prev => prev.map((item, i) => i !== index ? item
+            : key === null ? { ...item, unit_code: value } : { ...item, unit: { ...item.unit, [key]: value } }));
+        const errorKey = key === null ? `products.${index}.unit_code` : `products.${index}.unit.${key}`;
+        setErrorShop(prev => ({ ...prev, [errorKey]: '', [`products.${index}.unit`]: '' }));
+    };
+
+    // Otra unidad del mismo modelo y costo, debajo de la línea
+    const addUnitLine = (index: number) => {
+        setProductOutputs(prev => {
+            const newState = [...prev];
+            newState.splice(index + 1, 0, { ...prev[index], id: nanoid(), unit: {}, unit_code: '' });
+            calculateTotals(newState);
+            return newState;
+        });
+    };
 
     const deleteItem = (index: number) => {
         setProductOutputs((prevState) => {
+            if (prevState[index]?.xml) return prevState;
             const newState = prevState.filter((_, i) => i !== index);
             calculateTotals(newState);
             return newState;
@@ -110,5 +161,13 @@ export const useListProducts = () => {
         });
     };
 
-    return { addItem, updateItem, selectProduct, deleteItem, moveItem }
+    // "Recordar para este proveedor" en una línea del XML vinculada a mano
+    const toggleRemember = (index: number) => {
+        setProductOutputs(prev => prev.map((item, i) => i === index && item.xml ? { ...item, xml: { ...item.xml, remember: !item.xml.remember } } : item));
+    };
+
+    // Deja de tratar la compra como XML: cabecera, bases y líneas vuelven a ser editables
+    const unlockXml = () => setXmlImported(false);
+
+    return { addItem, updateItem, selectProduct, deleteItem, moveItem, updateUnit, addUnitLine, toggleRemember, unlockXml }
 }

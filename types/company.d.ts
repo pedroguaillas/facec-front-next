@@ -1,5 +1,8 @@
 import { Subscription } from "./subscription";
 
+// active: usó en 7 días y emitió en 30 · risk: 8–30 días o entra sin emitir · inactive: +30 días · never: nunca emitió
+export type CompanyActivityStatus = 'active' | 'risk' | 'inactive' | 'never';
+
 export interface Company {
     id: string,
     ruc: string,
@@ -43,6 +46,12 @@ export interface Company {
     last_subscription?: Subscription | null,
     // Usuario principal de la empresa (solo en la lista del admin)
     user?: { id: number, user: string, email: string } | null,
+    // Uso de la cuenta (solo en la lista del admin)
+    last_activity_at?: string | null,
+    orders_30d?: number,
+    shops_30d?: number,
+    first_voucher_at?: string | null,
+    activity_status?: CompanyActivityStatus,
 
     created_at?: string,
     updated_at?: string,

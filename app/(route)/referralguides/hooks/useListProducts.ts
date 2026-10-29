@@ -1,12 +1,19 @@
 import { useFormReferralGuide } from '../context/FormReferralGuideContext';
 import { productOutputSchema } from '@/schemas/referral-guide.schema';
 import { initialProductItem } from '@/constants/initialValues';
-import { ProductProps } from '@/types';
+import { ProductProps, ProductUnit } from '@/types';
 import { nanoid } from 'nanoid';
 import { arrayMove } from '@dnd-kit/sortable';
+import { useState } from 'react';
+import { useProductTemplates } from '@/lib/hooks/useProductTemplates';
+import { requiresUnit } from '@/helpers/productTemplateHelper';
+import { isUnitLine } from "@/helpers/productTemplateHelper";
 
 export const useListProducts = () => {
-	const { setProductOutputs, setErrorProductOutputs } = useFormReferralGuide();
+	const { productOutputs, setProductOutputs, setErrorProductOutputs } = useFormReferralGuide();
+	const templates = useProductTemplates();
+	// Modelo con campos por unidad: se elige la unidad para que el chasis salga en el XML/PDF
+	const [unitPicker, setUnitPicker] = useState<{ index: number; product: ProductProps } | null>(null);
 
 	const addItem = () => {
 		setProductOutputs(prevState => [...prevState, { ...initialProductItem, id: nanoid() }]);
@@ -14,6 +21,8 @@ export const useListProducts = () => {
 
 	const updateItem = (index: number, value: number | string) => {
 		if (value && Number(value) < 0) return;
+		// Una unidad (ej. una moto) va con cantidad 1
+		if (isUnitLine(productOutputs[index])) return;
 
 		setProductOutputs(prevState => {
 			const newState = [...prevState];
@@ -49,19 +58,50 @@ export const useListProducts = () => {
 		});
 	};
 
-	const selectProduct = (index: number, product: ProductProps) => {
+	const selectProduct = (index: number, product: ProductProps, askUnit = true) => {
+		if (askUnit && !product.parent_product_id && product.product_template_id
+			&& requiresUnit(templates.find(t => t.id === product.product_template_id))) {
+			setUnitPicker({ index, product });
+			return;
+		}
+		const isUnit = !!product.parent_product_id;
 		setProductOutputs(prevState => {
 			const newState = [...prevState];
 			newState[index] = {
 				...newState[index],
 				product_id: product.id,
 				name: product.atts.name,
+				product_code: product.atts.code,
+				parent_product_id: product.parent_product_id ?? null,
+				characteristics: product.characteristics ?? [],
+				...(isUnit && { quantity: 1 }),
 			};
 			// Limpia el error "Seleccione un producto" de esa línea
 			const id = newState[index].id;
 			setErrorProductOutputs(prev => ({ ...prev, [id]: { ...prev[id], product_id: '' } }));
 			return newState;
 		});
+	};
+
+	const selectUnit = (unit: ProductUnit) => {
+		if (!unitPicker) return;
+		const { index, product } = unitPicker;
+		setUnitPicker(null);
+		selectProduct(index, {
+			...product,
+			id: unit.id,
+			atts: { ...product.atts, code: unit.code, name: unit.name || product.atts.name },
+			parent_product_id: unit.parent_product_id,
+			characteristics: unit.characteristics,
+		});
+	};
+
+	// La guía no exige la unidad: con el modelo salen solo sus características (Marca, Año)
+	const skipUnit = () => {
+		if (!unitPicker) return;
+		const { index, product } = unitPicker;
+		setUnitPicker(null);
+		selectProduct(index, product, false);
 	};
 
 	const removeItem = (index: number) => {
@@ -83,5 +123,9 @@ export const useListProducts = () => {
 		selectProduct,
 		removeItem,
 		moveItem,
+		unitPicker,
+		selectUnit,
+		skipUnit,
+		closeUnitPicker: () => setUnitPicker(null),
 	};
 };

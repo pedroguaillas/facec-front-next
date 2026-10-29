@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import { CustomerProps } from '@/types';
 import React from 'react';
 import { useSession } from 'next-auth/react';
-import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
+import { CONSUMIDOR_FINAL_IDENTICATION, NC_FINAL_CONSUMER_ERROR, ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
 import { FormSection } from './FormSection';
 
 export const GeneralInformation = () => {
@@ -21,6 +21,8 @@ export const GeneralInformation = () => {
     const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(invoice.voucher_type_id));
     const isFactura = selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.FACTURA;
     const isNotaCredito = selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
+    // El SRI no admite notas de crédito a consumidor final: se avisa apenas se elige el cliente
+    const ncToFinalConsumer = isNotaCredito && selectCustom?.atts.identication === CONSUMIDOR_FINAL_IDENTICATION;
 
     const optionPoints = points.map((point) => ({
         value: point.id,
@@ -77,7 +79,7 @@ export const GeneralInformation = () => {
                 )}
                 <div className='flex flex-col gap-1.5 my-2 sm:col-span-2'>
                     <LabelComponent name='name' label='Cliente' required />
-                    <SelectCustomer label={selectCustom?.atts.name ?? ''} error={formErrors.customer_id} selectCustomer={handleSelectCustomer} />
+                    <SelectCustomer label={selectCustom?.atts.name ?? ''} error={formErrors.customer_id || (ncToFinalConsumer ? NC_FINAL_CONSUMER_ERROR : undefined)} selectCustomer={handleSelectCustomer} />
                 </div>
                 {/* Solo en el caso de facturas */}
                 {isFactura && session?.user.permissions.guia_in_invoice && (

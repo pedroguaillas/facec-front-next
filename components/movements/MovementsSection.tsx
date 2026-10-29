@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Paginate, Separate, TableResponsive } from "@/components";
 import { movementTransactionTypeLabels, movementStatusLabels, paymentMethodOptions } from "@/constants";
 import { getMovements, completeMovement } from "@/services/movementServices";
+import { ReceiptButton } from "../payment-receipt/ReceiptButton";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { Links, Meta, Movement, MovementSourceType } from "@/types";
 
@@ -94,6 +95,9 @@ export const MovementsSection = ({ sourceType, sourceId, title = 'Movimientos', 
                             <td>{paymentMethodLabel(movement.atts.payment_method)}</td>
                             <td>{movementStatusLabels[movement.atts.status]}</td>
                             <td className="w-1">
+                                <span className="block text-xs">
+                                    <ReceiptButton movement={movement} onUpdated={(updated) => setMovements(prev => prev.map(item => item.id === updated.id ? updated : item))} />
+                                </span>
                                 {movement.atts.status === 'PENDIENTE' && (
                                     <button
                                         type="button"

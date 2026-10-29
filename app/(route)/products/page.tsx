@@ -2,7 +2,7 @@
 
 import { ProductsProvider, useProducts } from './context/ProductContext';
 import { ProductsFilter, ProductsTable } from './components';
-import { Paginate, Title } from '@/components';
+import { Notice, Paginate, Title } from '@/components';
 import { ActionsTitle } from '@/types';
 import { useImportExcel } from './hooks/useImportExcel';
 import { exportProducts } from './services/productServices';
@@ -17,6 +17,21 @@ const ProductsPagination = () => {
     };
 
     return <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />;
+};
+
+// Al terminar la importación se refresca la tabla con fetchProducts,
+// reemplazando el antiguo window.location.reload().
+const ImportProductsInput = () => {
+    const { fetchProducts } = useProducts();
+    const { handleSelectFile, isPending, result } = useImportExcel({ onSuccess: () => fetchProducts() });
+
+    return (
+        <>
+            {isPending && <Notice tone="info" title="Importando productos..." />}
+            {result && <Notice tone={result.tone} title={result.text} />}
+            <input type="file" onChange={handleSelectFile} className="hidden" accept=".csv" />
+        </>
+    );
 };
 
 const OrdersPage = () => {
@@ -36,8 +51,6 @@ const OrdersPage = () => {
         { label: "Nuevo producto", type: "link", url: "products/create", action: "add" },
     ];
 
-    const { handleSelectFile } = useImportExcel();
-
     return (
         <ProductsProvider>
             <div className="dark:text-gray-300">
@@ -51,7 +64,7 @@ const OrdersPage = () => {
                     <ProductsFilter />
                     <ProductsTable />
                     <ProductsPagination />
-                    <input type="file" onChange={handleSelectFile} className="hidden" accept=".csv" />
+                    <ImportProductsInput />
                 </div>
             </div>
         </ProductsProvider>

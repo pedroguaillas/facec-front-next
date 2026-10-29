@@ -5,10 +5,11 @@ import { useListProducts } from '../hooks/useListProducts';
 import { ItemProduct } from './ItemProduct';
 import { SortableItems } from '../../orders/shared/SortableItems';
 import { AddRowButton, FormSection, tableHead } from '../../orders/shared/FormSection';
+import { UnitPickerModal } from '../../orders/shared/UnitPickerModal';
 
 export const ListProducts = () => {
 	const { productOutputs, errorProductOutputs, errors } = useFormReferralGuide();
-	const { addItem, updateItem, selectProduct, removeItem, moveItem } = useListProducts();
+	const { addItem, updateItem, selectProduct, removeItem, moveItem, unitPicker, selectUnit, skipUnit, closeUnitPicker } = useListProducts();
 	const ids = productOutputs.map(op => op.id);
 	// Con una sola línea no hay nada que ordenar
 	const sortable = productOutputs.length > 1;
@@ -48,6 +49,16 @@ export const ListProducts = () => {
 			{errors.products && <p className='mt-2 text-xs text-red-500'>{errors.products}</p>}
 
 			<AddRowButton label='Agregar producto' onClick={addItem} />
+
+			{unitPicker && (
+				<UnitPickerModal
+					product={unitPicker.product}
+					excludeIds={productOutputs.filter((op, i) => i !== unitPicker.index && op.parent_product_id).map(op => op.product_id)}
+					onSelect={selectUnit}
+					onSkip={skipUnit}
+					onClose={closeUnitPicker}
+				/>
+			)}
 		</FormSection>
 	);
 };

@@ -5,7 +5,7 @@ import { getCreateProduct, getEditProduct } from "../services/productServices";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
-import { Product, SriCategory, ProductEditResponse } from "@/types";
+import { Product, ProductCharacteristic, ProductTemplate, SriCategory, ProductEditResponse } from "@/types";
 import { CodeErrors } from "@/constants/codeErrors";
 import { redirect } from "next/navigation";
 import { useInventory } from "@/lib/hooks/useInventory";
@@ -39,6 +39,12 @@ interface ProductCreateContextType {
     setDraftPresentations: Dispatch<SetStateAction<DraftPresentation[]>>;
     draftErrors: DraftPresentationErrors;
     setDraftErrors: Dispatch<SetStateAction<DraftPresentationErrors>>;
+    // Plantillas de características (ej. Moto) que puede usar el producto
+    productTemplates: ProductTemplate[];
+    // Plantilla guardada en el backend: las unidades solo se manejan con ella (no con una recién elegida)
+    savedTemplateId: number | null;
+    // Características efectivas del producto guardado (en una unidad se muestran de solo lectura)
+    characteristics: ProductCharacteristic[];
 }
 
 const ProductCreateContext = createContext<ProductCreateContextType | undefined>(undefined);
@@ -68,6 +74,9 @@ export const ProductFormProvider = ({ id, children }: Props) => {
     const [base8, setBase8] = useState(false);
     const [draftPresentations, setDraftPresentations] = useState<DraftPresentation[]>([]);
     const [draftErrors, setDraftErrors] = useState<DraftPresentationErrors>({ rows: {} });
+    const [productTemplates, setProductTemplates] = useState<ProductTemplate[]>([]);
+    const [savedTemplateId, setSavedTemplateId] = useState<number | null>(null);
+    const [characteristics, setCharacteristics] = useState<ProductCharacteristic[]>([]);
     const { status } = useSession();
     const axiosAuth = useAxiosAuth(); // ✅ Llamar el hook aquí, dentro del componente
     const { enabled: inventory } = useInventory();
@@ -92,10 +101,14 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 setSriCategories(data.sriCategories);
                 setTransport(data.transport);
                 setBase8(!!data.base8);
+                setProductTemplates(data.productTemplates ?? []);
                 if ("product" in data) {
                     const editData = data as ProductEditResponse;
+                    const templateId = editData.product.product_template_id ?? null;
                     // requiere convertir el ID en string
-                    setProduct({ ...editData.product, id: `${editData.product.id}` });
+                    setProduct({ ...editData.product, id: `${editData.product.id}`, product_template_id: templateId, details: editData.details ?? {} });
+                    setSavedTemplateId(templateId);
+                    setCharacteristics(editData.characteristics ?? []);
                 }
             } else if (error === CodeErrors.NETWORK_ERROR) {
                 redirect(`/error?message=${encodeURIComponent(CodeErrors.NETWORK_ERROR_MESSAGE)}`);
@@ -122,6 +135,9 @@ export const ProductFormProvider = ({ id, children }: Props) => {
                 setDraftPresentations,
                 draftErrors,
                 setDraftErrors,
+                productTemplates,
+                savedTemplateId,
+                characteristics,
             }}
         >
             {children}

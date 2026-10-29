@@ -76,7 +76,7 @@ export const RucForm = () => {
                     </div>
                     <div className='lg:w-2/3'>
                         <TextInput
-                            type='number'
+                            type='text'
                             label='Monto pagado'
                             name='plan_amount'
                             value={ruc.plan_amount}

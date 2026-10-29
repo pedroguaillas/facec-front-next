@@ -12,6 +12,8 @@ import { IconButton } from "@/components";
 import { cellInput, cellInputError, cellInputNormal, tableRow } from "./FormSection";
 import { useInventory } from "@/lib/hooks/useInventory";
 import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
+import { characteristicsText } from "@/helpers/productTemplateHelper";
+import { isUnitLine } from "@/helpers/productTemplateHelper";
 
 interface Props {
     index: number;
@@ -44,6 +46,10 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
         // La cantidad va en la presentación; el stock siempre en unidad base
         && Number(productOutput.quantity) * (Number(productOutput.conversion_factor) || 1) > Number(stock);
     const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
+    const isUnit = isUnitLine(productOutput);
+    const unitText = isUnit ? characteristicsText(productOutput.characteristics) : '';
+    // Al elegirla: código del producto; al editar la venta: el guardado en la línea
+    const unitCode = productOutput.product_code ?? productOutput.code;
 
     const baseCalculation = () => {
         let { quantity, price, discount } = productOutput;
@@ -69,7 +75,8 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
             </td>
             <td>
                 <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} withPresentations={withPresentations} />
-                {withPresentations && productOutput.product_id > 0 && (
+                {unitText && <p className="mt-1 text-xs text-ink-3">{unitCode ? `${unitCode} · ` : ''}{unitText}</p>}
+                {withPresentations && productOutput.product_id > 0 && !isUnit && (
                     <PresentationLabel
                         productId={productOutput.product_id}
                         presentations={productOutput.presentations}
@@ -83,11 +90,14 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 <input
                     onChange={(e) => updateItem(index, 'quantity', limitDecimals(e.target.value, 6))}
                     value={productOutput.quantity ?? ''}
-                    type="number"
+                    type="text"
                     inputMode="decimal"
                     step="0.000001"
-                    className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
+                    readOnly={isUnit}
+                    title={isUnit ? 'Cada unidad va en su propia línea' : undefined}
+                    className={`${inputBase} ${error?.quantity ? inputError : inputNormal} ${isUnit ? 'opacity-60' : ''}`}
                 />
+                {error?.quantity && isUnit && <p className="text-xs mt-1 text-right text-red-500">{error.quantity}</p>}
                 {exceedsStock && (
                     <p className={`text-xs mt-1 text-right ${allowNegativeStock ? 'text-sri-wait' : 'text-red-500'}`} role="status">
                         Stock: {Number(stock).toLocaleString('es-EC', { maximumFractionDigits: 6 })}
@@ -98,7 +108,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 <input
                     onChange={(e) => updateItem(index, 'price', limitDecimals(e.target.value, 6))}
                     value={productOutput.price ?? ''}
-                    type="number"
+                    type="text"
                     inputMode="decimal"
                     step="0.000001"
                     className={`${inputBase} ${error?.price ? inputError : inputNormal}`}
@@ -108,7 +118,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 <input
                     onChange={(e) => updateItem(index, 'discount', limitDecimals(e.target.value, 2))}
                     value={productOutput.discount ?? ''}
-                    type="number"
+                    type="text"
                     inputMode="decimal"
                     step="0.01"
                     className={`${inputBase} ${error?.discount ? inputError : inputNormal}`}
@@ -120,7 +130,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                 <input
                     onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}
                     value={productOutput.total_iva ?? ''}
-                    type="number"
+                    type="text"
                     inputMode="decimal"
                     step="0.01"
                     className={`${inputBase} ${error?.total_iva ? inputError : inputNormal}`}
@@ -132,7 +142,7 @@ export const ItemProduct = ({ index, productOutput, error, updateItem, selectPro
                         <input
                             onChange={(e) => updateItem(index, 'ice', e.target.value)}
                             value={productOutput.ice}
-                            type="number"
+                            type="text"
                             inputMode="decimal"
                             className={`${inputBase} ${error?.ice ? inputError : inputNormal}`}
                         />

@@ -91,6 +91,7 @@ export interface Movement {
         payment_method: PaymentMethod;
         description?: string;
         receipt_path?: string | null;
+        has_receipt?: boolean;
         category?: MovementCategory | null;
     };
     // Documento que generó el movimiento (venta o compra de contado, abonos)

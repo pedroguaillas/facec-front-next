@@ -46,8 +46,11 @@ export const ShopsTable = () => {
                     const total = Number(shop.atts.total);
                     const retention = Number(shop.atts.retention ?? 0);
                     const hasDetail = ["NO AUTORIZADO", "EN PROCESO", "DEVUELTA"].includes(shop.atts?.state_retencion);
+                    // Crédito con saldo por pagar, sin la retención (misma regla que "Registrar pago"); la anulada no se paga
+                    const pending = shop.atts.payment_type === "CREDITO" && shop.atts.state !== "ANULADO"
+                        ? Number((total - retention - Number(shop.atts.paid ?? 0)).toFixed(2)) : 0;
                     return (
-                    <tr key={shop.id}>
+                    <tr key={shop.id} className={pending > 0 ? "bg-sri-wait-soft" : undefined}>
                         <td className="text-left whitespace-nowrap tabular-nums text-ink-2">{formatDate(shop.atts.date)}</td>
                         <td className="text-left">
                             <VoucherSerie serie={shop.atts.serie} href={`/shops/${shop.id}`} />
@@ -60,7 +63,10 @@ export const ShopsTable = () => {
                         </td>
                         <td className="text-right whitespace-nowrap tabular-nums">{total.toFixed(2)}</td>
                         <td className={`text-right whitespace-nowrap tabular-nums ${retention > 0 ? 'text-ink-2' : 'text-ink-4'}`}>{retention.toFixed(2)}</td>
-                        <td className="text-right whitespace-nowrap tabular-nums font-medium">{(total - retention).toFixed(2)}</td>
+                        <td className="text-right whitespace-nowrap tabular-nums font-medium">
+                            {(total - retention).toFixed(2)}
+                            {pending > 0 && <span className="block text-xs font-normal text-sri-wait">Pendiente {pending.toFixed(2)}</span>}
+                        </td>
                         <td>
                             {Number(shop.atts.send_mail_retention) === 1 && (
                                 <span className="flex justify-center text-sri-ok" title="Retención enviada por correo">

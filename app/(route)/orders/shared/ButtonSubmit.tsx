@@ -5,20 +5,21 @@ import { useFormInvoice } from '../context/FormInvoiceContext';
 import { invoiceSchema } from '@/schemas/invoice.schema';
 import useAxiosAuth from '@/lib/hooks/useAxiosAuth';
 import { useRouter, useParams } from 'next/navigation';
+import { uploadReceiptFile } from "@/components/payment-receipt/usePaymentReceipt";
 import { FaPaperPlane, FaRegSave, FaSpinner } from 'react-icons/fa';
 import { useToast } from '@/context/ToastContext';
 import { useState } from 'react';
 import { Repayment } from '@/types';
 import { invoiceStoreServices, invoiceUpdateServices } from '../services/invoiceServices';
 import { calculateInvoiceTotals } from '@/helpers/invoiceTotalsHelper';
-import { ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
+import { CONSUMIDOR_FINAL_IDENTICATION, NC_FINAL_CONSUMER_ERROR, ORDER_VOUCHER_TYPE_SLUG } from '@/constants';
 import { usePlan } from '@/lib/hooks/usePlan';
 import { useSession } from 'next-auth/react';
 import { PrintTicketPanel } from './PrintTicketPanel';
 
 export const ButtonSubmit = () => {
 
-    const { invoice, selectPoint, productOutputs, aditionalInformation, repayments, voucherTypes, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
+    const { invoice, selectPoint, selectCustom, productOutputs, aditionalInformation, repayments, voucherTypes, setFormErrors, setErrorProductOutputs, setErrorRepayments, setErrorAditionalInformation } = useFormInvoice();
     const axiosAuth = useAxiosAuth();
     const router = useRouter();
     // Acción en curso: guardar (false) o guardar y procesar (true)
@@ -59,6 +60,12 @@ export const ButtonSubmit = () => {
         const selectedVoucherType = voucherTypes.find((vt) => vt.id === Number(form.voucher_type_id));
         if (selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO && form.reason) {
             form.reason = form.reason.trim();
+        }
+
+        if (selectedVoucherType?.slug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO && selectCustom?.atts.identication === CONSUMIDOR_FINAL_IDENTICATION) {
+            setFormErrors(prev => ({ ...prev, customer_id: NC_FINAL_CONSUMER_ERROR }));
+            toast(NC_FINAL_CONSUMER_ERROR, 'error');
+            return;
         }
 
         // 2. Validar el formulario
@@ -134,8 +141,18 @@ export const ButtonSubmit = () => {
 
         // 3. Enviar el formulario
         setPendingSend(send);
+        // Comprobante del pago con banco (solo al crear): se sube primero y el documento lleva su id
+        const { receipt, receipt_number, ...payload } = form;
+        const withReceipt = !params.id && canUseFinance && payload.payment_type === 'CONTADO' && payload.source_type === 'bank_account';
+        const { receipt_id, error: receiptUploadError }: { receipt_id?: number; error?: string } = withReceipt ? await uploadReceiptFile(axiosAuth, receipt) : {};
+        if (receiptUploadError) {
+            setPendingSend(null);
+            setFormErrors(prev => ({ ...prev, receipt: receiptUploadError }));
+            toast(receiptUploadError, 'error');
+            return;
+        }
 
-        const { data, error, errors } = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), form) : invoiceStoreServices(axiosAuth, form));
+        const { data, error, errors } = await (params.id ? invoiceUpdateServices(axiosAuth, params.id.toString(), payload) : invoiceStoreServices(axiosAuth, { ...payload, receipt_id, ...(withReceipt && receipt_number?.trim() && { receipt_number: receipt_number.trim() }) }));
         if (data) {
             toast(send ? 'Venta guardada y enviada a procesar' : 'Venta guardada');
             // Imprime tickets y está en computadora (mouse): ticket listo e impresión automática.
@@ -152,6 +169,14 @@ export const ButtonSubmit = () => {
         setPendingSend(null);
         if (errors) {
             setFormErrors(errors);
+            // Ej. "La unidad M5452 no está en stock." en products.0.product_id: se muestra en su línea
+            const lineErrors: Record<string, Partial<Record<keyof ProductOutput, string>>> = {};
+            Object.entries(errors).forEach(([key, message]) => {
+                const [root, index, field] = key.split('.');
+                const lineId = root === 'products' ? form.products[Number(index)]?.id : undefined;
+                if (lineId && field) lineErrors[lineId] = { ...lineErrors[lineId], [field]: message };
+            });
+            if (Object.keys(lineErrors).length) setErrorProductOutputs(lineErrors);
             // Con inventario: "Stock insuficiente de ..." (errors.products) tiene prioridad
             toast(errors.products ?? Object.values(errors)[0] ?? 'Revisa los datos del formulario', 'error');
         } else {

@@ -8,11 +8,16 @@ import { useFile } from "../hooks/useFile";
 import { ChangeEvent, useState } from "react";
 import { Supplier } from "@/types";
 import { ModalConfirmSupplier } from "./ModalConfirmSupplier";
+import { useXmlLines } from "../hooks/useXmlLines";
+import { useShopVoucherType } from "../hooks/useShopVoucherType";
 
 export const ImportXml = () => {
     const { selectDocXml } = useFile();
     const axiosAuth = useAxiosAuth();
-    const { setSelectProvider, setShop } = useFormShop();
+    const { setSelectProvider, setShop, setProductOutputs, setErrorShop } = useFormShop();
+    const { resolveLines } = useXmlLines();
+    // Con inventario las líneas del XML ingresan al kardex
+    const { withProducts } = useShopVoucherType();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingSupplier, setPendingSupplier] = useState<Supplier | null>(null);
@@ -28,6 +33,15 @@ export const ImportXml = () => {
             }
         };
         reader.readAsText(input.files[0]);
+        // Permite volver a cargar el mismo archivo
+        input.value = '';
+    };
+
+    // Detalles del XML como líneas de la compra, con el producto encontrado o por vincular
+    const loadLines = async (lines: ReturnType<typeof selectDocXml>, providerId?: number) => {
+        setErrorShop({});
+        if (!withProducts) return;
+        setProductOutputs(await resolveLines(lines, providerId));
     };
 
     const handleButton = () => {
@@ -60,17 +74,20 @@ export const ImportXml = () => {
 
         // branch_id !== 0 significa que ya existe en la BD local → usar directamente
         if (existing && existing.branch_id) {
-            selectDocXml(xmlDoc, authorization, Number(existing.id));
+            const lines = selectDocXml(xmlDoc, authorization, Number(existing.id));
             setSelectProvider({
                 id: Number(existing.id),
                 atts: { identication: existing.identication, name: existing.name, address: existing.address },
             });
+            await loadLines(lines, Number(existing.id));
             return;
         }
 
         // No está en la BD local (branch_id === 0 = vino del SRI, o no existe)
         // Poblar el formulario con los datos financieros del XML y abrir modal para confirmar el proveedor
-        selectDocXml(xmlDoc, authorization);
+        // Proveedor nuevo: aún no tiene códigos vinculados, se busca por el código de cada producto
+        const lines = selectDocXml(xmlDoc, authorization);
+        await loadLines(lines);
         setPendingSupplier({
             id: ruc,
             type_identification: "ruc",

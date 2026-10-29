@@ -8,6 +8,8 @@ import { useFormInvoice } from "../context/FormInvoiceContext";
 import { DragHandle, useSortableItem } from "./SortableItems";
 import { hasIceApplied } from "@/helpers/invoiceTotalsHelper";
 import { limitDecimals } from "@/helpers/numberHelper";
+import { characteristicsText } from "@/helpers/productTemplateHelper";
+import { isUnitLine } from "@/helpers/productTemplateHelper";
 
 interface Props {
     index: number;
@@ -32,12 +34,17 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
     const { isActiveIce } = useFormInvoice();
     const { setNodeRef, style, isDragging, handleProps } = useSortableItem(productOutput.id);
     const [isEditing, setIsEditing] = useState(false);
+    const isUnit = isUnitLine(productOutput);
+    const unitText = isUnit ? characteristicsText(productOutput.characteristics) : '';
+    // Al elegirla: código del producto; al editar la venta: el guardado en la línea
+    const unitCode = productOutput.product_code ?? productOutput.code;
 
     return (
         <div ref={setNodeRef} style={style} className={`border rounded-lg p-3 bg-surface ${isDragging ? 'border-primary shadow-md' : 'border-line'}`}>
             {/* Selección directa: no hace falta abrir el modal para elegir el producto */}
             <SelectProduct index={index} label={productOutput.name ?? ''} error={error?.product_id} selectProduct={selectProduct} withPresentations={withPresentations} />
-                {withPresentations && productOutput.product_id > 0 && (
+                {unitText && <p className="mt-1 text-xs text-ink-3">{unitCode ? `${unitCode} · ` : ''}{unitText}</p>}
+                {withPresentations && productOutput.product_id > 0 && !isUnit && (
                     <PresentationLabel
                         productId={productOutput.product_id}
                         presentations={productOutput.presentations}
@@ -60,6 +67,9 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
 
             <Modal isOpen={isEditing} onClose={() => setIsEditing(false)} title="Editar Línea" modalSize="sm">
                 <div className="flex flex-col gap-3">
+                    {isUnit ? (
+                        <p className="text-xs text-ink-3">Cantidad 1: cada unidad va en su propia línea.</p>
+                    ) : (
                     <div>
                         <label className="text-xs font-medium text-ink-3 mb-1 block">Cantidad</label>
                         <div className="flex items-center gap-2">
@@ -73,7 +83,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                             <input
                                 onChange={(e) => updateItem(index, 'quantity', limitDecimals(e.target.value, 6))}
                                 value={productOutput.quantity ?? ''}
-                                type="number"
+                                type="text"
                                 inputMode="decimal"
                                 step="0.000001"
                                 className={`${inputBase} ${error?.quantity ? inputError : inputNormal}`}
@@ -88,13 +98,14 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                         </div>
                         {error?.quantity && <p className="text-xs text-red-500 mt-1">{error.quantity}</p>}
                     </div>
+                    )}
 
                     <div>
                         <label className="text-xs font-medium text-ink-3 mb-1 block">Precio Unitario</label>
                         <input
                             onChange={(e) => updateItem(index, 'price', limitDecimals(e.target.value, 6))}
                             value={productOutput.price ?? ''}
-                            type="number"
+                            type="text"
                             inputMode="decimal"
                             step="0.000001"
                             className={`${inputBase} text-left ${error?.price ? inputError : inputNormal}`}
@@ -107,7 +118,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                         <input
                             onChange={(e) => updateItem(index, 'discount', limitDecimals(e.target.value, 2))}
                             value={productOutput.discount ?? ''}
-                            type="number"
+                            type="text"
                             inputMode="decimal"
                             step="0.01"
                             className={`${inputBase} text-left ${error?.discount ? inputError : inputNormal}`}
@@ -121,7 +132,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                             <input
                                 onChange={(e) => updateItem(index, 'ice', e.target.value)}
                                 value={productOutput.ice}
-                                type="number"
+                                type="text"
                                 inputMode="decimal"
                                 className={`${inputBase} text-left ${error?.ice ? inputError : inputNormal}`}
                             />
@@ -140,7 +151,7 @@ export const ItemProductCard = ({ index, productOutput, error, updateItem, selec
                         <input
                             onChange={(e) => updateItem(index, 'total_iva', limitDecimals(e.target.value, 2))}
                             value={productOutput.total_iva ?? ''}
-                            type="number"
+                            type="text"
                             inputMode="decimal"
                             step="0.01"
                             className={`${inputBase} w-28 text-right ${error?.total_iva ? inputError : inputNormal}`}

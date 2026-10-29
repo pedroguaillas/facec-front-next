@@ -25,6 +25,8 @@ type FormShopState = {
     errorTaxes: Record<string, Partial<Record<keyof Tax, string>>>;
     productOutputs: ProductOutput[];
     taxes: Tax[];
+    // Compra cargada del XML del SRI: cabecera, bases y líneas tal como vienen (no se editan)
+    xmlImported: boolean;
 };
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
@@ -40,6 +42,7 @@ type FormShopAction =
     | { type: 'SET_ERROR_TAXES'; payload: Record<string, Partial<Record<keyof Tax, string>>> }
     | { type: 'SET_PRODUCT_OUTPUTS'; payload: ProductOutput[] }
     | { type: 'SET_TAXES'; payload: Tax[] }
+    | { type: 'SET_XML_IMPORTED'; payload: boolean }
     | { type: 'LOAD_SHOP'; payload: Pick<FormShopState, 'shop' | 'selectProvider' | 'applieWithholding' | 'taxInputs' | 'taxes' | 'productOutputs' | 'voucherTypes'> }
     | { type: 'LOAD_CREATE'; payload: Pick<FormShopState, 'points' | 'taxInputs' | 'voucherTypes'> };
 
@@ -57,6 +60,9 @@ function formShopReducer(state: FormShopState, action: FormShopAction): FormShop
         case 'SET_ERROR_TAXES':      return { ...state, errorTaxes: action.payload };
         case 'SET_PRODUCT_OUTPUTS':  return { ...state, productOutputs: action.payload };
         case 'SET_TAXES':            return { ...state, taxes: action.payload };
+        // Al dejar el XML las líneas vuelven a ser editables
+        case 'SET_XML_IMPORTED':     return action.payload ? { ...state, xmlImported: true }
+            : { ...state, xmlImported: false, productOutputs: state.productOutputs.map(item => ({ ...item, xml: undefined })) };
         case 'LOAD_SHOP':            return { ...state, ...action.payload };
         case 'LOAD_CREATE':          return { ...state, ...action.payload };
         default:                     return state;
@@ -103,6 +109,7 @@ const initialState: FormShopState = {
     errorTaxes: {},
     productOutputs: [],
     taxes: [{ ...initialTax, id: nanoid() }],
+    xmlImported: false,
 };
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -119,6 +126,7 @@ interface ShopContextType {
     taxes: Tax[];
     errorTaxes: Record<string, Partial<Record<keyof Tax, string>>>;
     productOutputs: ProductOutput[];
+    xmlImported: boolean;
     setShop: Dispatch<SetStateAction<ShopCreateProps>>;
     setSelectProvider: Dispatch<SetStateAction<SupplierProps | null>>;
     setSelectPoint: Dispatch<SetStateAction<EmisionPoint | null>>;
@@ -127,6 +135,7 @@ interface ShopContextType {
     setErrorTaxes: Dispatch<SetStateAction<Record<string, Partial<Record<keyof Tax, string>>>>>;
     setProductOutputs: Dispatch<SetStateAction<ProductOutput[]>>;
     setApplieWithholding: Dispatch<SetStateAction<boolean>>;
+    setXmlImported: (value: boolean) => void;
 }
 
 const FormShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -226,11 +235,15 @@ export const FormShopProvider = ({ children }: Props) => {
         dispatch({ type: 'SET_APPLIE_WITHHOLDING', payload: typeof value === 'function' ? value(stateRef.current.applieWithholding) : value });
     }, [dispatch]);
 
+    const setXmlImported = useCallback((value: boolean) => {
+        dispatch({ type: 'SET_XML_IMPORTED', payload: value });
+    }, [dispatch]);
+
     return (
         <FormShopContext.Provider value={{
             ...state,
             setShop, setErrorShop, setSelectProvider, setSelectPoint,
-            setApplieWithholding, setTaxes, setErrorTaxes, setProductOutputs,
+            setApplieWithholding, setTaxes, setErrorTaxes, setProductOutputs, setXmlImported,
         }}>
             {children}
         </FormShopContext.Provider>

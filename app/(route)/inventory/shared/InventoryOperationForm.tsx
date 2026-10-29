@@ -257,7 +257,7 @@ export const InventoryOperationForm = ({ mode, initialProductId }: Props) => {
                                 </td>
                                 <td>
                                     <input
-                                        type="number"
+                                        type="text"
                                         inputMode="decimal"
                                         step="0.000001"
                                         min="0"
@@ -276,7 +276,7 @@ export const InventoryOperationForm = ({ mode, initialProductId }: Props) => {
                                 {showCost && (
                                     <td>
                                         <input
-                                            type="number"
+                                            type="text"
                                             inputMode="decimal"
                                             step="0.000001"
                                             min="0"

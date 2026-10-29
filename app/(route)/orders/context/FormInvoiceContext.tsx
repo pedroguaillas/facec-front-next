@@ -127,7 +127,8 @@ export const FormInvoiceProvider = ({ children, recurring = false }: Props) => {
           setAditionalInformation(order_aditionals.map((item: AditionalInformation) => ({ ...item, id: item.id + '' })));
           // Normalizamos total_iva al cargar: puede venir persistido con una fórmula
           // vieja y quedar desincronizado de lo que la fila realmente calcula ahora.
-          const items = order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '', total_iva: calculateLineTotal(item) }));
+          // Unidad vendida (parent_product_id): sus características son la foto guardada en la línea
+          const items = order_items.map((item: ProductOutput) => ({ ...item, id: item.id + '', total_iva: calculateLineTotal(item), characteristics: item.details ?? [] }));
           setProductOutputs(items);
           setIsActiveIce(order_items.some((item: ProductOutput) => hasIceApplied(item.ice)));
           // El header de la venta puede venir desincronizado de los items (ediciones previas

@@ -8,7 +8,7 @@ import { useGeneralInformation } from '../hooks/useGeneralInformation';
 import { useSelectPoint } from '../hooks/useSelectPoint';
 import { FormSection } from '../../orders/shared/FormSection';
 import { addDaysToDate, formatDate, getDate, getMinDate } from '@/helpers/dateHelper';
-import { GUIDE_DURATION_MAX_DAYS, GUIDE_START_MAX_DAYS } from '@/constants/referralGuides';
+import { GUIDE_DURATION_MAX_DAYS } from '@/constants/referralGuides';
 
 // Días entre dos fechas YYYY-MM-DD, contando ambos extremos
 const spanDays = (from: string, to: string) => {
@@ -79,18 +79,14 @@ export const GeneralInformation = () => {
 						hint={!referralGuide.address_to && !selectCustom ? 'Se llena con la dirección del destinatario' : undefined}
 						required
 					/>
-					<TextInput
-						type='date'
-						label='Fecha de inicio'
-						value={date_start}
-						error={errors.date_start}
-						onChange={handleChange}
-						name='date_start'
-						min={today}
-						max={addDaysToDate(today, GUIDE_START_MAX_DAYS)}
-						hint={`Desde hoy hasta ${GUIDE_START_MAX_DAYS} días después`}
-						required
-					/>
+					{/* El inicio lo pone el backend: la fecha de emisión (al editar, la guardada) */}
+					<div className='flex flex-col gap-1.5 my-2'>
+						<span className='text-sm font-medium'>Fecha de inicio</span>
+						<p className='rounded-lg border border-line bg-surface-sunken px-3 py-2 text-sm text-ink-2 tabular-nums'>
+							{formatDate(date_start)}{date_start === today && <span className='text-ink-3'> · hoy</span>}
+						</p>
+						<p className='text-xs text-ink-3'>Es la fecha de emisión de la guía.</p>
+					</div>
 					<TextInput
 						type='date'
 						label='Fecha de fin'

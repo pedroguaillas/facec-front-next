@@ -21,7 +21,7 @@ export const AmountInput = ({ value, error, onChange, label = 'Monto', id = 'mov
                 id={id}
                 autoFocus={autoFocus}
                 name="amount"
-                type="number"
+                type="text"
                 inputMode="decimal"
                 step="0.01"
                 min="0"

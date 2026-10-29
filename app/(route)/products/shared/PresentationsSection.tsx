@@ -226,7 +226,7 @@ export const PresentationsSection = () => {
                 >
                     <TextInput label="Nombre" name="name" value={form.name} error={errors.name} maxLength={255} placeholder="Ej. Cubeta" onChange={handleChange} required />
                     <TextInput
-                        type="number"
+                        type="text"
                         label="Unidades por presentación"
                         name="conversion_factor"
                         value={String(form.conversion_factor)}
@@ -240,7 +240,7 @@ export const PresentationsSection = () => {
                         required
                     />
                     <TextInput
-                        type="number"
+                        type="text"
                         label="Precio"
                         name="price"
                         value={String(form.price ?? '')}

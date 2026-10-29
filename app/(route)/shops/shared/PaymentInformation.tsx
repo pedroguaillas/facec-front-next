@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SelectOption, SelectPaymentSource, TextInput } from "@/components";
+import { useParams } from "next/navigation";
+import { PaymentReceiptInput, SelectOption, SelectPaymentSource, TextInput } from "@/components";
 import { useFormShop } from "../context/FormShopContext";
 import { paymentTypeOptions, DEFAULT_CREDIT_TERM_DAYS } from "@/constants";
 import { addDaysToDate, getDate } from "@/helpers/dateHelper";
@@ -14,6 +15,8 @@ import { FormSection } from "../../orders/shared/FormSection";
 export const PaymentInformation = () => {
 
     const axiosAuth = useAxiosAuth();
+    // Al editar ya no se crea el movimiento: el comprobante va solo al crear
+    const params = useParams();
     const { canUseFinance } = usePlan();
     // Crédito y anticipo requieren el plan Financiero
     const { shop, errorShop, setShop, setErrorShop } = useFormShop();
@@ -41,6 +44,8 @@ export const PaymentInformation = () => {
             payment_type,
             source_type: undefined,
             source_id: undefined,
+            receipt: null,
+            receipt_number: undefined,
             due_date: payment_type !== 'CONTADO' ? addDaysToDate(prev.date, DEFAULT_CREDIT_TERM_DAYS) : undefined,
         }));
         setErrorShop(prev => ({ ...prev, payment_type: '', source_type: '', source_id: '', due_date: '' }));
@@ -52,7 +57,8 @@ export const PaymentInformation = () => {
     };
 
     const handleSelectSource = (source_type: MovementSourceType, source_id: number) => {
-        setShop(prev => ({ ...prev, source_type, source_id }));
+        // El comprobante solo va con cuenta bancaria
+        setShop(prev => ({ ...prev, source_type, source_id, ...(source_type !== 'bank_account' && { receipt: null, receipt_number: undefined }) }));
         setErrorShop(prev => ({ ...prev, source_type: '', source_id: '' }));
     };
 
@@ -101,6 +107,25 @@ export const PaymentInformation = () => {
                     error={errorShop.source_type || errorShop.source_id}
                     onChange={handleSelectSource}
                 />
+            )}
+
+            {shop.payment_type === 'CONTADO' && shop.source_type === 'bank_account' && !params?.id && (
+                <div className="col-span-full">
+                    <PaymentReceiptInput
+                        number={shop.receipt_number ?? ''}
+                        numberError={errorShop.receipt_number}
+                        onNumberChange={(receipt_number) => {
+                            setShop(prev => ({ ...prev, receipt_number }));
+                            setErrorShop(prev => ({ ...prev, receipt_number: '' }));
+                        }}
+                        file={shop.receipt ?? null}
+                        error={errorShop.receipt || errorShop.receipt_id}
+                        onChange={(receipt) => {
+                            setShop(prev => ({ ...prev, receipt }));
+                            setErrorShop(prev => ({ ...prev, receipt: '', receipt_id: '' }));
+                        }}
+                    />
+                </div>
             )}
         </div>
         </FormSection>

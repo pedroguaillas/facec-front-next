@@ -11,6 +11,7 @@ import { SortableItems } from "./SortableItems";
 import { ReactNode } from "react";
 import { ProductOutput } from "@/types";
 import { useInventory } from "@/lib/hooks/useInventory";
+import { UnitPickerModal } from "./UnitPickerModal";
 
 interface Props {
     // Contenido extra bajo el producto de cada línea (ej. código/descripción propios en la recurrente)
@@ -25,7 +26,7 @@ export const ListProducts = ({ renderLineExtra, withPresentations: allowPresenta
     const { enabled: inventory } = useInventory();
     const withPresentations = allowPresentations && inventory;
 
-    const { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem } = useProductOutput();
+    const { productOutputs, addItem, updateItem, selectProduct, removeItem, moveItem, unitPicker, selectUnit, closeUnitPicker } = useProductOutput();
     const { errorProductOutputs, isActiveIce } = useFormInvoice();
     const { data: session } = useSession();
     const ids = productOutputs.map(op => op.id);
@@ -97,6 +98,15 @@ export const ListProducts = ({ renderLineExtra, withPresentations: allowPresenta
             </div>
 
             <AddRowButton label="Agregar producto" onClick={addItem} />
+
+            {unitPicker && (
+                <UnitPickerModal
+                    product={unitPicker.product}
+                    excludeIds={productOutputs.filter((op, i) => i !== unitPicker.index && op.parent_product_id).map(op => op.product_id)}
+                    onSelect={selectUnit}
+                    onClose={closeUnitPicker}
+                />
+            )}
         </FormSection>
     )
 }

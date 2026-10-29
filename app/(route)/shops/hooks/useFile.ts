@@ -1,10 +1,12 @@
+import { XmlPurchaseLine } from "@/types";
 import { useFormShop } from "../context/FormShopContext";
 
 export const useFile = () => {
 
-    const { setShop } = useFormShop();
+    const { setShop, setXmlImported } = useFormShop();
 
-    const selectDocXml = (xmlDoc: Document, authorization: string, provider_id?: number) => {
+    // Llena la cabecera y las bases con los valores del XML y devuelve sus detalles (productos)
+    const selectDocXml = (xmlDoc: Document, authorization: string, provider_id?: number): XmlPurchaseLine[] => {
 
         const tv = parseInt(getTag(xmlDoc, 'codDoc'));
         const dateRaw = getTag(xmlDoc, 'fechaEmision');
@@ -83,7 +85,44 @@ export const useFile = () => {
             total,
             ...(provider_id !== undefined && { provider_id }),
         }));
+        setXmlImported(true);
+
+        return readDetails(xmlDoc);
     }
+
+    // <detalle> de la factura: el costo con ICE es lo que paga por la línea antes del IVA
+    const readDetails = (xmlDoc: Document): XmlPurchaseLine[] =>
+        Array.from(xmlDoc.getElementsByTagName('detalle')).map(detalle => {
+            let ice = 0;
+            let iva_code = 0;
+            let iva_rate = 0;
+            Array.from(detalle.getElementsByTagName('impuesto')).forEach(impuesto => {
+                const codigo = parseInt(getTag(impuesto, 'codigo'));
+                if (codigo === 2) {
+                    iva_code = parseInt(getTag(impuesto, 'codigoPorcentaje'));
+                    iva_rate = parseFloat(getTag(impuesto, 'tarifa')) || 0;
+                } else if (codigo === 3) {
+                    ice += parseFloat(getTag(impuesto, 'valor')) || 0;
+                }
+            });
+            const additional: Record<string, string> = {};
+            Array.from(detalle.getElementsByTagName('detAdicional')).forEach(det => {
+                const name = det.getAttribute('nombre')?.trim();
+                if (name) additional[name] = det.getAttribute('valor')?.trim() ?? '';
+            });
+            return {
+                // codigoInterno / codigoAdicional: versiones anteriores del esquema
+                code: (getTag(detalle, 'codigoPrincipal') || getTag(detalle, 'codigoInterno')).trim(),
+                aux_code: (getTag(detalle, 'codigoAuxiliar') || getTag(detalle, 'codigoAdicional')).trim(),
+                description: getTag(detalle, 'descripcion').trim(),
+                quantity: parseFloat(getTag(detalle, 'cantidad')) || 0,
+                cost_total: Number(((parseFloat(getTag(detalle, 'precioTotalSinImpuesto')) || 0) + ice).toFixed(2)),
+                iva_code,
+                iva_rate,
+                additional,
+                match: null,
+            };
+        });
 
     const getTag = (xmlDoc: Document | Element, tag: string): string => {
         const elements = xmlDoc.getElementsByTagName(tag);

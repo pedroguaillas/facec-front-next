@@ -2,7 +2,7 @@ import { FaEllipsisVertical } from "react-icons/fa6";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useEffect, useRef, useState } from "react";
 import { useShops } from "../context/ShopsContext";
-import { AxiosInstance } from "axios";
+import { AxiosError, AxiosInstance } from "axios";
 import type { ShopProps } from "@/types/shop";
 import { PDFViewer } from "@/components";
 import { downloadXml } from "@/services/downloadXmlServices";
@@ -45,7 +45,10 @@ const handleApiCall = async (
             alert(alertMessage);
         }
     } catch (error) {
-        console.error(error);
+        // 422 con motivo de negocio (ej. "No se puede anular: las unidades M5452 ya se vendieron.")
+        const message = (error as AxiosError<{ message?: string }>).response?.data?.message;
+        if (message) alert(message);
+        else console.error(error);
     }
 };
 
@@ -83,7 +86,9 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
     const seriePrefix = shop.atts.serie?.trim().split(" ")[0] ?? "";
     const isLiquidacion = seriePrefix === SHOP_SERIE_PREFIX.LIQUIDACION_COMPRA;
     // Abonos sobre cartera existente: permitidos con cualquier plan (incluso vencido)
-    const canRegisterPayment = shop.atts.payment_type === "CREDITO" && Number(shop.atts.paid) < Number(shop.atts.total);
+    // La retención no se paga al proveedor: el saldo es total - retención - pagado
+    const canRegisterPayment = shop.atts.payment_type === "CREDITO"
+        && Number(shop.atts.paid) < Number((Number(shop.atts.total) - Number(shop.atts.retention ?? 0)).toFixed(2));
 
     // 🔹 Función para obtener las opciones del menú
     const getOptions = () => {

@@ -42,6 +42,8 @@ const PageMovements = () => {
         e.preventDefault();
         const match = pageUrl.match(/[?&]page=(\d+)/);
         fetchMovements(match ? Number(match[1]) : 1);
+        // La lista es larga: al cambiar de página se vuelve al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -100,6 +102,11 @@ const PageMovements = () => {
                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem] items-start">
                     <div className="min-w-0">
                         <MovementsLedger movements={movements} isLoading={isLoading} onUpdated={replaceMovement} />
+                        {!isLoading && meta?.total ? (
+                            <p className="mt-3 text-center text-xs text-ink-3 tabular-nums">
+                                {meta.from}–{meta.to} de {meta.total} movimientos
+                            </p>
+                        ) : null}
                         <Paginate meta={meta} links={links} reqNewPage={handlePageChange} />
                     </div>
 

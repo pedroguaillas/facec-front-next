@@ -17,9 +17,10 @@ interface Props {
     handleSelect: (event: ChangeEvent<HTMLSelectElement>) => void;
     error?: string; // 🔴 Nueva prop opcional para error
     required?: boolean;
+    disabled?: boolean;
 }
 
-export const SelectOption = ({ options, label, name, select = false, selectedValue, error, handleSelect, required }: Props) => {
+export const SelectOption = ({ options, label, name, select = false, selectedValue, error, handleSelect, required, disabled }: Props) => {
     const generatedId = useId();
     const selectId = `${name}-${generatedId}`;
 
@@ -37,6 +38,7 @@ export const SelectOption = ({ options, label, name, select = false, selectedVal
                 required
                 aria-invalid={error ? 'true' : 'false'}
                 onChange={handleSelect}
+                disabled={disabled}
             >
                 {select && <option value="">Seleccione</option>}
                 {options.map(it => (
