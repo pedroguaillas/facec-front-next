@@ -2,6 +2,7 @@
 
 import { ReactNode, useId } from 'react';
 import { LabelComponent } from '../label/LabelComponent';
+import { normalizePhone } from '@/helpers/phoneHelper';
 
 interface Props {
     type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'month' | 'tel';
@@ -70,6 +71,14 @@ export const TextInput = ({
     const inputId = id ?? `${name}-${generatedId}`;
     const messageId = `${inputId}-message`;
     const message = error || success || hint;
+    const isEmail = type === 'email';
+
+    // Correos siempre en minúscula y teléfonos en formato local, al escribir o al pegar
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (isEmail) event.target.value = event.target.value.toLowerCase();
+        if (type === 'tel') event.target.value = normalizePhone(event.target.value);
+        onChange(event);
+    };
 
     return (
         <div className="flex flex-col gap-1.5 my-2">
@@ -98,7 +107,7 @@ export const TextInput = ({
                     value={value}
                     maxLength={maxLength}
                     required={required}
-                    onChange={onChange}
+                    onChange={handleChange}
                     onBlur={onBlur}
                     placeholder={placeholder}
                     disabled={disabled}
@@ -113,6 +122,8 @@ export const TextInput = ({
                     aria-invalid={error ? 'true' : 'false'}
                     aria-describedby={message ? messageId : undefined}
                     autoComplete={autoComplete}
+                    autoCapitalize={isEmail ? 'none' : undefined}
+                    spellCheck={isEmail ? false : undefined}
                 />
                 {endAdornment && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">

@@ -9,15 +9,15 @@ import { ChangeEvent, useState } from "react";
 import { Supplier } from "@/types";
 import { ModalConfirmSupplier } from "./ModalConfirmSupplier";
 import { useXmlLines } from "../hooks/useXmlLines";
-import { useShopVoucherType } from "../hooks/useShopVoucherType";
+import { useInventory } from "@/lib/hooks/useInventory";
+import { SHOP_VOUCHER_TYPE_SLUG } from "@/constants";
 
 export const ImportXml = () => {
-    const { selectDocXml } = useFile();
+    const { selectDocXml, voucherTypeFromXml } = useFile();
     const axiosAuth = useAxiosAuth();
     const { setSelectProvider, setShop, setProductOutputs, setErrorShop } = useFormShop();
     const { resolveLines } = useXmlLines();
-    // Con inventario las líneas del XML ingresan al kardex
-    const { withProducts } = useShopVoucherType();
+    const { enabled: inventory } = useInventory();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [pendingSupplier, setPendingSupplier] = useState<Supplier | null>(null);
@@ -38,9 +38,16 @@ export const ImportXml = () => {
     };
 
     // Detalles del XML como líneas de la compra, con el producto encontrado o por vincular
-    const loadLines = async (lines: ReturnType<typeof selectDocXml>, providerId?: number) => {
+    // Se decide con el tipo del XML: el del formulario aún no refleja el cambio de este import
+    const loadLines = async (slug: string, lines: ReturnType<typeof selectDocXml>, providerId?: number) => {
         setErrorShop({});
-        if (!withProducts) return;
+        // Con inventario las líneas del XML ingresan al kardex
+        const withProducts = slug === SHOP_VOUCHER_TYPE_SLUG.LIQUIDACION_COMPRA
+            || (inventory && (slug === SHOP_VOUCHER_TYPE_SLUG.FACTURA || slug === SHOP_VOUCHER_TYPE_SLUG.NOTA_VENTA));
+        if (!withProducts) {
+            setProductOutputs([]);
+            return;
+        }
         setProductOutputs(await resolveLines(lines, providerId));
     };
 
@@ -64,11 +71,11 @@ export const ImportXml = () => {
         const authorization = getTag(xmlDoc, "claveAcceso");
         const ruc = getTag(xmlDoc, "ruc");
 
-        // const tv = parseInt(getTag(xmlDoc, "codDoc"));
-        // if (tv !== voucher_type) {
-        //   alert("No es un tipo de comprobante seleccionado");
-        //   return;
-        // }
+        const voucherType = voucherTypeFromXml(xmlDoc);
+        if (!voucherType) {
+            alert("El XML no es un comprobante de compra soportado (factura, nota de venta, liquidación de compra o nota de débito)");
+            return;
+        }
 
         const { data: existing } = await resolveSupplier(axiosAuth, ruc);
 
@@ -79,7 +86,7 @@ export const ImportXml = () => {
                 id: Number(existing.id),
                 atts: { identication: existing.identication, name: existing.name, address: existing.address },
             });
-            await loadLines(lines, Number(existing.id));
+            await loadLines(voucherType.slug, lines, Number(existing.id));
             return;
         }
 
@@ -87,7 +94,7 @@ export const ImportXml = () => {
         // Poblar el formulario con los datos financieros del XML y abrir modal para confirmar el proveedor
         // Proveedor nuevo: aún no tiene códigos vinculados, se busca por el código de cada producto
         const lines = selectDocXml(xmlDoc, authorization);
-        await loadLines(lines);
+        await loadLines(voucherType.slug, lines);
         setPendingSupplier({
             id: ruc,
             type_identification: "ruc",

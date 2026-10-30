@@ -101,13 +101,14 @@ export const ModalConfirmSupplier = ({ isOpen, onClose, supplier, onSave }: Prop
                 maxLength={300}
             />
             <TextInput
-                type="text"
+                type="tel"
                 label="Teléfono"
                 value={form.phone ?? ''}
                 error={errors.phone}
                 onChange={handleChange}
                 name="phone"
                 maxLength={20}
+                inputMode="tel"
             />
             <TextInput
                 type="email"

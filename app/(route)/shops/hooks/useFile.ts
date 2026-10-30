@@ -1,14 +1,30 @@
 import { XmlPurchaseLine } from "@/types";
+import { SHOP_VOUCHER_TYPE_SLUG } from "@/constants";
 import { useFormShop } from "../context/FormShopContext";
+
+// codDoc del SRI → slug del tipo de comprobante de compra (04 nota de crédito no aplica a compras)
+const COD_DOC_SLUG: Record<number, string> = {
+    1: SHOP_VOUCHER_TYPE_SLUG.FACTURA,
+    2: SHOP_VOUCHER_TYPE_SLUG.NOTA_VENTA,
+    3: SHOP_VOUCHER_TYPE_SLUG.LIQUIDACION_COMPRA,
+    5: SHOP_VOUCHER_TYPE_SLUG.NOTA_DEBITO,
+};
 
 export const useFile = () => {
 
-    const { setShop, setXmlImported } = useFormShop();
+    const { setShop, setXmlImported, voucherTypes } = useFormShop();
+
+    // Tipo de comprobante de compra que corresponde al XML, o undefined si no es soportado
+    const voucherTypeFromXml = (xmlDoc: Document) => {
+        const slug = COD_DOC_SLUG[parseInt(getTag(xmlDoc, 'codDoc'))];
+        return voucherTypes.find(vt => vt.slug === slug);
+    };
 
     // Llena la cabecera y las bases con los valores del XML y devuelve sus detalles (productos)
     const selectDocXml = (xmlDoc: Document, authorization: string, provider_id?: number): XmlPurchaseLine[] => {
 
         const tv = parseInt(getTag(xmlDoc, 'codDoc'));
+        const voucherType = voucherTypeFromXml(xmlDoc);
         const dateRaw = getTag(xmlDoc, 'fechaEmision');
         const dateParts = dateRaw.split('/').reverse();
         const formattedDate = dateParts.join('-');
@@ -68,6 +84,7 @@ export const useFile = () => {
 
         setShop(prev => ({
             ...prev,
+            ...(voucherType && { voucher_type_id: voucherType.id }),
             serie: `${getTag(xmlDoc, 'estab')}-${getTag(xmlDoc, 'ptoEmi')}-${getTag(xmlDoc, 'secuencial')}`,
             date: formattedDate,
             authorization,
@@ -131,5 +148,5 @@ export const useFile = () => {
             : '';
     };
 
-    return { selectDocXml }
+    return { selectDocXml, voucherTypeFromXml }
 }

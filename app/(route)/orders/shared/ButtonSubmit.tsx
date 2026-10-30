@@ -31,6 +31,9 @@ export const ButtonSubmit = () => {
     const { data: session } = useSession();
     // Venta recién guardada cuyo ticket se imprime antes de volver a la lista
     const [printOrder, setPrintOrder] = useState<{ id: string | number; serie?: string } | null>(null);
+    // Solo factura y nota de crédito son electrónicos (van al SRI); nota de venta y proforma solo se guardan
+    const voucherSlug = voucherTypes.find((vt) => vt.id === Number(invoice.voucher_type_id))?.slug;
+    const isElectronic = voucherSlug === ORDER_VOUCHER_TYPE_SLUG.FACTURA || voucherSlug === ORDER_VOUCHER_TYPE_SLUG.NOTA_CREDITO;
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, send: boolean) => {
         e.preventDefault();
@@ -189,23 +192,27 @@ export const ButtonSubmit = () => {
             {printOrder && (
                 <PrintTicketPanel orderId={printOrder.id} serie={printOrder.serie} onDone={() => router.push('/orders')} />
             )}
-            <button
-                type="button"
-                onClick={(e) => handleSubmit(e, true)}
-                disabled={isPending}
-                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-                {pendingSend === true ? <FaSpinner className="animate-spin" /> : <FaPaperPlane />}
-                {pendingSend === true ? 'Procesando…' : 'Guardar y procesar'}
-            </button>
+            {isElectronic && (
+                <button
+                    type="button"
+                    onClick={(e) => handleSubmit(e, true)}
+                    disabled={isPending}
+                    className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                    {pendingSend === true ? <FaSpinner className="animate-spin" /> : <FaPaperPlane />}
+                    {pendingSend === true ? 'Procesando…' : 'Guardar y procesar'}
+                </button>
+            )}
             <button
                 type="button"
                 onClick={(e) => handleSubmit(e, false)}
                 disabled={isPending}
-                className="inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg text-sm font-medium border border-line-strong text-ink-2 transition-colors cursor-pointer hover:bg-surface hover:text-ink-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                className={isElectronic
+                    ? "inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-lg text-sm font-medium border border-line-strong text-ink-2 transition-colors cursor-pointer hover:bg-surface hover:text-ink-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                    : "inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-primary text-white transition-colors cursor-pointer hover:bg-primaryhover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"}
             >
                 {pendingSend === false ? <FaSpinner className="animate-spin" /> : <FaRegSave />}
-                {pendingSend === false ? 'Guardando…' : 'Solo guardar'}
+                {pendingSend === false ? 'Guardando…' : isElectronic ? 'Solo guardar' : 'Guardar'}
             </button>
         </div>
     )
