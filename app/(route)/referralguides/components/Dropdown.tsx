@@ -5,6 +5,7 @@ import { ReferralGuideProps } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "axios";
 import { PDFViewer } from "@/components";
+import { canShareFiles, sharePdf } from "@/services/sharePdfService";
 import { usePlan } from "@/lib/hooks/usePlan";
 
 interface Props {
@@ -72,6 +73,14 @@ export const Dropdown = ({ isOpen, index, referralGuide, only, setIsOpen }: Prop
             { label: "Ver Pdf", onClick: () => setPdf({ route: `referralguides/${referralGuide.id}/pdf`, name: `Guia ${referralGuide.atts.serie}` }) },
             { label: "Enviar correo", onClick: sendMail },
         ];
+
+        // Antes de Enviar correo (más usado). Por soporte del navegador, no por dispositivo
+        if (canShareFiles()) {
+            options.splice(1, 0, {
+                label: "Compartir",
+                onClick: () => sharePdf(`referralguides/${referralGuide.id}/pdf`, axiosAuth, `Guia ${referralGuide.atts.serie}`),
+            });
+        }
 
         // Procesar solo mientras no esté autorizada (la guía no se anula); con plan vencido no se procesa
         const state = referralGuide.atts.state.replace(' ', '_');

@@ -1,17 +1,17 @@
 import { z } from 'zod';
-import { productOutputSchema } from './product-output.schema';
+import { discountRefineOptions, discountWithinSubtotal, productOutputBaseSchema } from './product-output.schema';
 import { CONSUMIDOR_FINAL_IDENTICATION, SRI_MAX_LINE_CODE, SRI_MAX_LINE_DESCRIPTION } from '@/constants';
 import { filledLength } from '@/helpers/recurrenceHelper';
 
 const monthMessage = (max: number) => `Con el mes reemplazado supera los ${max} caracteres que acepta el SRI`;
 
 // Línea de la plantilla: código y descripción propios opcionales, vacío = los del producto
-const recurringLineSchema = productOutputSchema.extend({
+const recurringLineSchema = productOutputBaseSchema.extend({
     custom_code: z.string().trim().max(40, 'Máximo 40 caracteres').optional()
         .refine(val => !val || filledLength(val) <= SRI_MAX_LINE_CODE, monthMessage(SRI_MAX_LINE_CODE)),
     custom_description: z.string().trim().max(300, 'Máximo 300 caracteres').optional()
         .refine(val => !val || filledLength(val) <= SRI_MAX_LINE_DESCRIPTION, monthMessage(SRI_MAX_LINE_DESCRIPTION)),
-});
+}).refine(discountWithinSubtotal, discountRefineOptions);
 
 const optionalInt = (min: number, message: string) => z
     .union([z.literal(''), z.coerce.number().int(message).min(min, message)])

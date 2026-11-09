@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const productOutputSchema = z.object({
+export const productOutputBaseSchema = z.object({
   // id: z.string(), // o number si usas timestamp
   product_id: z.coerce.number().min(1, "Seleccione un producto"),
   aux_cod: z.string().nullable().optional(),
@@ -43,3 +43,11 @@ export const productOutputSchema = z.object({
   stock: z.number().optional(),
   percentage: z.number().optional(),
 });
+
+// El descuento es un monto por línea: no puede superar precio × cantidad (base negativa)
+export const discountWithinSubtotal = <T extends { price: number; quantity: number; discount: number }>(item: T) =>
+  item.discount <= item.price * item.quantity + 0.000001;
+
+export const discountRefineOptions = { message: "Descuento mayor al subtotal", path: ["discount"] };
+
+export const productOutputSchema = productOutputBaseSchema.refine(discountWithinSubtotal, discountRefineOptions);

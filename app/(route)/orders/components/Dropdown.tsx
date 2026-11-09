@@ -104,6 +104,15 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
         if (session?.user.permissions.printf) {
             options.push({ label: "Imprimir", onClick: printfPdf });
         }
+        // Antes de Enviar correo: es la opción más usada
+        if (canShareFiles()) {
+            options.push({
+                label: "Compartir",
+                onClick: () =>
+                    sharePdf(`orders/${order.id}/pdf`, axiosAuth, order.atts.serie),
+            });
+        }
+
         options.push({ label: "Enviar correo", onClick: sendMail });
 
         // Ya convertida: no se vuelve a facturar (evita facturas duplicadas)
@@ -119,14 +128,6 @@ export const Dropdown = ({ isOpen, index, order, only, setIsOpen }: Props) => {
             options.push({
                 label: "Convertir en Factura",
                 onClick: () => handleApiCall("convert-to-invoice", order.id, axiosAuth, fetchInvoices, undefined, (message) => toast(message, 'error')),
-            });
-        }
-
-        if (canShareFiles()) {
-            options.push({
-                label: "Compartir",
-                onClick: () =>
-                    sharePdf(`orders/${order.id}/pdf`, axiosAuth, order.atts.serie),
             });
         }
 

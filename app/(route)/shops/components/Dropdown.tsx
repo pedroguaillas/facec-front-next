@@ -6,6 +6,7 @@ import { AxiosError, AxiosInstance } from "axios";
 import type { ShopProps } from "@/types/shop";
 import { PDFViewer } from "@/components";
 import { downloadXml } from "@/services/downloadXmlServices";
+import { canShareFiles, sharePdf } from "@/services/sharePdfService";
 import { SHOP_SERIE_PREFIX } from "@/constants";
 import { RegisterPaymentModal } from "../shared/RegisterPaymentModal";
 import { usePlan } from "@/lib/hooks/usePlan";
@@ -106,6 +107,14 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             },
         ];
 
+        // Antes de Enviar correo (más usado). Por soporte del navegador, no por dispositivo: escritorio (Chrome/Edge/Safari) también abre el menú nativo
+        if (canShareFiles()) {
+            options.splice(1, 0, {
+                label: "Compartir",
+                onClick: () => sharePdf(`retentions/${shop.id}/pdf`, axiosAuth, `Retención ${shop.atts.serie_retencion}`),
+            });
+        }
+
         if (shop.atts.state_retencion && shop.atts.state_retencion !== "ANULADO" && canProcess(shop.atts.state_retencion.replace(/ /g, "_"))) {
             const state = shop.atts.state_retencion.replace(/ /g, "_");
             options.splice(1, 0, {
@@ -135,6 +144,13 @@ export const Dropdown = ({ isOpen, index, shop, only, setIsOpen }: Props) => {
             options.splice(1, 0, {
                 label: renderSwitch[shop.atts.state.replace(" ", "_")],
                 onClick: () => processAction("shops", shop.atts.state.replace(" ", "_"), shop.id, axiosAuth, fetchShops),
+            });
+        }
+
+        if (canShareFiles()) {
+            options.splice(options.length - 1, 0, {
+                label: "Compartir",
+                onClick: () => sharePdf(`shops/${shop.id}/pdf`, axiosAuth, `Liquidación en compra ${shop.atts.serie}`),
             });
         }
 

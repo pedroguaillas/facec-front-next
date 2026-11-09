@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { useParams } from "next/navigation";
 import { useFormShop } from "../context/FormShopContext";
 import { useShopVoucherType } from "../hooks/useShopVoucherType";
@@ -17,13 +17,17 @@ export const Totals = () => {
     // Con la retención autorizada la compra ya no se puede modificar
     const isLocked = !!params?.id && shop.state_retencion === 'AUTORIZADO';
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        const parsed = Number(value);
-        if (parsed < 0) return;
+    // Texto tal como se tipea (ej. "12." o "12,5"): guardar Number() en el estado borraba el punto y no dejaba poner decimales
+    const [drafts, setDrafts] = useState<Record<string, string>>({});
 
-        // Número o '' (para poder borrar el campo)
-        const newValue = value !== '' ? parsed : value;
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name } = event.target;
+        // Teclado en español: la coma también vale como separador decimal
+        const value = event.target.value.replace(',', '.');
+        if (!/^\d*\.?\d{0,2}$/.test(value)) return;
+
+        setDrafts(prev => ({ ...prev, [name]: value }));
+        const newValue = value === '' || value === '.' ? 0 : Number(value);
 
         const form = { ...shop, [name]: newValue };
         form.iva = Number((Number(form.base12) * 0.12).toFixed(2));
@@ -72,10 +76,11 @@ export const Totals = () => {
                                         id={`shop-${name}`}
                                         type="text"
                                         inputMode="decimal"
-                                        value={value}
+                                        value={drafts[name] ?? value}
                                         name={name}
                                         onChange={handleChange}
                                         onFocus={e => e.target.select()}
+                                        onBlur={() => setDrafts(prev => { const next = { ...prev }; delete next[name]; return next; })}
                                         min={0}
                                         aria-invalid={error ? 'true' : 'false'}
                                         className={`w-28 rounded-md border px-2 py-1 text-right text-sm tabular-nums bg-[var(--background)] text-ink-1 focus:outline-none focus:border-primary ${error ? 'border-red-400' : 'border-line-strong'}`}

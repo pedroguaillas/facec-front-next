@@ -13,6 +13,8 @@ import { ORDER_VOUCHER_TYPE_SLUG } from "@/constants";
 import { useState } from "react";
 
 
+const DISCOUNT_DEPS: fields[] = ['quantity', 'price', 'discount', 'total_iva'];
+
 export const useProductOutput = () => {
     const { enabled: inventory } = useInventory();
 
@@ -35,6 +37,16 @@ export const useProductOutput = () => {
         if (field === 'quantity' && isUnitLine(productOutputs[index])) return
         const updated: ProductOutput = { ...productOutputs[index], [field]: value };
 
+        if (field === 'total_iva') {
+            const { percentage } = updated
+            const quantity = updated.quantity === '' ? 0 : Number(updated.quantity);
+            const discount = updated.discount === '' ? 0 : Number(updated.discount);
+            // El total ya trae el descuento restado: se suma de vuelta para obtener el precio unitario
+            updated.price = parseFloat(((Number(value) / (1 + (percentage / 100)) + discount) / quantity).toFixed(6))
+        } else if (field !== 'ice') {
+            updated.total_iva = calculateLineTotal(updated);
+        }
+
         // Validar ese campo
         const validation = productOutputSchema.safeParse(updated);
 
@@ -44,7 +56,9 @@ export const useProductOutput = () => {
                 ...prev,
                 [updated.id]: {
                     ...prev[updated.id],
-                    [field]: fieldError[field]?.[0] || ""
+                    [field]: fieldError[field]?.[0] || "",
+                    // El tope del descuento depende de precio y cantidad: se revalida al cambiar cualquiera
+                    ...(DISCOUNT_DEPS.includes(field) && { discount: fieldError.discount?.[0] || "" }),
                 }
             }));
         } else {
@@ -53,17 +67,10 @@ export const useProductOutput = () => {
                 ...prev,
                 [updated.id]: {
                     ...prev[updated.id],
-                    [field]: ""
+                    [field]: "",
+                    ...(DISCOUNT_DEPS.includes(field) && { discount: "" }),
                 }
             }));
-        }
-
-        if (field === 'total_iva') {
-            const { percentage } = updated
-            const quantity = updated.quantity === '' ? 0 : Number(updated.quantity);
-            updated.price = parseFloat((Number(value) / quantity / (1 + (percentage / 100))).toFixed(6))
-        } else if (field !== 'ice') {
-            updated.total_iva = calculateLineTotal(updated);
         }
 
         const prods = productOutputs.map((item, i) => i === index ? updated : item);
