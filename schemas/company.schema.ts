@@ -74,3 +74,20 @@ export const subscriptionSchema = z.object({
     refinePlanEndsAt(data.plan, data.ends_at, 'ends_at', ctx);
     refinePlanAmount(data.plan, data.amount, 'amount', ctx);
 });
+
+// Corrección manual de un registro del historial: cualquier plan, fechas y monto obligatorios
+export const subscriptionEditSchema = z.object({
+    plan: z.enum(['GRATUITO', 'FACTURADOR', 'FINANCIERO'], {
+        errorMap: () => ({ message: 'Selecciona un plan' }),
+    }),
+    started_at: z.string().min(1, 'La fecha de inicio es requerida'),
+    ended_at: z.string().min(1, 'La fecha de fin es requerida'),
+    amount: amountField,
+}).superRefine((data, ctx) => {
+    if (data.started_at && data.ended_at && data.ended_at < data.started_at) {
+        ctx.addIssue({ path: ['ended_at'], message: 'Debe ser igual o posterior al inicio', code: z.ZodIssueCode.custom });
+    }
+    if (data.amount === undefined) {
+        ctx.addIssue({ path: ['amount'], message: 'El monto pagado es requerido', code: z.ZodIssueCode.custom });
+    }
+});

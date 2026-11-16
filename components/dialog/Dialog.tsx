@@ -23,7 +23,10 @@ export const Dialog = ({ itemId, confirmation, title, sutTitle }: Props) => {
         <Modal
             isOpen={isOpen}
             modalSize="sm"
-            onClose={() => setIsOpen(false)}
+            onClose={() => {
+                setIsOpen(false);
+                confirmation(false);
+            }}
             title=""
         >
             <div className="flex flex-col items-center gap-6 p-4 text-center">
@@ -65,7 +68,10 @@ export const Dialog = ({ itemId, confirmation, title, sutTitle }: Props) => {
                         type="button"
                         label="Cancelar"
                         action="store"
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => {
+                            setIsOpen(false);
+                            confirmation(false);
+                        }}
                     />
                 </div>
             </div>

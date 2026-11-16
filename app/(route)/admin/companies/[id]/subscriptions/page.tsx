@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { PlanBadge, TableResponsive, Title } from "@/components";
-import { getCompanySubscriptions } from "../../services/companiesServices";
+import { Dialog, IconButton, PlanBadge, TableResponsive, Title } from "@/components";
+import { deleteCompanySubscription, getCompanySubscriptions } from "../../services/companiesServices";
 import { ChangePlanModal } from "../../shared/ChangePlanModal";
+import { EditSubscriptionModal } from "../../shared/EditSubscriptionModal";
+import { useToast } from "@/context/ToastContext";
 import { formatAmount, formatPlanDate, isSubscriptionExpired, subscriptionAmount } from "@/helpers/subscriptionHelper";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { CompanySubscriptions, Subscription } from "@/types";
@@ -26,6 +28,9 @@ const PageCompanySubscriptions = () => {
     const axiosAuth = useAxiosAuth();
     const [subscriptions, setSubscriptions] = useState<CompanySubscriptions | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editing, setEditing] = useState<Subscription | null>(null);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+    const { toast } = useToast();
 
     const fetchSubscriptions = useCallback(async () => {
         const { data } = await getCompanySubscriptions(axiosAuth, id);
@@ -35,6 +40,19 @@ const PageCompanySubscriptions = () => {
     useEffect(() => {
         fetchSubscriptions();
     }, [fetchSubscriptions]);
+
+    const confirmDelete = async (accept: boolean) => {
+        const subscriptionId = deleteId;
+        setDeleteId(null);
+        if (!accept || subscriptionId === null) return;
+        const { error } = await deleteCompanySubscription(axiosAuth, id, subscriptionId);
+        if (error) {
+            toast(error, 'error');
+            return;
+        }
+        toast('Suscripción eliminada');
+        fetchSubscriptions();
+    };
 
     const history = subscriptions?.history ?? [];
     const current = subscriptions?.current ?? null;
@@ -71,14 +89,15 @@ const PageCompanySubscriptions = () => {
                                 <th>HASTA</th>
                                 <th className="text-right">MONTO</th>
                                 <th>ESTADO</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {subscriptions === null && (
-                                <tr><td colSpan={5} className="py-6 opacity-60">Cargando…</td></tr>
+                                <tr><td colSpan={6} className="py-6 opacity-60">Cargando…</td></tr>
                             )}
                             {subscriptions !== null && history.length === 0 && (
-                                <tr><td colSpan={5} className="py-6 opacity-60">La empresa no tiene suscripciones registradas.</td></tr>
+                                <tr><td colSpan={6} className="py-6 opacity-60">La empresa no tiene suscripciones registradas.</td></tr>
                             )}
                             {history.map((subscription) => {
                                 const status = statusOf(subscription, current?.id);
@@ -90,6 +109,10 @@ const PageCompanySubscriptions = () => {
                                         <td className="text-right tabular-nums">{formatAmount(subscriptionAmount(subscription))}</td>
                                         <td>
                                             <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${status.className}`}>{status.label}</span>
+                                        </td>
+                                        <td className="w-1 whitespace-nowrap">
+                                            <IconButton type="button" action="edit" onClick={() => setEditing(subscription)} title="Editar" />
+                                            <IconButton type="button" action="delete" onClick={() => setDeleteId(subscription.id)} title="Eliminar" />
                                         </td>
                                     </tr>
                                 );
@@ -110,6 +133,25 @@ const PageCompanySubscriptions = () => {
                     }}
                 />
             )}
+
+            {editing && (
+                <EditSubscriptionModal
+                    companyId={id}
+                    subscription={editing}
+                    onClose={() => setEditing(null)}
+                    onSaved={() => {
+                        setEditing(null);
+                        fetchSubscriptions();
+                    }}
+                />
+            )}
+
+            <Dialog
+                itemId={deleteId}
+                confirmation={confirmDelete}
+                title="¿Eliminar esta suscripción?"
+                sutTitle="Se borrará el registro de forma permanente. Si es el plan vigente, la empresa quedará con el plan anterior que siga vigente o sin plan."
+            />
         </div>
     )
 }

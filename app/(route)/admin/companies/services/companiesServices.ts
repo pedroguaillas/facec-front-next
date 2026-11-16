@@ -33,6 +33,23 @@ export const storeCompanySubscription = async (
 ): Promise<ApiResponse<Subscription>> =>
     handleApiRequest<Subscription>(() => axiosAuth.post(`admin/companies/${companyId}/subscription`, form));
 
+// Corrige un registro del historial sin cerrar ni abrir otros
+export const updateCompanySubscription = async (
+    axiosAuth: AxiosInstance,
+    companyId: string,
+    subscriptionId: number,
+    form: object,
+): Promise<ApiResponse<Subscription>> =>
+    handleApiRequest<Subscription>(() => axiosAuth.put(`admin/companies/${companyId}/subscriptions/${subscriptionId}`, form));
+
+// Eliminación física del registro
+export const deleteCompanySubscription = async (
+    axiosAuth: AxiosInstance,
+    companyId: string,
+    subscriptionId: number,
+): Promise<ApiResponse<unknown>> =>
+    handleApiRequest<unknown>(() => axiosAuth.delete(`admin/companies/${companyId}/subscriptions/${subscriptionId}`));
+
 export const getCompanyEdit = async (axiosAuth: AxiosInstance, id: string) =>
     handleApiRequest<Company>(() => axiosAuth.get(`admin/companies/${id}/edit`));
 
