@@ -14,6 +14,13 @@ export const addDaysToDate = (date: string, days: number) => {
     return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
 }
 
+// Suma meses ajustando al último día si el mes destino es más corto (31/01 + 1 → 28/02)
+export const addMonthsToDate = (date: string, months: number) => {
+    const [year, month, day] = date.split('-').map(Number);
+    const lastDay = new Date(Date.UTC(year, month - 1 + months + 1, 0)).getUTCDate();
+    return new Date(Date.UTC(year, month - 1 + months, Math.min(day, lastDay))).toISOString().slice(0, 10);
+}
+
 // "2026-09-30" → "30/09/2026" (formato del SRI); tolera fecha con hora
 export const formatDate = (date?: string | null) => {
     if (!date) return '';

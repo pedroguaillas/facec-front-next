@@ -5,7 +5,7 @@ import { FormModal, SegmentedControl, TextInput } from "@/components";
 import { storeCompanySubscription } from "../services/companiesServices";
 import { planOptions } from "@/constants/plans";
 import { subscriptionSchema } from "@/schemas/company.schema";
-import { addDaysToDate, getDate } from "@/helpers/dateHelper";
+import { addDaysToDate, addMonthsToDate, getDate } from "@/helpers/dateHelper";
 import { useFormSubmit } from "@/lib/hooks/useFormSubmit";
 import { useToast } from "@/context/ToastContext";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
@@ -27,7 +27,9 @@ export const ChangePlanModal = ({ companyId, currentPlan, onClose, onSaved }: Pr
     const axiosAuth = useAxiosAuth();
     const { toast } = useToast();
     const initialPlan: PlanCode = currentPlan && currentPlan !== 'GRATUITO' ? currentPlan : 'FACTURADOR';
-    const [form, setForm] = useState<{ plan: PlanCode; ends_at: string; amount: string }>({ plan: initialPlan, ends_at: '', amount: '' });
+    // Por defecto vence en un mes desde hoy (renovación mensual)
+    const initialEndsAt = addMonthsToDate(getDate(), 1);
+    const [form, setForm] = useState<{ plan: PlanCode; ends_at: string; amount: string }>({ plan: initialPlan, ends_at: initialEndsAt, amount: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const selectedPlan = paidPlanOptions.find(option => option.value === form.plan);
 
@@ -54,7 +56,7 @@ export const ChangePlanModal = ({ companyId, currentPlan, onClose, onSaved }: Pr
             onClose={onClose}
             onSubmit={handleSubmit}
             isPending={isPending}
-            isDirty={form.ends_at !== '' || form.amount !== '' || form.plan !== initialPlan}
+            isDirty={form.ends_at !== initialEndsAt || form.amount !== '' || form.plan !== initialPlan}
             message={message}
         >
             <SegmentedControl
