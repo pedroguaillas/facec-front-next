@@ -37,7 +37,10 @@ export const useGeneralInformation = () => {
     ]
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name } = e.target;
+        let { value } = e.target;
+        // Nro. de calificación artesanal: solo dígitos, máximo 5
+        if (name === 'artisan_number') value = value.replace(/\D/g, '').slice(0, 5);
         setForm(prev => ({ ...prev, [name]: value }))
         setFieldErrors(prev => ({ ...prev, [name]: '' }))
     }

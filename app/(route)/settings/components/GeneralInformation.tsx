@@ -44,7 +44,8 @@ export const GeneralInformation = () => {
                             value={form.artisan_number ?? ''}
                             error={fieldErrors.artisan_number}
                             onChange={handleChange}
-                            maxLength={30}
+                            maxLength={5}
+                            inputMode='numeric'
                             hint='Déjalo vacío si no eres artesano calificado'
                         />
                     </div>
