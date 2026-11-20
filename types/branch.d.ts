@@ -5,4 +5,6 @@ export interface Branch {
     name?: null | string,
     type: 'matriz' | 'sucursal',
     cf?: boolean,
+    logo_dir?: string | null,
+    logo_url?: string | null,
 }
